@@ -3,7 +3,6 @@
 	"manifest_version": 2,
 	"description": "A web3 wallet connecting you to the world of DeFi!",
 	"version": "0.0.1",
-    "content_security_policy": "script-src 'self' 'sha256-CMyYic0d7L0Q9AwjGU0n6buHFRR6bU3TOAe0P7DEJrk='; object-src 'self",
     
     "icons": {
         "48": "ww-48.png",
