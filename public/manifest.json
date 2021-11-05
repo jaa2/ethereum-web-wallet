@@ -9,6 +9,10 @@
         "1024": "ww-1024.png"
     },
 
+    "background": {
+        "page": "background.html"
+    },
+
     "browser_action": {
         "default_icon": {
             "48": "ww-48.png",
