@@ -1,14 +1,14 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { MemoryRouter } from 'react-router';
+import { BrowserRouter } from 'react-router-dom';
 import './styles.scss';
 import App from './App';
 
 ReactDOM.render(
   <React.StrictMode>
-    <MemoryRouter>
+    <BrowserRouter>
       <App />
-    </MemoryRouter>
+    </BrowserRouter>
   </React.StrictMode>,
   document.getElementById('root')
 );

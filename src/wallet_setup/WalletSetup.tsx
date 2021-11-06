@@ -1,9 +1,8 @@
-
 function WalletSetup() {
   return (
-      <div>
-        WalletSetup
-      </div>
+    <div>
+      WalletSetup
+    </div>
   );
 }
 
