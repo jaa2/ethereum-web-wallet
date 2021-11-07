@@ -1,4 +1,3 @@
-import React from 'react';
 import { Routes, Route, Link } from 'react-router-dom';
 
 import NavigationDebug from './debug/NavigationDebug';
@@ -16,8 +15,6 @@ import SignIn from './SignIn';
 import CreateTransaction from './transaction/CreateTransaction';
 import ReplaceTransaction from './transaction/ReplaceTransaction';
 import SimulationResults from './transaction/SimulationResults';
-
-import './styles.scss';
 
 function App() {
   return (
