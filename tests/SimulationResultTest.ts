@@ -3,6 +3,7 @@ import { SimulationSuite } from "../background/SimulationSuite"
 import { Provider, EtherscanProvider } from "@ethersproject/providers"
 import { Transaction } from 'ethers';
 
+// TODO: Add delaysg
 describe("SimulationResults tests", () => {
     var sr: SimulationSuite;
     var provider: Provider;
@@ -64,7 +65,7 @@ describe("SimulationResults tests", () => {
     // });
 
     // it("Can detect empty data fields", async () => {
-    //     // Transaction has an _____ data field
+    //     // Transaction's _____ data field is empty
     //     var t: Transaction = await provider.getTransaction("");
     //     expect(await sr.hasEmptyDataFields(t)).to.be.true;
 
@@ -73,14 +74,14 @@ describe("SimulationResults tests", () => {
     //     expect(await sr.hasEmptyDataFields(t)).to.be.false;
     // });
 
-    // it("Can detect that the transaction is being sent on the right network", async () => {
+    // it("Can detect that the transaction's destination address is a valid address", async () => {
     //     // Transaction is sent on the right network
     //     var t: Transaction = await provider.getTransaction("");
-    //     expect(await sr.isOnRightNetwork(t)).to.be.true;
+    //     expect(await sr.isAddressValid(t)).to.be.true;
 
     //     // Transaction is sent on the wrong network
     //     var t: Transaction = await provider.getTransaction("");
-    //     expect(await sr.isOnRightNetwork(t)).to.be.false;
+    //     expect(await sr.isAddressValid(t)).to.be.false;
     // });
 
     // it("Can detect that a transaction is being sent to a new address", async () => {
