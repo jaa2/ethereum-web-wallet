@@ -1,7 +1,10 @@
+import './Home.scss';
+
 function Home() {
   return (
-    <div>
+    <div id="home">
       Home
+      {/* Insert HTML elements here! */}
     </div>
   );
 }
