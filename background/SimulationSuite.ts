@@ -125,8 +125,8 @@ export class SimulationSuite {
                 return false;
             }
 
-            if (maxPriorityFeePerGas.gte(estMaxPriorityFeePerGas) && maxPriorityFeePerGas.lte(estMaxPriorityFeePerGas.mul(2)) 
-                && maxFeePerGas.gte(estMaxFeePerGas.mul(1.1)) && maxFeePerGas.lte(estMaxFeePerGas.mul(3))) {
+            if ((maxPriorityFeePerGas.toNumber() >= estMaxPriorityFeePerGas.toNumber()) && (maxPriorityFeePerGas.toNumber() <= estMaxPriorityFeePerGas.toNumber() * 2)
+                && (maxFeePerGas.toNumber() >= estMaxFeePerGas.toNumber() * 1) && (maxFeePerGas.toNumber() <= estMaxFeePerGas.toNumber() * 3)) {
                     return true;
             } else {
                 return false;
@@ -138,9 +138,9 @@ export class SimulationSuite {
                 return false;
             }
 
-            var estGasPrice50 = estGasPrice.mul(0.5);
+            var estGasPrice50 = estGasPrice.toNumber() * 0.5;
 
-            if (estGasPrice.sub(estGasPrice50).gte(tGasPrice) || estGasPrice.add(estGasPrice50).lte(tGasPrice)) {
+            if (estGasPrice.toNumber() - estGasPrice50 >= tGasPrice.toNumber() || estGasPrice.toNumber() + estGasPrice50 <= tGasPrice.toNumber()) {
                 return false;
             } else {
                 return true;
