@@ -97,15 +97,13 @@ export class WalletState {
      * @param progressCallback Callback function accepting a number between 0 and 1,
      * the progress of decrypting the wallet.
      */
-    async decryptWallet(password: string, progressCallback?: {(progress: Number): any}): Promise<boolean> {
+    async decryptWallet(password: string, progressCallback?: {(progress: Number): any}): Promise<void> {
         const _this = this;
         if (_this.encryptedWalletJSON === null) {
             // Load encrypted wallet information if it hasn't already been loaded
             await _this.loadEncrypted();
             if (_this.encryptedWalletJSON === null) {
-                return new Promise((_resolve: any, reject: any) => {
-                    reject("No stored wallet exists");
-                });
+                return Promise.reject("No stored wallet exists");
             }
         }
 
@@ -113,7 +111,6 @@ export class WalletState {
         .then(wallet => {
             // Success!
             _this.currentWallet = wallet;
-            return true;
         });
     }
 
