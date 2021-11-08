@@ -13,7 +13,8 @@ export class MemoryStorage implements WalletStorage {
             if (typeof(keys) === "string") {
                 if (_this.storage.hasOwnProperty(keys)) {
                     resolve({
-                        keys: _this.storage[keys]
+                        // Use computed property name so that it's not "keys"
+                        [keys]: _this.storage[keys]
                     });
                     return;
                 } else {
@@ -38,8 +39,13 @@ export class MemoryStorage implements WalletStorage {
             }
         });
     }
+
     set(items: Record<string, any>): Promise<void> {
-        throw new Error("Method not implemented.");
+        var keys: Array<string> = Object.keys(items);
+        for (let val of keys) {
+            this.storage[val] = items[val];
+        }
+        return Promise.resolve();
     }
     
 }

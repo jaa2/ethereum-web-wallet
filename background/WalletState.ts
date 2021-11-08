@@ -26,6 +26,25 @@ export class WalletState {
     constructor(storageArea: WalletStorage) {
         this.storageArea = storageArea;
     }
+
+    /**
+     * @returns true if saving a new wallet would overwrite an existing one
+     */
+    async willOverwrite(): Promise<boolean> {
+        // Try to load wallet data. If there is any, don't proceed with wallet creation
+        var hasWalletData = false;
+        await this.loadEncrypted()
+        .then(() => {
+            hasWalletData = true;
+        })
+        .catch(reason => {
+            if (reason != "Not all storage values found") {
+                hasWalletData = true;
+            }
+        });
+
+        return hasWalletData;
+    }
     
     /**
      * Get the wallet object for an immediate operation.
@@ -43,7 +62,7 @@ export class WalletState {
         const _this: WalletState = this;
         if (_this.isStateLoaded) {
             // The state is already loaded
-            return new Promise(() => {});
+            return Promise.resolve();
         }
 
         const keysToFind: Array<string> = ["storageVersion", "currentWallet"];
@@ -96,5 +115,40 @@ export class WalletState {
             _this.currentWallet = wallet;
             return true;
         });
+    }
+
+    /**
+     * Creates a new random wallet
+     * @param overwrite If true, a new wallet will be created even if one already exists
+     * @returns true if the action succeeded following the overwrite argument
+     */
+    async createWallet(overwrite: boolean): Promise<boolean> {
+        if (!overwrite && (await this.willOverwrite())) {
+            return false;
+        }
+
+        // Create the new wallet
+        this.currentWallet = Wallet.createRandom();
+        return true;
+    }
+
+    /**
+     * Encrypts the wallet object and saves it to the storage area
+     * @param overwrite If true, the wallet object will be saved even if one already exists
+     * @param password Password to encrypt the wallet with
+     * @returns true if the action succeeded following the overwrite argument
+     */
+    async saveEncryptedWallet(overwrite: boolean, password: string): Promise<boolean> {
+        if (this.currentWallet === null || (!overwrite && (await this.willOverwrite()))) {
+            return false;
+        }
+
+        // Save the new wallet
+        var encryptedWalletJSON = await this.currentWallet.encrypt(password);
+        await this.storageArea.set({
+            "storageVersion": storageVersion,
+            "currentWallet": encryptedWalletJSON
+        });
+        return true;
     }
 }
