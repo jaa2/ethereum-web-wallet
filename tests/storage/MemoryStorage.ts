@@ -1,4 +1,3 @@
-import { recoverAddress } from "@ethersproject/transactions";
 import { WalletStorage } from "../../background/WalletStorage";
 
 /**
