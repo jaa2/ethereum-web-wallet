@@ -4,19 +4,16 @@ import { resolve } from 'dns';
 import { WalletState } from '../background/WalletState';
 import { WalletStorage } from '../background/WalletStorage';
 import { MemoryStorage } from './storage/MemoryStorage';
+import chaiAsPromised from 'chai-as-promised';
+import chai from 'chai';
+
+ // Load chai-as-promised support
+ chai.use(chaiAsPromised);
 
 describe("WalletState tests", () => {
     it("loadEncrypted rejects if nothing exists in local storage", async () => {
         var state: WalletState = new WalletState(new MemoryStorage());
-        var didReject: boolean = await state.loadEncrypted()
-            .then(() => {
-                return false;
-            })
-            .catch(reason => {
-                expect(reason).to.be.equal("Not all storage values found");
-                return true;
-            });
-        expect(didReject).to.be.true;
+        expect(state.loadEncrypted()).to.eventually.be.rejectedWith("Not all storage values found");
     });
 
     it("Creates, saves, and loads a wallet", async () => {
