@@ -1,4 +1,3 @@
-import React from 'react';
 import { Routes, Route, Link } from 'react-router-dom';
 
 import NavigationDebug from './debug/NavigationDebug';
@@ -17,7 +16,7 @@ import CreateTransaction from './transaction/CreateTransaction';
 import ReplaceTransaction from './transaction/ReplaceTransaction';
 import SimulationResults from './transaction/SimulationResults';
 
-import './styles.scss';
+// TODO: Gate off routes based on if the user has authenticated or not 
 
 function App() {
   return (
