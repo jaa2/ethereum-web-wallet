@@ -10,8 +10,8 @@ import { ethers } from "ethers";
 // Source: https://ethereum.stackexchange.com/questions/11144/how-to-decode-input-data-from-a-transaction
     // To decode transaction data
 
-declare const WEI_TO_GWEI = 0.000000001
-declare const GWEI_TO_ETH = 0.000000001;
+// declare const WEI_TO_GWEI = 0.000000001
+// declare const GWEI_TO_ETH = 0.000000001;
 
 export class SimulationSuite {
     provider: Provider;
@@ -89,7 +89,7 @@ export class SimulationSuite {
      */
     async isGasLimitEnough(t: Transaction): Promise<Boolean> {
         var estimatedGas = await this.provider.estimateGas({to: t.to, data: t.data, value: t.value});
-        if (estimatedGas.gt(t.gasLimit)) {
+        if (t.gasLimit.gt(estimatedGas)) {
             return false;
         }
 
@@ -172,7 +172,7 @@ export class SimulationSuite {
      * @param t Transaction to test
      * @returns true if the transcation matches the function description
      */
-    async isAddressValid(t: Transaction, w: Wallet): Promise<Boolean> {
+    async isAddressValid(t: Transaction): Promise<Boolean> {
         try {
             // Returns the checksum address, or we can just the simple isAddress()
             var dest = getAddress(t.to as string);
@@ -203,14 +203,14 @@ export class SimulationSuite {
      * @param t Transaction to test
      * @returns true if the transaction matches the function description
      */
-    async isTotalMoreThanWallet(t: Transaction, w: Wallet, balance: BigNumber): Promise<Boolean> {
+    async isTotalMoreThanWallet(t: Transaction, balance: BigNumber): Promise<Boolean> {
         var tGasPrice = t.gasPrice;
         var tGasLimit = t.gasLimit;
         if ((tGasPrice === null || tGasPrice === undefined) || (tGasLimit === null || tGasLimit === undefined)) {
             return false;
         }
 
-        var tGasTotalFees = tGasPrice.mul(tGasLimit).mul(WEI_TO_GWEI).mul(GWEI_TO_ETH);
+        var tGasTotalFees = tGasPrice.mul(tGasLimit);
 
         var amount = t.value;
         if (amount.add(tGasTotalFees).gt(balance)) {

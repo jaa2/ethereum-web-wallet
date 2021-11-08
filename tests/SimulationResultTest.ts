@@ -1,7 +1,8 @@
 import { expect } from 'chai';
 import { SimulationSuite } from "../background/SimulationSuite"
 import { Provider, EtherscanProvider } from "@ethersproject/providers"
-import { Transaction } from 'ethers';
+import { Transaction, BigNumber } from 'ethers';
+import { parseEther } from '@ethersproject/units';
 
 // TODO: Add delaysg
 describe("SimulationResults tests", () => {
@@ -50,19 +51,33 @@ describe("SimulationResults tests", () => {
             .to.be.false;
     });
 
-    // it("Can determine that the gas price is reasonable", async () => {
-    //     // Transaction's gas price is reasonable
-    //     var t: Transaction = await provider.getTransaction("");
-    //     expect(await sr.isGasPriceReasonable(t)).to.be.true;
+    it("Can determine that the gas limit is enough", async () => {
+        // Transaction's gas limit is reasonable
+        var t: Transaction = await provider.getTransaction("0xc0f9db74a248ef15b041b576878375213037bc83767ce22b3ae20972c032afcc");
+        expect(await sr.isGasLimitEnough(t)).to.be.true;
 
-    //     // Transaction's gas price is too high
-    //     var t: Transaction = await provider.getTransaction("");
-    //     expect(await sr.isGasPriceReasonable(t)).to.be.false;
+        // Transaction's gas limit is too low
+        // var t: Transaction = await provider.getTransaction("");
+        // expect(await sr.isGasLimitEnough(t)).to.be.false;
 
-    //     // Transaction's gas price is too low
-    //     var t: Transaction = await provider.getTransaction("");
-    //     expect(await sr.isGasPriceReasonable(t)).to.be.false;
-    // });
+        // Transaction's gas limit is too high
+        var t: Transaction = await provider.getTransaction("0xc7ed0d3e0190ba51c3d3f0169f5db1117cac355029a9eee8c1387669ed9dc636");
+        expect(await sr.isGasLimitEnough(t)).to.be.false;
+    });
+
+    it("Can determine that the gas price is reasonable", async () => {
+        // Transaction's gas price is reasonable
+        var t: Transaction = await provider.getTransaction("0xc0f9db74a248ef15b041b576878375213037bc83767ce22b3ae20972c032afcc");
+        expect(await sr.isGasPriceReasonable(t)).to.be.true;
+
+        // // Transaction's gas price is too high
+        // var t: Transaction = await provider.getTransaction("");
+        // expect(await sr.isGasPriceReasonable(t)).to.be.false;
+
+        // // Transaction's gas price is too low
+        // var t: Transaction = await provider.getTransaction("");
+        // expect(await sr.isGasPriceReasonable(t)).to.be.false;
+    });
 
     // it("Can detect empty data fields", async () => {
     //     // Transaction's _____ data field is empty
@@ -74,15 +89,15 @@ describe("SimulationResults tests", () => {
     //     expect(await sr.hasEmptyDataFields(t)).to.be.false;
     // });
 
-    // it("Can detect that the transaction's destination address is a valid address", async () => {
-    //     // Transaction is sent on the right network
-    //     var t: Transaction = await provider.getTransaction("");
-    //     expect(await sr.isAddressValid(t)).to.be.true;
+    it("Can detect that the transaction's destination address is a valid address", async () => {
+        // Transaction is sent to a valid address
+        var t: Transaction = await provider.getTransaction("0xaa527abc67d4e64b97194502f6ffd5908b4b389bb4098a1aa4b239105968dc9d");
+        expect(await sr.isAddressValid(t)).to.be.true;
 
-    //     // Transaction is sent on the wrong network
-    //     var t: Transaction = await provider.getTransaction("");
-    //     expect(await sr.isAddressValid(t)).to.be.false;
-    // });
+        // Transaction is sent to an invalid address
+        var t: Transaction = await provider.getTransaction("0xaa527abc67d4e64b97144502f6ffd5908b4b389bb4098a1aa4b239105968dc9d");
+        expect(await sr.isAddressValid(t)).to.be.false;
+    });
 
     // it("Can detect that a transaction is being sent to a new address", async () => {
     //     // Transaction is being sent to a new address
@@ -94,13 +109,15 @@ describe("SimulationResults tests", () => {
     //     expect(await sr.isNewAddress(t)).to.be.false;
     // });
 
-    // it("Can detect that the total amount of the transaction is more than what exists in the wallet", async () => {
-    //     // Transaction costs more than what user has in wallet
-    //     var t: Transaction = await provider.getTransaction("");
-    //     expect(await sr.isTotalMoreThanWallet(t)).to.be.true;
+    it("Can detect that the total amount of the transaction is more than what exists in the wallet", async () => {
+        var balance = parseEther("0.005");
+        // Transaction costs more than what user has in wallet
+        var t: Transaction = await provider.getTransaction("0x6a44268d33924f4f36223013d17da57ff98325bf246152214c044c055da4cbf5");
+        expect(await sr.isTotalMoreThanWallet(t, balance)).to.be.true;
 
-    //     // Transaction amount is within the wallet's capacity
-    //     var t: Transaction = await provider.getTransaction("");
-    //     expect(await sr.isTotalMoreThanWallet(t)).to.be.false;
-    // });
+        // Transaction amount is within the wallet's capacity
+        balance = parseEther("0.05");
+        t = await provider.getTransaction("0x6a44268d33924f4f36223013d17da57ff98325bf246152214c044c055da4cbf5");
+        expect(await sr.isTotalMoreThanWallet(t, balance)).to.be.false;
+    });
 });
