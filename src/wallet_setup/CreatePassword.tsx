@@ -37,16 +37,20 @@ function CreatePassword() {
   let passwordMatchElements: JSX.Element = ( <div /> );
   // handle additional state where the user's password doesn't meet requirements
   if (passwordMatchState === "match") {
-    passwordMatchElements = (<div id="create-password-match-elements">
-      <p id="create-password-info-match" className="password-info" >Success. Your passwords match!</p>
-      <Link id="create-password-continue-link" className="link hoverable" to="/Home" onClick={PasswordCreated} >
-        <h4>Continue</h4>
-      </Link>
-    </div>);
+    passwordMatchElements = (
+      <div id="create-password-match-elements">
+        <p id="create-password-info-match" className="password-info" >Success. Your passwords match!</p>
+        <Link id="create-password-continue-link" className="link hoverable" to="/Home" onClick={PasswordCreated} >
+          <h4>Continue</h4>
+        </Link>
+      </div>
+    );
   } else if (passwordMatchState === "mismatch") {
-    passwordMatchElements = (<div id="create-password-match-elements">
+    passwordMatchElements = (
+    <div id="create-password-match-elements">
       <p id="create-password-info-mismatch" className="password-info">Uh oh. Your passwords don't match!</p>
-    </div>);
+    </div>
+    );
   } else {
     passwordMatchElements = (
       <div id="create-password-match-elements">
