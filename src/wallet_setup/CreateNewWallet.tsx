@@ -62,8 +62,9 @@ function CreateNewWallet() {
   return (
     <div id="create-new-wallet">
       <Link id="back-button" to="/Home"> 
-      <button className="back-button">Back</button>
+        <button className = "button">Back</button>
       </Link>
+      <div id="align-center">
       <FontAwesomeIcon className="fa-icon" icon={faPlus} size="4x" />
       <h1>Create New Wallet</h1>
       <div id = "border-red">
@@ -80,6 +81,7 @@ function CreateNewWallet() {
           <input id="create-phrase-confirm-phrase-input" type="phrase" name="confirm phrase" onChange={handleConfirmPhrase} />
       </div>
       {phraseMatchElements}
+    </div>
     </div>
   );
 }

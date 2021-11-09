@@ -9,20 +9,24 @@ import './SimulationResults.scss';
 function SimulationResults() {
   return (
     <div id="simulation-results">
-      <h1>Transaction Details</h1>
+      <div id="top-box">
+        <h1>Transaction Details</h1>
+        <h3>0x51092...094ef to Timmy Turner (0x98173...)</h3>
+        <h3><b>Contract interaction: Transfer 1 ETH to Timmy Turner</b></h3>
         <div id="transaction-details">
           <div id = "gas-fee">
             <FontAwesomeIcon className="fa-icon" icon={faGasPump} size="2x" />
-            <h4>At Most</h4> <h2> 130 Gwei </h2>
+            <h5>At Most <h3> 130 Gwei </h3></h5> 
           </div>
           <div id = "amount">
             <FontAwesomeIcon className="fa-icon" icon={faEthereum} size="2x" />
-            <h4>ETH sent to "Timmy Turner"</h4> <h2> 1 ETH </h2>
+            <h5>ETH sent to "Timmy Turner" <h3> 1 ETH </h3></h5> 
           </div>
           <div id = "max-tx-fee">
           <FontAwesomeIcon className="fa-icon" icon={faFire} size="2x" />
-          <h4>Max tx fee   Gas limit: 46,142</h4> <h2> 0.00035201 ETH </h2>
+          <h5>Max tx fee   Gas limit: 46,142 <h3> 0.00035201 ETH </h3></h5> 
           </div>
+        </div>
       </div>
     </div>
   );
