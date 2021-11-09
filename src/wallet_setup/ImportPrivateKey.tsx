@@ -2,9 +2,9 @@ import React, { useEffect } from 'react';
 import { Link } from "react-router-dom";
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faUnlock } from '@fortawesome/free-solid-svg-icons';
+import { faUnlock, faUserSecret } from '@fortawesome/free-solid-svg-icons';
 
-import './CreatePassword.scss';
+import './ImportPrivateKey.scss';
 
 function CorrectPrivateKey() {
   console.log("Correct Private Key LogIn!");
@@ -45,10 +45,8 @@ function ImportSecretPhrase() {
 
   return (
     <div id= "import-private-key">
-      <div>
+      <FontAwesomeIcon className="fa-icon" icon={faUserSecret} size="4x" />
        
-        <h1>Icon Here</h1>
-      </div>
 
       <h1>Import Private Key</h1>
 

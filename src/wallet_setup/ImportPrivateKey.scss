@@ -1,6 +1,6 @@
 @import '../common/colors';
 
-#import-secret-phrase {
+#import-private-key {
   width: 33vw;
   min-width: 400px;
 
@@ -27,57 +27,3 @@
     background-color: $hover-button-color;
     cursor: pointer;
   }
-
-  #wallet-setup-header {
-    width: 100%;
-
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
-    align-items: center;
-
-    * {
-      margin: 10px;
-    }
-  }
-
-  #wallet-setup-create-wallet {
-    width: fit-content;
-    height: fit-content;
-
-    padding: 10px;
-  }
-
-  #wallet-setup-other-options {
-    width: 100%;
-    
-    display: flex;
-    flex-direction: row;
-    justify-content: space-around;
-    align-items: center;
-
-    #wallet-setup-import-phrase {
-      width: 50%;
-
-      margin: 5px;
-      padding: 10px;
-    
-      display: flex;
-      flex-direction: row;
-      justify-content: space-evenly;
-      align-items: center;
-    }
-
-    #wallet-setup-import-key {
-      width: 50%;
-
-      margin: 5px;
-      padding: 10px;
-    
-      display: flex;
-      flex-direction: horizontal;
-      justify-content: space-evenly;
-      align-items: center;
-    }
-  }
-}
