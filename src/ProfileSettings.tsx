@@ -16,13 +16,17 @@ function ProfileSettings() {
       <div id="profile-left-section">
         <div id="settings-nav-button">
           <div>
+          <Link to="/Home">
             <FontAwesomeIcon className="fa-icon" icon={faHome} size="1x" />
             <button>Home</button>
+          </Link>
 
           </div>
           <div>
+            <Link to="/SignIn">
             <FontAwesomeIcon className="fa-icon" icon={faLock} size="1x" />
             <button>Lock</button>
+            </Link>
 
           </div>
         </div>

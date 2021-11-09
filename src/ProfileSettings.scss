@@ -9,12 +9,18 @@
   // flex-direction: column;
   // justify-content: space-evenly;
   // align-content:horizontal;
-  align-items: center;
+  // align-items: center;
 
   text-align: center;
 
   #profile-left-section {
     margin:10px;
+
+    .settings-nav-button {
+      // display: flex;
+      float: left;
+      padding-left: 1px;
+    }
 
     .profile-name-edit {
       align-items: center;
