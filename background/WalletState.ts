@@ -141,7 +141,11 @@ export class WalletState {
         }
 
         // Save the new wallet
-        var encryptedWalletJSON = await this.currentWallet.encrypt(password);
+        var encryptedWalletJSON = await this.currentWallet.encrypt(password, {
+            scrypt: {
+                N: 131072 / 4
+            }
+        });
         await this.storageArea.set({
             "storageVersion": storageVersion,
             "currentWallet": encryptedWalletJSON
