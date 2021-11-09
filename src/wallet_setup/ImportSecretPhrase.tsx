@@ -19,8 +19,8 @@ function ImportSecretPhrase() {
 
         <div id="match-elements">
           <p id="info-match" className="info" >Success. This is a valid wallet account!</p>
-          <Link id="continue-link" className="link hoverable" to="/CreatePassword">
-            <h4>Continue</h4>
+          <Link to="/CreatePassword">
+            <button className="bottom-button">Continue</button>
           </Link>
         </div>
       </div>
