@@ -9,6 +9,7 @@ import './SimulationResults.scss';
 function SimulationResults() {
   return (
     <div id="simulation-results">
+
       <div id="top-box">
         <h1>Transaction Details</h1>
         <h3>0x51092...094ef to Timmy Turner (0x98173...)</h3>
@@ -28,6 +29,20 @@ function SimulationResults() {
           </div>
         </div>
       </div>
+
+      <div id= "bottom-buttons">
+        <Link to="/Home"> 
+          <button className = "button reject-transaction">Reject Transaction</button>
+        </Link>
+
+        <Link to="/CreateTransaction"> 
+          <button className = "button edit-transaction">Edit Transaction</button>
+        </Link>
+
+        <Link to="/Home"> 
+          <button className = "button send-transaction">Send Transaction</button>
+        </Link>
+      </div>  
     </div>
   );
 }
