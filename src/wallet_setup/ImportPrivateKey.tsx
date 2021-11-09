@@ -55,8 +55,15 @@ function ImportSecretPhrase() {
           <input id="private-key-input" type="text" name="privateKey" onChange={handlePrivateKey} />
       </div>
 
+      <Link to="/CreatePassword">
+        <button className = "continue-button">Continue</button>
+      </Link>
+
+
+
       
     </div>
+
       
   );
 }
