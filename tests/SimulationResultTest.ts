@@ -33,29 +33,33 @@ describe("SimulationResults tests", () => {
             .to.be.false;
 
         await delay(1000);
+
         // Token transfer to non-contract address
         t = await provider.getTransaction("0x8431016caad2a1bed1d4a7b4e6b2c9d6c797ee6f3f775c694cace3ddc7d12e98");
         expect(await sr.isTokenTransferToContract(t))
             .to.be.false;
     });
 
-    // it("Can detect data sent to non-contract addresses", async () => {
-    //     // Data sent to non-contract address
-    //     var t: Transaction = await provider.getTransaction("0xeb0d50c3d14cfce8f84ae86ac4cde37d4913c6d6b331bf9a61197c3e1f0f27e5");
-    //     expect(await sr.isDataSentToEOA(t))
-    //         .to.be.true;
-            // await delay(1000);
-    //     // Data sent to contract address
-    //     t = await provider.getTransaction("0xbb13c1de1d4dd0aea8fc9e5ea22f4362c76d9a24d6ef7706e23eaae529820f70");
-    //     expect(await sr.isDataSentToEOA(t))
-    //         .to.be.false;
-            // await delay(1000);
+    it("Can detect data sent to non-contract addresses", async () => {
+        // Data sent to non-contract address
+        var t: Transaction = await provider.getTransaction("0xeb0d50c3d14cfce8f84ae86ac4cde37d4913c6d6b331bf9a61197c3e1f0f27e5");
+        expect(await sr.isDataSentToEOA(t))
+            .to.be.true;
+        
+        await delay(1000);
 
-    //     // No data sent
-    //     t = await provider.getTransaction("0x26c10475f0e6a73b45ee73f54743c459f428efa899d0a4c6ec72d65dc23380f1");
-    //     expect(await sr.isDataSentToEOA(t))
-    //         .to.be.false;
-    // });
+        // Data sent to contract address
+        t = await provider.getTransaction("0xbb13c1de1d4dd0aea8fc9e5ea22f4362c76d9a24d6ef7706e23eaae529820f70");
+        expect(await sr.isDataSentToEOA(t))
+            .to.be.false;
+        
+        await delay(1000);
+
+        // No data sent
+        t = await provider.getTransaction("0x26c10475f0e6a73b45ee73f54743c459f428efa899d0a4c6ec72d65dc23380f1");
+        expect(await sr.isDataSentToEOA(t))
+            .to.be.false;
+    });
 
     it("Can determine that the gas limit is enough", async () => {
         // Transaction's gas limit is reasonable
@@ -69,7 +73,7 @@ describe("SimulationResults tests", () => {
 
         // await delay(1000);
         // Transaction's gas limit is too high
-        var t: Transaction = await provider.getTransaction("0xc7ed0d3e0190ba51c3d3f0169f5db1117cac355029a9eee8c1387669ed9dc636");
+        t = await provider.getTransaction("0xc7ed0d3e0190ba51c3d3f0169f5db1117cac355029a9eee8c1387669ed9dc636");
         expect(await sr.isGasLimitEnough(t)).to.be.false;
     });
 
@@ -105,7 +109,7 @@ describe("SimulationResults tests", () => {
         await delay(1000);
 
         // Transaction is sent to an invalid address
-        var t: Transaction = await provider.getTransaction("0xaa527abc67d4e64b97144502f6ffd5908b4b389bb4098a1aa4b239105968dc9d");
+        t = await provider.getTransaction("0xaa527abc67d4e64b97144502f6ffd5908b4b389bb4098a1aa4b239105968dc9d");
         expect(await sr.isAddressValid(t)).to.be.false;
     });
 

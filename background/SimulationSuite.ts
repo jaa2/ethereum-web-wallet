@@ -23,7 +23,7 @@ export class SimulationSuite {
      */
     constructor(provider: Provider) {
         this.provider = provider;
-        this.erc20interface = new ethers.utils.Interface(require('../erc20abi.json'));
+        this.erc20interface = new Interface(require('../erc20abi.json'));
     }
 
     /**
@@ -62,24 +62,22 @@ export class SimulationSuite {
      * @param t Transaction to test
      * @returns true if the transaction matches the function description
      */
-    // TODO: Needs to be fixed. Depending on the function, it is difficult to determine which parameter is the destination address
-    // Using a defaultAbiCoder and using its decoding function requires guessing of the parameter types unless if somehow manually
-    // parse out the data and recognize the 42-character address (including 0x). However, we would also need to know the number of 
-    // parameters the function in the data takes
     async isDataSentToEOA(t: Transaction): Promise<Boolean> {
-        var res = true;
-        try {
-            var input = await this.erc20interface.parseTransaction({data: t.data});
-            var dest = input.args[0];
-            var code = await this.provider.getCode(dest);
-            if (code !== "0x") {
-                res = false;
-            }
-        } catch {
-            res = false;
-        };
+        if (t == null) {
+            return false;
+        }
 
-        return res;
+        var dest = t.to as string;
+        if (dest === null || dest === undefined) {
+            return false;
+        } 
+
+        var code = await this.provider.getCode(t.to as string);
+        if ((t.data !== undefined || t.data !== null) && t.data !== "0x" && code === "0x") {
+            return true;
+        }
+
+        return false;
     }
 
     /**
@@ -88,6 +86,10 @@ export class SimulationSuite {
      * @returns true if the transaction matches the function description
      */
     async isGasLimitEnough(t: Transaction): Promise<Boolean> {
+        if (t === null) {
+            return false;
+        }
+
         var estimatedGas = await this.provider.estimateGas({to: t.to, data: t.data, value: t.value});
         if (t.gasLimit.gt(estimatedGas)) {
             return false;
@@ -125,8 +127,16 @@ export class SimulationSuite {
                 return false;
             }
 
-            if ((maxPriorityFeePerGas.toNumber() >= estMaxPriorityFeePerGas.toNumber()) && (maxPriorityFeePerGas.toNumber() <= estMaxPriorityFeePerGas.toNumber() * 2)
-                && (maxFeePerGas.toNumber() >= estMaxFeePerGas.toNumber() * 1) && (maxFeePerGas.toNumber() <= estMaxFeePerGas.toNumber() * 3)) {
+            var maxPFPG = maxPriorityFeePerGas.toNumber();
+            var estMaxPFPG = estMaxPriorityFeePerGas.toNumber();
+            var maxFPG = maxFeePerGas.toNumber();
+            var estMaxFPG = estMaxFeePerGas.toNumber();
+            // console.log("max priority fee per gas: ", maxPFPG);
+            // console.log("est max priority fee per gas: ", estMaxPFPG);
+            // console.log("max fee per gas: ", maxFPG);
+            // console.log("est max fee per gas: ", estMaxFPG);
+            if ((maxPFPG >= estMaxPFPG) && (maxPFPG <= estMaxPFPG * 2)
+                && (maxFPG >= estMaxFPG * 1.03) && (maxFPG <= estMaxFPG * 3)) {
                     return true;
             } else {
                 return false;
@@ -173,6 +183,10 @@ export class SimulationSuite {
      * @returns true if the transcation matches the function description
      */
     async isAddressValid(t: Transaction): Promise<Boolean> {
+        if (t === null) {
+            return false;
+        }
+
         try {
             // Returns the checksum address, or we can just the simple isAddress()
             var dest = getAddress(t.to as string);
@@ -204,6 +218,10 @@ export class SimulationSuite {
      * @returns true if the transaction matches the function description
      */
     async isTotalMoreThanWallet(t: Transaction, balance: BigNumber): Promise<Boolean> {
+        if (t === null) {
+            return true;
+        }
+
         var tGasPrice = t.gasPrice;
         var tGasLimit = t.gasLimit;
         if ((tGasPrice === null || tGasPrice === undefined) || (tGasLimit === null || tGasLimit === undefined)) {
