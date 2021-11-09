@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faGasPump, faFire} from '@fortawesome/free-solid-svg-icons';
+import { faGasPump, faFire, faCheckCircle} from '@fortawesome/free-solid-svg-icons';
 import { faEthereum } from '@fortawesome/free-brands-svg-icons';
 
 import './SimulationResults.scss';
@@ -29,6 +29,40 @@ function SimulationResults() {
           </div>
         </div>
       </div>
+
+      <div id="simulation-text"><h1><b>Simulation Successful!</b></h1></div>
+
+      <div id="checklist">
+        <div id="item">
+          <FontAwesomeIcon icon={faCheckCircle} />
+          <h4> Known Token</h4>
+        </div>
+        <div id="item">
+          <FontAwesomeIcon icon={faCheckCircle}/>
+          <h4> Simulation gas: 40,190 (87.1% of limit)</h4>
+        </div>
+        <div id="item">
+          <FontAwesomeIcon icon={faCheckCircle}/>
+          <h4> Simulation tx fee: 0.003580 ETH</h4>
+        </div>
+      </div>
+      <div id="checklist">
+        <div id="item">
+          <FontAwesomeIcon icon={faCheckCircle}/>
+          <h4> Sufficient ETH for gas fee</h4>
+        </div>
+        <div id="item">
+          <FontAwesomeIcon icon={faCheckCircle}/>
+          <h4> Token sent to non-contract address</h4>
+        </div>
+        <div id="item">
+          <FontAwesomeIcon icon={faCheckCircle}/>
+          <h4> Reasonable gas price</h4>
+        </div>
+      </div>
+
+      <h1>Token Transfers</h1>
+      <h4>0x51092...094ef to <b>Timmy Turner</b> for 1 ETH </h4> 
 
       <div id= "bottom-buttons">
         <Link to="/Home"> 
