@@ -38,7 +38,7 @@ function CreateTransaction() {
             </div>
             <h4 id="eth" className="unit">ETH</h4>
           </div>
-          <div className="field">
+          {/* <div className="field">
             <h4 id="gas-label">Gas Fee:</h4>
             <div className="currency-conversion">
               <input id="gas-input" type="text" name="gas" />
@@ -46,7 +46,7 @@ function CreateTransaction() {
             </div>
             <h4 className="unit">Gwei</h4>
             <FontAwesomeIcon className="fa-icon" icon={faQuestionCircle} />
-          </div>
+          </div> */}
       </div>
 
       <div className="button-container">
