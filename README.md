@@ -17,6 +17,14 @@ We use Chai/Mocha for testing TypeScript:
 npm run test-backend
 ```
 
+### Lint your code
+```
+# Show lint results
+npm run lint
+# Fix as many lint errors as possible automatically and display results
+npm run lint -- --fix
+```
+
 ### Loading the extension
 You can load a temporary add-on using the following steps. Both browsers have a button that reloads the extension in a single click.
 * Chrome/Chromium: `chrome://extensions` -> Developer Mode -> Load unpacked

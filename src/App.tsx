@@ -1,23 +1,8 @@
 import React from 'react';
 import './App.css';
 import { utils, BigNumber, Wallet } from 'ethers';
-import browser from "webextension-polyfill";
+import browser from 'webextension-polyfill';
 import { BackgroundWindowInterface } from '../background/background';
-import { WalletState } from '../background/WalletState';
-
-declare global {
-    interface Window extends BackgroundWindowInterface {
-    }
-}
-
-interface WalletAddressBox {
-  state: {
-    walletAddress?: string|null;
-    decryptionProgress?: Number|null;
-    creatingWallet?: boolean;
-    savingWallet?: boolean;
-  }
-}
 
 class WalletAddressBox extends React.Component {
   constructor(props: any) {
@@ -25,18 +10,24 @@ class WalletAddressBox extends React.Component {
     this.state = {
       walletAddress: null,
       savingWallet: false,
-      decryptionProgress: null
+      decryptionProgress: null,
     };
     this.load();
   }
 
-  async load() {
-    var backgroundWindow = await browser.runtime.getBackgroundPage();
-    var _this = this;
+  state: {
+    walletAddress?: string | null;
+    decryptionProgress?: Number | null;
+    creatingWallet?: boolean;
+    savingWallet?: boolean;
+  };
 
-    var walletState: WalletState = backgroundWindow.stateObj.walletState;
-    var wallet = await walletState.getWallet();
-    var hasWalletPromise: Promise<void>;
+  async load() {
+    const backgroundWindow: BackgroundWindowInterface = await browser.runtime.getBackgroundPage();
+
+    const { walletState } = backgroundWindow.stateObj;
+    const wallet = await walletState.getWallet();
+    let hasWalletPromise: Promise<void>;
     /**
      * There are several cases handled here:
      * - Decrypted wallet loaded into memory
@@ -47,27 +38,26 @@ class WalletAddressBox extends React.Component {
     if (wallet === null) {
       // Encrypted wallet not loaded into memory
       hasWalletPromise = walletState.loadEncrypted()
-      .then(() => {
-        // Encrypted wallet saved in local storage
-        return walletState.decryptWallet("password", function (progress: Number) {
-          _this.setState({
-            decryptionProgress: progress
+        .then(
+          // Encrypted wallet saved in local storage
+          () => walletState.decryptWallet('password', (progress: Number) => {
+            this.setState({
+              decryptionProgress: progress,
+            });
+          }),
+        )
+        .catch(async () => {
+          // No wallet saved in local storage
+          await backgroundWindow.stateObj.walletState.createWallet(false);
+          this.setState({
+            savingWallet: true,
+          });
+          // Save the wallet to local storage
+          await backgroundWindow.stateObj.walletState.saveEncryptedWallet(false, 'password');
+          this.setState({
+            savingWallet: false,
           });
         });
-      })
-      .catch(async (reason) => {
-        // No wallet saved in local storage
-        console.log(reason, "Creating wallet...");
-        await backgroundWindow.stateObj.walletState.createWallet(false);
-        _this.setState({
-          savingWallet: true
-        });
-        // Save the wallet to local storage
-        await backgroundWindow.stateObj.walletState.saveEncryptedWallet(false, "password");
-        _this.setState({
-          savingWallet: false
-        });
-      });
     } else {
       // Decrypted wallet loaded into memory
       hasWalletPromise = Promise.resolve();
@@ -75,30 +65,34 @@ class WalletAddressBox extends React.Component {
 
     hasWalletPromise.then(async () => {
       // Display address on screen
-      var walletAddress: string = (await backgroundWindow.stateObj.walletState.getWallet() as Wallet).address;
-      _this.setState({
-        walletAddress: walletAddress
+      const walletAddress: string = (await walletState.getWallet() as Wallet).address;
+      this.setState({
+        walletAddress,
       });
     });
   }
 
   render() {
-    if (this.state.savingWallet) {
-      return <p>Encrypting your new wallet (this could take a while)...</p>
+    const { savingWallet, walletAddress, decryptionProgress } = this.state;
+    if (savingWallet) {
+      return <p>Encrypting your new wallet (this could take a while)...</p>;
     }
-    if (this.state.walletAddress === null && this.state.decryptionProgress !== null) {
-      return(
+    if (walletAddress === null && decryptionProgress !== null) {
+      return (
         <div>
           <p>Decrypting...</p>
-          <progress max="100" value={Number(this.state.decryptionProgress) * 100}></progress>
+          <progress max="100" value={Number(decryptionProgress) * 100} />
         </div>
-      )
+      );
     }
+    const walletURL = `https://ropsten.etherscan.io/address/${walletAddress}`;
     return (
-        <a className="walletAddressBox"
-        href={"https://ropsten.etherscan.io/address/" + this.state.walletAddress}>
-          {this.state.walletAddress}
-        </a>
+      <a
+        className="walletAddressBox"
+        href={walletURL}
+      >
+        {walletAddress}
+      </a>
     );
   }
 }
@@ -108,18 +102,22 @@ function App() {
     <div className="App">
       <header className="App-header">
         <p>
-          Edit <code>src/App.tsx</code> and save to reload.
+          Edit
+          {' '}
+          <code>src/App.tsx</code>
+          {' '}
+          and save to reload.
         </p>
         <a
           className="App-link"
-          href=""
+          href={document.location.href}
           target="_blank"
           rel="noopener noreferrer"
         >
           Learn React
         </a>
-      <WalletAddressBox />
-      <p>{utils.formatEther(BigNumber.from("0xfffffffff"))}</p>
+        <WalletAddressBox />
+        <p>{utils.formatEther(BigNumber.from('0xfffffffff'))}</p>
       </header>
     </div>
   );

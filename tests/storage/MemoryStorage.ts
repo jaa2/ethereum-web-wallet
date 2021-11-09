@@ -1,50 +1,41 @@
-import { WalletStorage } from "../../background/WalletStorage";
+import { WalletStorage } from '../../background/WalletStorage';
 
 /**
  * A class that implements a WalletStorage container in memory for testing
  */
-export class MemoryStorage implements WalletStorage {
-    storage: Record<string, any> = {};
+export default class MemoryStorage implements WalletStorage {
+  storage: Record<string, any> = {};
 
-    get(keys?: string | string[] | Record<string, any>): Promise<Record<string, any>> {
-        const _this = this;
-        return new Promise(async (resolve: any, reject: any) => {
-            if (typeof(keys) === "string") {
-                if (_this.storage.hasOwnProperty(keys)) {
-                    resolve({
-                        // Use computed property name so that it's not "keys"
-                        [keys]: _this.storage[keys]
-                    });
-                    return;
-                } else {
-                    // Not found
-                    resolve({});
-                    return;
-                }
-            } else if (keys instanceof Array) {
-                // Merge each result into a single Object
-                var result: Record<string, any> = {};
-                for (let val of keys) {
-                    result = Object.assign(result, await _this.get(val));
-                }
-                resolve(result);
-            } else if (typeof(keys) == "object") {
-                // Merge each result into the keys object
-                var keysToFind: Array<string> = Object.keys(keys);
-                for (let val of keysToFind) {
-                    keys = Object.assign(keys, await _this.get(val));
-                }
-                resolve(keys);
-            }
+  get(keys?: string | string[] | Record<string, any>): Promise<Record<string, any>> {
+    if (typeof (keys) === 'string') {
+      if (Object.keys(this.storage).includes(keys)) {
+        return Promise.resolve({
+          // Use computed property name so that it's not "keys"
+          [keys]: this.storage[keys],
         });
+      }
+      // Not found
+      return Promise.resolve({});
+    } if (keys instanceof Array) {
+      // Merge each result into a single Object
+      return Promise.all(keys.map((val) => this.get(val)))
+        .then((vals) => vals.reduce((prev, cur) => Object.assign(prev, cur)));
+    } if (typeof (keys) === 'object') {
+      // Merge each result into the keys object
+      const result: Record<string, any> = keys;
+      const keysToFind: Array<string> = Object.keys(result);
+      return Promise.all(keysToFind.map((val) => this.get(val)))
+        .then((vals) => vals.reduce((prev, cur) => Object.assign(prev, cur), keys));
     }
+    // Unknown key
+    return Promise.resolve({});
+  }
 
-    set(items: Record<string, any>): Promise<void> {
-        var keys: Array<string> = Object.keys(items);
-        for (let val of keys) {
-            this.storage[val] = items[val];
-        }
-        return Promise.resolve();
+  set(items: Record<string, any>): Promise<void> {
+    const keys: Array<string> = Object.keys(items);
+    for (let i = 0; i < keys.length; i += 1) {
+      this.storage[keys[i]] = items[keys[i]];
     }
-    
+    return Promise.resolve();
+  }
 }
