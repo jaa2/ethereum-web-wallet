@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 import { Provider, EtherscanProvider } from '@ethersproject/providers';
-import { Transaction, BigNumber } from 'ethers';
+import { Transaction } from 'ethers';
 import { parseEther } from '@ethersproject/units';
 import { SimulationSuite } from '../background/SimulationSuite';
 

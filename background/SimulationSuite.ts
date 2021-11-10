@@ -1,11 +1,9 @@
-import { defaultAbiCoder, Interface } from '@ethersproject/abi';
+import { Interface } from '@ethersproject/abi';
 import { Provider } from '@ethersproject/abstract-provider';
 import { getAddress, getContractAddress, isAddress } from '@ethersproject/address';
-import { hexDataSlice } from '@ethersproject/bytes';
 import { Transaction } from '@ethersproject/transactions';
-import { Wallet } from '@ethersproject/wallet';
 import { BigNumber } from '@ethersproject/bignumber';
-import { ethers } from 'ethers';
+import ERC20ABI from '../erc20abi.json'
 
 // Source: https://ethereum.stackexchange.com/questions/11144/how-to-decode-input-data-from-a-transaction
 // To decode transaction data
@@ -24,7 +22,7 @@ export class SimulationSuite {
      */
   constructor(provider: Provider) {
     this.provider = provider;
-    this.erc20interface = new Interface(require('../erc20abi.json'));
+    this.erc20interface = new Interface(ERC20ABI);
   }
 
   /**
@@ -187,7 +185,7 @@ export class SimulationSuite {
 
     try {
       // Returns the checksum address, or we can just the simple isAddress()
-      const dest = getAddress(t.to as string);
+        getAddress(t.to as string);
       // TODO: check that address is something you can interact with and that user is not just sending to a void
       // Something I need to take more time to research into
 
