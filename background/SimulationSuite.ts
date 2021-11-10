@@ -1,9 +1,9 @@
 import { Interface } from '@ethersproject/abi';
 import { Provider } from '@ethersproject/abstract-provider';
-import { getAddress, getContractAddress, isAddress } from '@ethersproject/address';
+import { getAddress } from '@ethersproject/address';
 import { Transaction } from '@ethersproject/transactions';
 import { BigNumber } from '@ethersproject/bignumber';
-import ERC20ABI from '../erc20abi.json'
+import ERC20ABI from '../erc20abi.json';
 
 // Source: https://ethereum.stackexchange.com/questions/11144/how-to-decode-input-data-from-a-transaction
 // To decode transaction data
@@ -11,7 +11,7 @@ import ERC20ABI from '../erc20abi.json'
 // declare const WEI_TO_GWEI = 0.000000001
 // declare const GWEI_TO_ETH = 0.000000001;
 
-export class SimulationSuite {
+class SimulationSuite {
   provider: Provider;
 
   erc20interface: Interface;
@@ -39,7 +39,8 @@ export class SimulationSuite {
          *  Source: https://ethereum.stackexchange.com/questions/83017/how-do-you-know-if-a-contract-is-destroyed
          *  Source: https://docs.ethers.io/v5/api/providers/provider/
         */
-    // Checking if transaction is a token transfer and then checking if the destination address is a contract address
+    // Checking if transaction is a token transfer and
+    // then checking if the destination address is a contract address
     let res = true;
     try {
       const input = await this.erc20interface.parseTransaction({ data: t.data });
@@ -89,8 +90,8 @@ export class SimulationSuite {
       return false;
     }
 
-    const estimatedGas = await this.provider.estimateGas({ to: t.to, data: t.data, value: t.value });
-    if (t.gasLimit.gt(estimatedGas)) {
+    const estGas = await this.provider.estimateGas({ to: t.to, data: t.data, value: t.value });
+    if (t.gasLimit.gt(estGas)) {
       return false;
     }
 
@@ -148,7 +149,8 @@ export class SimulationSuite {
 
     const estGasPrice50 = estGasPrice.toNumber() * 0.5;
 
-    if (estGasPrice.toNumber() - estGasPrice50 >= tGasPrice.toNumber() || estGasPrice.toNumber() + estGasPrice50 <= tGasPrice.toNumber()) {
+    if (estGasPrice.toNumber() - estGasPrice50 >= tGasPrice.toNumber()
+        || estGasPrice.toNumber() + estGasPrice50 <= tGasPrice.toNumber()) {
       return false;
     }
     return true;
@@ -178,15 +180,16 @@ export class SimulationSuite {
      * @param t Transaction to test
      * @returns true if the transcation matches the function description
      */
-  async isAddressValid(t: Transaction): Promise<Boolean> {
+  static async isAddressValid(t: Transaction): Promise<Boolean> {
     if (t === null) {
       return false;
     }
 
     try {
       // Returns the checksum address, or we can just the simple isAddress()
-        getAddress(t.to as string);
-      // TODO: check that address is something you can interact with and that user is not just sending to a void
+      getAddress(t.to as string);
+      // TODO: check that address is something you can interact with and that
+      // user is not just sending to a void
       // Something I need to take more time to research into
 
       // Can do additional address checks if needed
@@ -203,24 +206,25 @@ export class SimulationSuite {
      * @param t Transaction to test
      * @returns true if the transaction matches the function description
      */
-  async isNewAddress(t: Transaction): Promise<Boolean> {
-    return false;
-  }
-
-  // NOTE: Need to get wallet balance without using await this.provider.getBalance(await w.getAddress()) for every simulation call
+  //   async isNewAddress(t: Transaction): Promise<Boolean> {
+  //       return false;
+  //     }
+  // NOTE: Need to get wallet balance without using
+  // await this.provider.getBalance(await w.getAddress()) for every simulation call
   /**
      * Returns true if the total amount of the transaction is more than what is in the user's wallet
      * @param t Transaction to test
      * @returns true if the transaction matches the function description
      */
-  async isTotalMoreThanWallet(t: Transaction, balance: BigNumber): Promise<Boolean> {
+  static async isTotalMoreThanWallet(t: Transaction, balance: BigNumber): Promise<Boolean> {
     if (t === null) {
       return true;
     }
 
     const tGasPrice = t.gasPrice;
     const tGasLimit = t.gasLimit;
-    if ((tGasPrice === null || tGasPrice === undefined) || (tGasLimit === null || tGasLimit === undefined)) {
+    if ((tGasPrice === null || tGasPrice === undefined)
+        || (tGasLimit === null || tGasLimit === undefined)) {
       return false;
     }
 
@@ -242,3 +246,4 @@ export class SimulationSuite {
      * Could user's priority fee be safely lowered?
      */
 }
+export default SimulationSuite;
