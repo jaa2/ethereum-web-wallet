@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unused-expressions */
+
 import { expect } from 'chai';
 import { Provider, EtherscanProvider } from '@ethersproject/providers';
 import { Transaction } from 'ethers';
