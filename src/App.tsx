@@ -1,124 +1,47 @@
-import React from 'react';
-import './App.css';
-import { utils, BigNumber, Wallet } from 'ethers';
-import browser from 'webextension-polyfill';
-import { BackgroundWindowInterface } from '../background/background';
+import { Routes, Route, Link } from 'react-router-dom';
 
-class WalletAddressBox extends React.Component {
-  constructor(props: any) {
-    super(props);
-    this.state = {
-      walletAddress: null,
-      savingWallet: false,
-      decryptionProgress: null,
-    };
-    this.load();
-  }
+import NavigationDebug from './debug/NavigationDebug';
 
-  state: {
-    walletAddress?: string | null;
-    decryptionProgress?: Number | null;
-    creatingWallet?: boolean;
-    savingWallet?: boolean;
-  };
+import CreateNewWallet from './wallet_setup/CreateNewWallet';
+import CreatePassword from './wallet_setup/CreatePassword';
+import ImportPrivateKey from './wallet_setup/ImportPrivateKey';
+import ImportSecretPhrase from './wallet_setup/ImportSecretPhrase';
+import WalletSetup from './wallet_setup/WalletSetup';
 
-  async load() {
-    const backgroundWindow: BackgroundWindowInterface = await browser.runtime.getBackgroundPage();
+import Home from './Home';
+import ProfileSettings from './ProfileSettings';
+import SignIn from './SignIn';
 
-    const { walletState } = backgroundWindow.stateObj;
-    const wallet = await walletState.getWallet();
-    let hasWalletPromise: Promise<void>;
-    /**
-     * There are several cases handled here:
-     * - Decrypted wallet loaded into memory
-     * - Encrypted wallet not loaded into memory, and
-     *   - Encrypted wallet saved in local storage
-     *   - No wallet saved in local storage
-     */
-    if (wallet === null) {
-      // Encrypted wallet not loaded into memory
-      hasWalletPromise = walletState.loadEncrypted()
-        .then(
-          // Encrypted wallet saved in local storage
-          () => walletState.decryptWallet('password', (progress: Number) => {
-            this.setState({
-              decryptionProgress: progress,
-            });
-          }),
-        )
-        .catch(async () => {
-          // No wallet saved in local storage
-          await backgroundWindow.stateObj.walletState.createWallet(false);
-          this.setState({
-            savingWallet: true,
-          });
-          // Save the wallet to local storage
-          await backgroundWindow.stateObj.walletState.saveEncryptedWallet(false, 'password');
-          this.setState({
-            savingWallet: false,
-          });
-        });
-    } else {
-      // Decrypted wallet loaded into memory
-      hasWalletPromise = Promise.resolve();
-    }
+import CreateTransaction from './transaction/CreateTransaction';
+import ReplaceTransaction from './transaction/ReplaceTransaction';
+import SimulationResults from './transaction/SimulationResults';
 
-    hasWalletPromise.then(async () => {
-      // Display address on screen
-      const walletAddress: string = (await walletState.getWallet() as Wallet).address;
-      this.setState({
-        walletAddress,
-      });
-    });
-  }
-
-  render() {
-    const { savingWallet, walletAddress, decryptionProgress } = this.state;
-    if (savingWallet) {
-      return <p>Encrypting your new wallet (this could take a while)...</p>;
-    }
-    if (walletAddress === null && decryptionProgress !== null) {
-      return (
-        <div>
-          <p>Decrypting...</p>
-          <progress max="100" value={Number(decryptionProgress) * 100} />
-        </div>
-      );
-    }
-    const walletURL = `https://ropsten.etherscan.io/address/${walletAddress}`;
-    return (
-      <a
-        className="walletAddressBox"
-        href={walletURL}
-      >
-        {walletAddress}
-      </a>
-    );
-  }
-}
+// TODO: Gate off routes based on if the user has authenticated or not 
 
 function App() {
   return (
     <div className="App">
-      <header className="App-header">
-        <p>
-          Edit
-          {' '}
-          <code>src/App.tsx</code>
-          {' '}
-          and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href={document.location.href}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-        <WalletAddressBox />
-        <p>{utils.formatEther(BigNumber.from('0xfffffffff'))}</p>
-      </header>
+      <Link to="/NavigationDebug">
+        <button>Navigation Debug</button>
+      </Link>
+      
+      <Routes>
+        <Route path="/NavigationDebug" element={<NavigationDebug />} />
+
+        <Route path="/CreateNewWallet" element={<CreateNewWallet />} />
+        <Route path="/CreatePassword" element={<CreatePassword />} />
+        <Route path="/ImportPrivateKey" element={<ImportPrivateKey />} />
+        <Route path="/ImportSecretPhrase" element={<ImportSecretPhrase />} />
+        <Route path="/WalletSetup" element={<WalletSetup />} />
+
+        <Route path="/Home" element={<Home  />} />
+        <Route path="/ProfileSettings" element={<ProfileSettings />} />
+        <Route path="/SignIn" element={<SignIn />} />
+
+        <Route path="/CreateTransaction" element={<CreateTransaction />} />
+        <Route path="/ReplaceTransaction" element={<ReplaceTransaction />} />
+        <Route path="/SimulationResults" element={<SimulationResults />} />
+      </Routes>
     </div>
   );
 }
