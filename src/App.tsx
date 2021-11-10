@@ -16,7 +16,7 @@ import CreateTransaction from './transaction/CreateTransaction';
 import ReplaceTransaction from './transaction/ReplaceTransaction';
 import SimulationResults from './transaction/SimulationResults';
 
-// TODO: Gate off routes based on if the user has authenticated or not 
+// TODO: Gate off routes based on if the user has authenticated or not
 
 function App() {
   return (
@@ -24,7 +24,7 @@ function App() {
       <Link to="/NavigationDebug">
         <button>Navigation Debug</button>
       </Link>
-      
+
       <Routes>
         <Route path="/NavigationDebug" element={<NavigationDebug />} />
 
@@ -34,7 +34,7 @@ function App() {
         <Route path="/ImportSecretPhrase" element={<ImportSecretPhrase />} />
         <Route path="/WalletSetup" element={<WalletSetup />} />
 
-        <Route path="/Home" element={<Home  />} />
+        <Route path="/Home" element={<Home />} />
         <Route path="/ProfileSettings" element={<ProfileSettings />} />
         <Route path="/SignIn" element={<SignIn />} />
 

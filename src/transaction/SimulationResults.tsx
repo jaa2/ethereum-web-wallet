@@ -5,5 +5,5 @@ function SimulationResults() {
     </div>
   );
 }
-  
+
 export default SimulationResults;

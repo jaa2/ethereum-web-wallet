@@ -5,5 +5,5 @@ function ReplaceTransaction() {
     </div>
   );
 }
-  
+
 export default ReplaceTransaction;
