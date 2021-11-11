@@ -22,7 +22,7 @@ function App() {
   return (
     <div className="App">
       <Link to="/NavigationDebug">
-        <button>Navigation Debug</button>
+        <button type="button">Navigation Debug</button>
       </Link>
 
       <Routes>

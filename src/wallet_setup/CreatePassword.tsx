@@ -7,7 +7,7 @@ import { faUnlock } from '@fortawesome/free-solid-svg-icons';
 import './CreatePassword.scss';
 
 function PasswordCreated() {
-  console.log('Password created!');
+  console.log('TODO: Password created!');  // eslint-disable-line
 }
 
 function CreatePassword() {
@@ -48,7 +48,7 @@ function CreatePassword() {
   } else if (passwordMatchState === 'mismatch') {
     passwordMatchElements = (
       <div id="create-password-match-elements">
-        <p id="create-password-info-mismatch" className="password-info">Uh oh. Your passwords don't match!</p>
+        <p id="create-password-info-mismatch" className="password-info">Uh oh. Your passwords don&apos;t match!</p>
       </div>
     );
   } else {
@@ -63,7 +63,10 @@ function CreatePassword() {
     <div id="create-password">
       <FontAwesomeIcon className="fa-icon" icon={faUnlock} size="4x" />
       <h1>Create a Password</h1>
-      <h3>To make your wallet easy to access, create a strong password at least 8 characters long.</h3>
+      <h3>
+        To make your wallet easy to access, create a strong password at least 8 characters
+        long.
+      </h3>
       <div id="create-password-entry" className="field-entry">
         <h5 id="create-password-password-label">Password</h5>
         <input id="create-password-password-input" type="password" name="password" onChange={handlePassword} />

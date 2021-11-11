@@ -6,6 +6,18 @@ import { faCloudUploadAlt, faKey, faPlus } from '@fortawesome/free-solid-svg-ico
 
 import './WalletSetup.scss';
 
+function CreateNewWallet() {
+  console.log('TODO: Creating new wallet!'); // eslint-disable-line
+}
+
+function ImportSecretPhrase() {
+  console.log('TODO: Importing from secret recovery page!'); // eslint-disable-line
+}
+
+function ImportPrivateKey() {
+  console.log('TODO: Importing from private key!'); // eslint-disable-line
+}
+
 function WalletSetup() {
   return (
     <div id="wallet-setup">
@@ -34,18 +46,6 @@ function WalletSetup() {
       </div>
     </div>
   );
-}
-
-function CreateNewWallet() {
-  console.log('Creating new wallet!');
-}
-
-function ImportSecretPhrase() {
-  console.log('Importing from secret recovery page!');
-}
-
-function ImportPrivateKey() {
-  console.log('Importing from private key!');
 }
 
 export default WalletSetup;
