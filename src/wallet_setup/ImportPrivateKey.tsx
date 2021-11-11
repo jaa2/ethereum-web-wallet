@@ -5,5 +5,5 @@ function ImportPrivateKey() {
     </div>
   );
 }
-  
+
 export default ImportPrivateKey;
