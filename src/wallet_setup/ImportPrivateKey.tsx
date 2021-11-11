@@ -10,7 +10,7 @@ function CorrectPrivateKey() {
   console.log("Correct Private Key LogIn!");
 }
 
-function ImportSecretPhrase() {
+function ImportPrivateKey() {
   const [privateKeyMatchState, setPrivateKeyMatchState]: [string, (matchState: string) => void] = React.useState<string>("empty");
 
   const [privateKey, setPrivateKey]: [string, (privateKey: string) => void] = React.useState<string>("");
@@ -69,4 +69,4 @@ function ImportSecretPhrase() {
 }
 
 
-export default ImportSecretPhrase;
+export default ImportPrivateKey;
