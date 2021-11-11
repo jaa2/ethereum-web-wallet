@@ -1,36 +1,34 @@
-import { Link } from "react-router-dom";
+import { Link } from 'react-router-dom';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faEthereum } from '@fortawesome/free-brands-svg-icons';
-import { faCloudUploadAlt, faKey, faPlus, faUsers, faUserEdit, faUserCircle, faEdit, faHome, faLock } from '@fortawesome/free-solid-svg-icons';
+import {
+  faUserCircle, faEdit, faHome, faLock,
+} from '@fortawesome/free-solid-svg-icons';
 
-import './ProfileSettings.scss'
+import './ProfileSettings.scss';
 
 function ProfileSettings() {
-
-
-
   return (
     <div id="profile-settings">
 
       <div id="profile-left-section">
         <div id="settings-nav-button">
           <div>
-          <Link to="/Home">
-            <FontAwesomeIcon className="fa-icon" icon={faHome} size="1x" />
-            <button>Home</button>
-          </Link>
+            <Link to="/Home">
+              <FontAwesomeIcon className="fa-icon" icon={faHome} size="1x" />
+              <button type="button">Home</button>
+            </Link>
 
           </div>
           <div>
             <Link to="/SignIn">
-            <FontAwesomeIcon className="fa-icon" icon={faLock} size="1x" />
-            <button>Lock</button>
+              <FontAwesomeIcon className="fa-icon" icon={faLock} size="1x" />
+              <button type="button">Lock</button>
             </Link>
 
           </div>
         </div>
-        
+
         <div id="profile-picture-edit">
           <FontAwesomeIcon className="fa-icon" icon={faUserCircle} size="7x" />
           <FontAwesomeIcon className="fa-icon" icon={faEdit} size="1x" />
@@ -39,9 +37,9 @@ function ProfileSettings() {
         <div id="profile-name-edit">
           <text>Name</text>
           <FontAwesomeIcon className="fa-icon" icon={faEdit} size="1x" />
-          
+
         </div>
-        <button>0x51912454541...</button>
+        <button type="button">0x51912454541...</button>
       </div>
 
       <div id="profile-right-section">
@@ -49,13 +47,11 @@ function ProfileSettings() {
         <h5>Delay Time</h5>
         <div id="dark-mode">
           <h5>Dark Mode</h5>
-          <input type="checkbox"/>
-          <span id="slider"></span>
+          <input type="checkbox" />
+          <span id="slider" />
         </div>
-        
 
-        <button>Delete Account</button>
-        
+        <button type="button">Delete Account</button>
 
       </div>
     </div>

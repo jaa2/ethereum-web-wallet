@@ -3,6 +3,14 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@ethersproject/abi": "^5.5.0",
+    "@ethersproject/abstract-provider": "^5.5.1",
+    "@ethersproject/address": "^5.5.0",
+    "@ethersproject/bignumber": "^5.5.0",
+    "@ethersproject/providers": "^5.5.0",
+    "@ethersproject/transactions": "^5.5.0",
+    "@ethersproject/units": "^5.5.0",
+    "@ethersproject/wallet": "^5.5.0",
     "@fortawesome/fontawesome-svg-core": "^1.2.36",
     "@fortawesome/free-brands-svg-icons": "^5.15.4",
     "@fortawesome/free-solid-svg-icons": "^5.15.4",
@@ -10,23 +18,31 @@
     "@testing-library/jest-dom": "^5.15.0",
     "@testing-library/react": "^11.2.7",
     "@testing-library/user-event": "^12.8.3",
+    "@types/chai-as-promised": "^7.1.4",
     "@types/jest": "^26.0.24",
     "@types/node": "^12.20.36",
     "@types/react": "^17.0.33",
     "@types/react-dom": "^17.0.10",
+    "@types/webextension-polyfill": "^0.8.1",
+    "chai-as-promised": "^7.1.1",
+    "ethers": "^5.5.1",
     "node-sass": "^6.0.1",
     "normalize.css": "^8.0.1",
+    "parcel": "^2.0.0",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "react-router-dom": "^6.0.1",
     "react-scripts": "4.0.3",
     "typescript": "^4.4.4",
-    "web-vitals": "^1.1.2"
+    "web-vitals": "^1.1.2",
+    "webextension-polyfill": "^0.8.0"
   },
   "scripts": {
     "start": "react-scripts start",
-    "build": "react-scripts build",
+    "build": "react-scripts build && parcel build --dist-dir build/ background/background.html",
     "test": "react-scripts test",
+    "test-backend": "env TS_NODE_COMPILER_OPTIONS='{\"module\": \"commonjs\" }' mocha -r ts-node/register 'tests/**/*.ts' --timeout 10000",
+    "lint": "node ./node_modules/eslint/bin/eslint.js ./",
     "eject": "react-scripts eject"
   },
   "eslintConfig": {
@@ -46,5 +62,24 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "@types/chai": "^4.2.22",
+    "@types/mocha": "^9.0.0",
+    "@typescript-eslint/eslint-plugin": "^5.3.1",
+    "@typescript-eslint/parser": "^5.3.1",
+    "chai": "^4.3.4",
+    "eslint": "^7.32.0",
+    "eslint-config-airbnb": "^18.2.1",
+    "eslint-config-airbnb-typescript": "^15.0.0",
+    "eslint-config-standard": "^16.0.3",
+    "eslint-plugin-import": "^2.25.2",
+    "eslint-plugin-jsx-a11y": "^6.4.1",
+    "eslint-plugin-node": "^11.1.0",
+    "eslint-plugin-promise": "^5.1.1",
+    "eslint-plugin-react": "^7.27.0",
+    "eslint-plugin-react-hooks": "^4.3.0",
+    "mocha": "^9.1.3",
+    "ts-node": "^10.4.0"
   }
 }
