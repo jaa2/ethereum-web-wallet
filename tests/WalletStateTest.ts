@@ -18,7 +18,7 @@ describe('WalletState tests', () => {
     const storage: WalletStorage = new MemoryStorage();
     // Create
     const state1: WalletState = new WalletState(storage);
-    await state1.createWallet(false);
+    await state1.createWallet(false, null);
     const key: string = ((await state1.getWallet()) as Wallet).privateKey;
     // Encrypt and save
     const password: string = 'examplePassword2021!';
