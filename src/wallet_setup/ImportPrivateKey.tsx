@@ -6,7 +6,7 @@ import { faUserSecret } from '@fortawesome/free-solid-svg-icons';
 import './ImportPrivateKey.scss';
 
 function CorrectPrivateKey() {
-  console.log('Correct Private Key LogIn!');
+
 }
 
 function ImportPrivateKey() {

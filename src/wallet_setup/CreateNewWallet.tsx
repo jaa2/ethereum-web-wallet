@@ -7,7 +7,7 @@ import { faPlus } from '@fortawesome/free-solid-svg-icons';
 import './CreateNewWallet.scss';
 
 function NewWalletCreated() {
-  console.log('New Wallet Created!');
+
 }
 
 function CreateNewWallet() {
