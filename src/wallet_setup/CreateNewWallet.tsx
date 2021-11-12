@@ -3,7 +3,10 @@ import { Link } from 'react-router-dom';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlus } from '@fortawesome/free-solid-svg-icons';
+import browser from 'webextension-polyfill';
+import { Wallet } from 'ethers';
 
+import { BackgroundWindowInterface } from '../../background/background';
 import './CreateNewWallet.scss';
 
 function NewWalletCreated() {
@@ -22,6 +25,26 @@ function CreateNewWallet() {
   const handleConfirmPhrase = (event: React.ChangeEvent<HTMLInputElement>) => {
     setConfirmPhrase(event.target.value);
   };
+
+  // Generate a new wallet
+  const loadNewWallet = async function () {
+    // Create a new wallet
+    const backgroundWindow: BackgroundWindowInterface = await browser.runtime.getBackgroundPage();
+    const { walletState } = backgroundWindow.stateObj;
+    const walletCreated: boolean = await walletState.createWallet(false);
+
+    // Show secret recovery phrase
+    const wallet: Wallet | null = !walletCreated ? null : await walletState.getWallet();
+    if (walletCreated && wallet !== null) {
+      console.log('phrase', wallet.mnemonic.phrase); // eslint-ignore-line
+      setPhrase(wallet.mnemonic.phrase);
+    } else {
+      // TODO: Show error message; this state should not be reached!
+      console.log('bad'); // eslint-ignore-line
+    }
+  };
+
+  loadNewWallet();
 
   useEffect(() => {
     // TODO: add more phrase authentication (length, char type, etc.)
