@@ -8,9 +8,6 @@ import ERC20ABI from '../erc20abi.json';
 // Source: https://ethereum.stackexchange.com/questions/11144/how-to-decode-input-data-from-a-transaction
 // To decode transaction data
 
-// declare const WEI_TO_GWEI = 0.000000001
-// declare const GWEI_TO_ETH = 0.000000001;
-
 class SimulationSuite {
   provider: Provider;
 
@@ -90,8 +87,14 @@ class SimulationSuite {
       return false;
     }
 
-    const estGas = await this.provider.estimateGas({ to: t.to, data: t.data, value: t.value });
-    if (t.gasLimit.gt(estGas)) {
+    // Source:
+    // https://ethereum.stackexchange.com/questions/109990/how-to-determine-if-a-pending-transaction-will-revert
+    try {
+      const estGas = await this.provider.estimateGas({ to: t.to, data: t.data, value: t.value });
+      if (t.gasLimit.gt(estGas)) {
+        return false;
+      }
+    } catch {
       return false;
     }
 
@@ -156,24 +159,6 @@ class SimulationSuite {
     return true;
   }
 
-  // NOTE: Can be done on create transaction page rather than here (before user simulates)
-  /**
-     * Returns true if the transaction has an empty data fields
-     * @param t Transaction to test
-     * @returns true if the transaction matches the function description
-     */
-  // async hasEmptyDataFields(t: Transaction): Promise<Boolean> {
-  //     var dest = t.to as string;
-  //     var amount = t.value;
-  //     var gasPrice = t.gasPrice;
-
-  //     if (dest === "" || amount === null || gasPrice === null) {
-  //         return true;
-  //     }
-
-  //     return false;
-  // }
-
   // NOTE: All networks have different address spaces but of the same capacity
   /**
      * Returns true if the destination address is valid
@@ -188,10 +173,6 @@ class SimulationSuite {
     try {
       // Returns the checksum address, or we can just the simple isAddress()
       getAddress(t.to as string);
-      // TODO: check that address is something you can interact with and that
-      // user is not just sending to a void
-      // Something I need to take more time to research into
-
       // Can do additional address checks if needed
     } catch {
       return false;
@@ -221,11 +202,20 @@ class SimulationSuite {
       return true;
     }
 
-    const tGasPrice = t.gasPrice;
+    let tGasPrice = t.gasPrice;
     const tGasLimit = t.gasLimit;
-    if ((tGasPrice === null || tGasPrice === undefined)
-        || (tGasLimit === null || tGasLimit === undefined)) {
+    if (tGasLimit === null || tGasLimit === undefined) {
       return false;
+    }
+
+    const tMaxFeePerGas = t.maxFeePerGas;
+    const tMaxPriorityFeePerGas = t.maxPriorityFeePerGas;
+    if (tGasPrice === null || tGasPrice === undefined) {
+      if (tMaxFeePerGas !== undefined && tMaxPriorityFeePerGas !== undefined) {
+        tGasPrice = (tMaxFeePerGas.add(tMaxPriorityFeePerGas));
+      } else {
+        return false;
+      }
     }
 
     const tGasTotalFees = tGasPrice.mul(tGasLimit);
