@@ -17,15 +17,16 @@ async function loadNewWallet(): Promise<string | null> {
   // Create a new wallet
   const backgroundWindow: BackgroundWindowInterface = await browser.runtime.getBackgroundPage();
   const { walletState } = backgroundWindow.stateObj;
-  const walletCreated: boolean = await walletState.createWallet(false);
+  const walletCreated: boolean = await walletState.createWallet(false, null);
 
   // Show secret recovery phrase
   const wallet: Wallet | null = !walletCreated ? null : await walletState.getWallet();
   if (walletCreated && wallet !== null) {
     return wallet.mnemonic.phrase;
   }
-  // TODO: Show error message; this state should not be reached!
-  return null;
+
+  // Wallet not created
+  throw new Error('Could not create new random wallet');
 }
 
 function CreateNewWallet() {

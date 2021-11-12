@@ -1,4 +1,5 @@
 import { Wallet } from '@ethersproject/wallet';
+import { ethers } from 'ethers';
 import { WalletStorage } from './WalletStorage';
 
 /**
@@ -114,15 +115,20 @@ export default class WalletState {
   /**
      * Creates a new random wallet
      * @param overwrite If true, a new wallet will be created even if one already exists
+     * @param privateKey If non-null, specifies the private key of the wallet
      * @returns true if the action succeeded following the overwrite argument
      */
-  async createWallet(overwrite: boolean): Promise<boolean> {
+  async createWallet(overwrite: boolean, privateKey: string | null): Promise<boolean> {
     if (!overwrite && (await this.willOverwrite())) {
       return false;
     }
 
     // Create the new wallet
-    this.currentWallet = Wallet.createRandom();
+    if (privateKey === null) {
+      this.currentWallet = Wallet.createRandom();
+    } else {
+      this.currentWallet = new ethers.Wallet(privateKey);
+    }
     return true;
   }
 
@@ -144,7 +150,7 @@ export default class WalletState {
       },
     });
     await this.storageArea.set({
-      storageVersion: storageVersion,
+      storageVersion,
       currentWallet: encryptedWalletJSON,
     });
     return true;
