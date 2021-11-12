@@ -40,7 +40,6 @@ function CreateNewWallet() {
 
   useEffect(() => {
     loadNewWallet().then((newPhrase) => {
-      console.log('Got phrase', newPhrase); // eslint-disable-line
       if (newPhrase !== null) {
         setPhrase(newPhrase);
       }

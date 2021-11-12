@@ -1,17 +1,31 @@
 import React, { useEffect } from 'react';
-import { Link } from 'react-router-dom';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUnlock } from '@fortawesome/free-solid-svg-icons';
+import { NavigateFunction, useNavigate } from 'react-router-dom';
+import browser from 'webextension-polyfill';
 
 import './CreatePassword.scss';
+import { BackgroundWindowInterface } from '../../background/background';
 
-function PasswordCreated() {
-  console.log('TODO: Password created!');  // eslint-disable-line
+/**
+ * Called once the password has been created and confirmed
+ */
+async function PasswordCreated(password: string): Promise<void> {
+  // Get wallet state
+  const backgroundWindow: BackgroundWindowInterface = await browser.runtime.getBackgroundPage();
+  const { walletState } = backgroundWindow.stateObj;
+  // Encrypt wallet
+  const result = walletState.saveEncryptedWallet(false, password);
+  if (!result) {
+    throw new Error('Could not save');
+  }
 }
 
 function CreatePassword() {
   const [passwordMatchState, setPasswordMatchState]: [string, (matchState: string) => void] = React.useState<string>('empty');
+  // eslint-disable-next-line max-len
+  const [isEncrypting, setIsEncrypting]: [boolean, (encrypting: boolean) => void] = React.useState<boolean>(false);
 
   const [password, setPassword]: [string, (password: string) => void] = React.useState<string>('');
   const handlePassword = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -34,15 +48,27 @@ function CreatePassword() {
     }
   }, [password, confirmPassword]);
 
+  const navigate: NavigateFunction = useNavigate();
+
+  const handlePasswordCompleted = async () => {
+    // Display encrypting spinner
+    setIsEncrypting(true);
+    // Encrypt
+    await PasswordCreated(password);
+    // Redirect
+    setIsEncrypting(false);
+    navigate('/Home');
+  };
+
   let passwordMatchElements: JSX.Element = (<div />);
   // handle additional state where the user's password doesn't meet requirements
   if (passwordMatchState === 'match') {
     passwordMatchElements = (
       <div id="create-password-match-elements">
         <p id="create-password-info-match" className="password-info">Success. Your passwords match!</p>
-        <Link id="create-password-continue-link" className="link hoverable" to="/Home" onClick={PasswordCreated}>
-          <h4>Continue</h4>
-        </Link>
+        <button type="button" id="create-password-continue-link" className="link hoverable" onClick={handlePasswordCompleted}>
+          Continue
+        </button>
       </div>
     );
   } else if (passwordMatchState === 'mismatch') {
@@ -55,6 +81,15 @@ function CreatePassword() {
     passwordMatchElements = (
       <div id="create-password-match-elements">
         <p id="create-password-info-empty" className="password-info" />
+      </div>
+    );
+  }
+
+  if (isEncrypting) {
+    // TODO: The ellipsis should become a Bootstrap spinner
+    return (
+      <div id="create-password">
+        <h3>Encrypting...</h3>
       </div>
     );
   }

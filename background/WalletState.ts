@@ -144,7 +144,7 @@ export default class WalletState {
       },
     });
     await this.storageArea.set({
-      storageVersion,
+      storageVersion: storageVersion,
       currentWallet: encryptedWalletJSON,
     });
     return true;
