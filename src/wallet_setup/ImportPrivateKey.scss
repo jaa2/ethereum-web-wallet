@@ -1,0 +1,38 @@
+@import '../common/colors';
+
+#import-private-key {
+  width: 33vw;
+  min-width: 400px;
+
+  margin: auto;
+  padding: 10px;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+  align-items: center;
+
+  text-align: center;
+
+  .fa-icon {
+    color: $icon-color;
+  }
+
+  .link {
+    color: $text-color;
+    text-decoration: none;
+  }
+
+  .hoverable:hover {
+    background-color: $hover-button-color;
+    cursor: pointer;
+  }
+
+
+  .continue-button {
+    margin: 10px;
+  }
+
+  
+  
+}
