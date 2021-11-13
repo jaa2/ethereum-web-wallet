@@ -1,7 +1,6 @@
 import { Interface } from '@ethersproject/abi';
-import { Provider } from '@ethersproject/abstract-provider';
+import { Provider, TransactionRequest } from '@ethersproject/abstract-provider';
 import { getAddress } from '@ethersproject/address';
-import { Transaction } from '@ethersproject/transactions';
 import { BigNumber } from '@ethersproject/bignumber';
 import ERC20ABI from '../erc20abi.json';
 
@@ -30,7 +29,10 @@ class SimulationSuite {
      * @param t Transaction to test
      * @returns true if the transaction matches the function description
      */
-  async isTokenTransferToContract(t: Transaction): Promise<Boolean> {
+  async isTokenTransferToContract(t: TransactionRequest | null): Promise<Boolean> {
+    if (t === null) {
+      return false;
+    }
     // If destination address is not a contract address, return false
     /** Using getCode() to determine if a contract is associated with the address
          *  Source: https://ethereum.stackexchange.com/questions/83017/how-do-you-know-if-a-contract-is-destroyed
@@ -40,7 +42,7 @@ class SimulationSuite {
     // then checking if the destination address is a contract address
     let res = true;
     try {
-      const input = await this.erc20interface.parseTransaction({ data: t.data });
+      const input = await this.erc20interface.parseTransaction({ data: t.data as string });
       const dest = input.args[0];
       const code = await this.provider.getCode(dest);
       if (code === '0x') {
@@ -59,7 +61,7 @@ class SimulationSuite {
      * @param t Transaction to test
      * @returns true if the transaction matches the function description
      */
-  async isDataSentToEOA(t: Transaction): Promise<Boolean> {
+  async isDataSentToEOA(t: TransactionRequest | null): Promise<Boolean> {
     if (t == null) {
       return false;
     }
@@ -82,7 +84,7 @@ class SimulationSuite {
      * @param t Transaction to test
      * @returns true if the transaction matches the function description
      */
-  async isGasLimitEnough(t: Transaction): Promise<Boolean> {
+  async isGasLimitEnough(t: TransactionRequest | null): Promise<Boolean> {
     if (t === null) {
       return false;
     }
@@ -91,7 +93,8 @@ class SimulationSuite {
     // https://ethereum.stackexchange.com/questions/109990/how-to-determine-if-a-pending-transaction-will-revert
     try {
       const estGas = await this.provider.estimateGas({ to: t.to, data: t.data, value: t.value });
-      if (t.gasLimit.gt(estGas)) {
+      const tGasLimt = t.gasLimit as BigNumber;
+      if (tGasLimt.gt(estGas)) {
         return false;
       }
     } catch {
@@ -106,8 +109,8 @@ class SimulationSuite {
      * @param t Transaction to test
      * @returns true if the transaction matches the function description
      */
-  async isGasPriceReasonable(t: Transaction): Promise<Boolean> {
-    if (t === null || t === undefined) {
+  async isGasPriceReasonable(t: TransactionRequest | null): Promise<Boolean> {
+    if (t === null) {
       return false;
     }
 
@@ -118,8 +121,8 @@ class SimulationSuite {
     }
 
     if (type === 2) {
-      const { maxPriorityFeePerGas } = t;
-      const { maxFeePerGas } = t;
+      const maxPriorityFeePerGas = t.maxPriorityFeePerGas as BigNumber;
+      const maxFeePerGas = t.maxFeePerGas as BigNumber;
       if (maxFeePerGas === undefined || maxPriorityFeePerGas === undefined) {
         return false;
       }
@@ -144,7 +147,7 @@ class SimulationSuite {
       }
       return false;
     }
-    const tGasPrice = t.gasPrice;
+    const tGasPrice = t.gasPrice as BigNumber;
     const estGasPrice = feeData.gasPrice;
     if (tGasPrice === undefined || estGasPrice === null) {
       return false;
@@ -165,7 +168,7 @@ class SimulationSuite {
      * @param t Transaction to test
      * @returns true if the transcation matches the function description
      */
-  static async isAddressValid(t: Transaction): Promise<Boolean> {
+  static async isAddressValid(t: TransactionRequest | null): Promise<Boolean> {
     if (t === null) {
       return false;
     }
@@ -197,19 +200,20 @@ class SimulationSuite {
      * @param t Transaction to test
      * @returns true if the transaction matches the function description
      */
-  static async isTotalMoreThanWallet(t: Transaction, balance: BigNumber): Promise<Boolean> {
+  static async isTotalMoreThanWallet(t: TransactionRequest
+  | null, balance: BigNumber): Promise<Boolean> {
     if (t === null) {
       return true;
     }
 
-    let tGasPrice = t.gasPrice;
+    let tGasPrice = t.gasPrice as BigNumber;
     const tGasLimit = t.gasLimit;
     if (tGasLimit === null || tGasLimit === undefined) {
       return false;
     }
 
-    const tMaxFeePerGas = t.maxFeePerGas;
-    const tMaxPriorityFeePerGas = t.maxPriorityFeePerGas;
+    const tMaxFeePerGas = t.maxFeePerGas as BigNumber;
+    const tMaxPriorityFeePerGas = t.maxPriorityFeePerGas as BigNumber;
     if (tGasPrice === null || tGasPrice === undefined) {
       if (tMaxFeePerGas !== undefined && tMaxPriorityFeePerGas !== undefined) {
         tGasPrice = (tMaxFeePerGas.add(tMaxPriorityFeePerGas));
@@ -220,7 +224,7 @@ class SimulationSuite {
 
     const tGasTotalFees = tGasPrice.mul(tGasLimit);
 
-    const amount = t.value;
+    const amount = t.value as BigNumber;
     if (amount.add(tGasTotalFees).gt(balance)) {
       return true;
     }
