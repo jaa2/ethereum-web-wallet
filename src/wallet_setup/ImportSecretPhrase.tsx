@@ -26,7 +26,9 @@ function ImportSecretPhrase() {
   const [secretPhrase, setSecretPhrase]:
   [string, (phrase: string) => void] = React.useState<string>('');
   const handleSecretPhrase = (event: ChangeEvent<HTMLTextAreaElement>) => {
-    const val = event.target.value;
+    const val = event.target.value
+      .trim()
+      .replaceAll(/\s{2,}/g, ' ');
     setSecretPhrase(val);
     setSecretPhraseStatus(ethers.utils.isValidMnemonic(val) ? 'valid' : 'invalid');
   };
