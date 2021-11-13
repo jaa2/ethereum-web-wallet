@@ -133,6 +133,22 @@ export default class WalletState {
   }
 
   /**
+     * Creates a wallet from a secret recovery phrase
+     * @param overwrite If true, a new wallet will be created even if one already exists
+     * @param phrase The secret recovery phrase ('mnemonic')
+     * @returns true if the action succeeded following the overwrite argument
+     */
+  async createWalletFromPhrase(overwrite: boolean, phrase: string): Promise<boolean> {
+    if (!overwrite && (await this.willOverwrite())) {
+      return false;
+    }
+
+    // Create the new wallet
+    this.currentWallet = ethers.Wallet.fromMnemonic(phrase);
+    return true;
+  }
+
+  /**
      * Encrypts the wallet object and saves it to the storage area
      * @param overwrite If true, the wallet object will be saved even if one already exists
      * @param password Password to encrypt the wallet with
