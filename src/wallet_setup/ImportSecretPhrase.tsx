@@ -21,6 +21,8 @@ async function ValidSecretPhrase(secretPhrase: string): Promise<boolean> {
 function ImportSecretPhrase() {
   const [secretPhraseStatus, setSecretPhraseStatus]:
   [string, (state: string) => void] = React.useState<string>('length');
+  const [inputDisabled, setInputDisabled]:
+  [boolean, (state: boolean) => void] = React.useState<boolean>(false);
   const [secretPhrase, setSecretPhrase]:
   [string, (phrase: string) => void] = React.useState<string>('');
   const handleSecretPhrase = (event: ChangeEvent<HTMLTextAreaElement>) => {
@@ -31,7 +33,9 @@ function ImportSecretPhrase() {
 
   const navigate: NavigateFunction = useNavigate();
   const onSecretPhrase = async () => {
+    setInputDisabled(true);
     const resultSuccess: boolean = await ValidSecretPhrase(secretPhrase);
+    setInputDisabled(false);
     if (resultSuccess) {
       // Redirect
       navigate('/CreatePassword');
@@ -45,7 +49,14 @@ function ImportSecretPhrase() {
     matchElements = (
       <div>
         <p id="info-match" className="info">Success. This is a valid wallet account!</p>
-        <button className="bottom-button" type="button" onClick={onSecretPhrase}>Continue</button>
+        <button
+          className="bottom-button"
+          type="button"
+          disabled={inputDisabled}
+          onClick={onSecretPhrase}
+        >
+          Continue
+        </button>
       </div>
     );
   } else if (secretPhraseStatus === 'invalid') {
@@ -65,7 +76,12 @@ function ImportSecretPhrase() {
         <FontAwesomeIcon className="fa-icon" icon={faCloudUploadAlt} size="4x" />
         <h1>Import Secret Recovery Phrase</h1>
         <h3>Enter your 12-word secret recovery phrase below.</h3>
-        <textarea cols={40} rows={4} onChange={(event) => handleSecretPhrase(event)} />
+        <textarea
+          disabled={inputDisabled}
+          cols={40}
+          rows={4}
+          onChange={(event) => handleSecretPhrase(event)}
+        />
 
         {matchElements}
       </div>
