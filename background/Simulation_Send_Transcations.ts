@@ -1,6 +1,6 @@
 import { EtherscanProvider, TransactionRequest } from '@ethersproject/providers';
 import {
-  BytesLike, ethers, Transaction, Wallet,
+  BytesLike, Contract, ethers, Transaction, Wallet,
 } from 'ethers';
 import { BigNumber } from '@ethersproject/bignumber';
 import SimulationSuite from './SimulationSuite';
@@ -31,6 +31,19 @@ function requestToTransaction(txRequest: TransactionRequest) {
   } catch {
     return null;
   }
+}
+
+/**
+ * Returns the USD amount of 1 ETH
+ */
+async function currentETHtoUSD() {
+  const abi = ['function latestAnswer() public view returns (int256)'];
+  const chainlinkETHUSDFeed = new Contract('0x0x5f4eC3Df9cbd43714FE2740f5E3616155c5b8419',
+    abi, provider);
+  // Doing a reconversion back into ETH because we want only a specific number of decimal places
+  const priceInUSDinWei = ethers.utils.parseUnits(BigNumber.from(await chainlinkETHUSDFeed.latestAnswer()).toString(), 'wei');
+  const priceInUSD = BigNumber.from(ethers.utils.formatUnits(priceInUSDinWei, 8));
+  return priceInUSD;
 }
 
 /**
