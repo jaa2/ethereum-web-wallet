@@ -10,7 +10,6 @@ class SimulationSendTransactions {
 
   simulationSuite: SimulationSuite;
 
-  // TODO: Have direct access to provider object, so grab that
   constructor(provider: Provider) {
     this.provider = provider;
     this.simulationSuite = new SimulationSuite(this.provider);
