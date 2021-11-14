@@ -15,11 +15,11 @@ function ProfileSettings() {
         <div id="settings-nav">
           <Link id="wallet-setup-import-key" className="link hoverable" to="/Home">
             <FontAwesomeIcon className="fa-icon" icon={faHome} size="1x" />
-            <h4>Home</h4>
+            <h6>Home</h6>
           </Link>
           <Link id="wallet-setup-import-key" className="link hoverable" to="/SignIn">
             <FontAwesomeIcon className="fa-icon" icon={faLock} size="1x" />
-            <h4>SignIn</h4>
+            <h6>SignIn</h6>
           </Link>
         </div>
         <div id="profile-picture-edit">
