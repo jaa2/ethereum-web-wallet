@@ -1,5 +1,5 @@
 /* eslint-disable no-param-reassign */
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, NavigateFunction, useNavigate } from 'react-router-dom';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
@@ -37,8 +37,7 @@ async function TestTransaction(addressElem: HTMLInputElement, amountElem: HTMLIn
     const transactionController: SimulationSendTransactions = new
     SimulationSendTransactions(provider);
 
-    document.getElementById('amount-in-usd')!.innerHTML = await transactionController.currentETHtoUSD().toString().concat(' USD');
-
+    document.getElementById('amount-in-usd')!.innerHTML = (await transactionController.currentETHtoUSD(+amountInput)).toString().concat(' USD');
     if (wallet !== null) {
       // create transaction request object
       const txReq: TransactionRequest = {
@@ -51,25 +50,42 @@ async function TestTransaction(addressElem: HTMLInputElement, amountElem: HTMLIn
       const simulationChecks = transactionController.simulateTransaction(txReq, '0x', wallet);
 
       // TODO: populate simulation results page with the simulations checks
-      console.log(simulationChecks);
-      useNavigate()('/SimulationResults');
+      return simulationChecks;
     }
   }
 
   if (!isAddressValid) {
     addressElem.style.borderColor = 'red';
+    return null;
   }
 
   if (!isAmountValid) {
     amountElem.style.borderColor = 'red';
+    return null;
   }
+
+  return null;
 }
 
 function CreateTransaction() {
+  const navigate: NavigateFunction = useNavigate();
+  const onTestTransaction = async () => {
+    const addressElem = (document.getElementById('to-address-input') as HTMLInputElement);
+    const amountElem = (document.getElementById('amount-input') as HTMLInputElement);
+    const simulationsExist: Map<string, Boolean> | null = await
+    TestTransaction(addressElem, amountElem);
+    if (simulationsExist) {
+      navigate('/SimulationResults');
+    } else {
+      throw new Error('Failed to get simulations.');
+    }
+  };
+
   return (
     <div className="container">
       <div className="user">
         <img src="../../avatar.png" alt="avatar" className="avatar" />
+        {/* TODO: Change from address to match the wallet's address */}
         <div className="address">0x510928a823b...</div>
         <FontAwesomeIcon className="copy fa-icon" icon={faCopy} />
       </div>
@@ -108,6 +124,12 @@ function CreateTransaction() {
             <h4 className="unit">Gwei</h4>
             <FontAwesomeIcon className="fa-icon" icon={faQuestionCircle} />
           </div> */}
+        <div className="field">
+          <h4 id="data-label">Data:</h4>
+          <div className="data-class">
+            <input id="data-input" type="text" name="data" />
+          </div>
+        </div>
       </div>
 
       <div className="button-container">
@@ -116,7 +138,7 @@ function CreateTransaction() {
         </Link>
         <span>
           {/* <Link to="/SimulationResults"> */}
-          <button id="test" className="bottom-button" type="button" onClick={() => TestTransaction((document.getElementById('to-address-input') as HTMLInputElement), (document.getElementById('amount-input') as HTMLInputElement))}>Test Transaction</button>
+          <button id="test" className="bottom-button" type="button" onClick={() => onTestTransaction()}>Test Transaction</button>
           {/* </Link> */}
           <FontAwesomeIcon id="help-test" className="fa-icon" icon={faQuestionCircle} />
         </span>

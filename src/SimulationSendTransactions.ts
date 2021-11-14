@@ -18,12 +18,21 @@ class SimulationSendTransactions {
   /**
    * Returns the USD amount of 1 ETH
    */
-  async currentETHtoUSD():Promise<BigNumber> {
+  async currentETHtoUSD(amount: number):Promise<number> {
     const abi = ['function latestAnswer() public view returns (int256)'];
-    const chainlinkETHUSDFeed = new Contract('0x0x5f4eC3Df9cbd43714FE2740f5E3616155c5b8419',
+    // Mainnet: 0x5f4eC3Df9cbd43714FE2740f5E3616155c5b8419
+    // Old Ropsten: 0x8468b2bDCE073A157E560AA4D9CcF6dB1DB98507
+    // TODO: Find different address to calculate up to date conversion from ETH to USD
+    const chainlinkETHUSDFeed = new Contract('0x8468b2bDCE073A157E560AA4D9CcF6dB1DB98507',
       abi, this.provider);
-    const priceInUSD = await chainlinkETHUSDFeed.latestAnswer();
-    return priceInUSD;
+    try {
+      const priceInUSD = (BigNumber.from(await chainlinkETHUSDFeed.latestAnswer()).toNumber()
+        / 10 ** 8) * amount;
+      return priceInUSD;
+    } catch (e) {
+      console.log(e);
+      return 0;
+    }
   }
 
   // TODO: Cache the result because the numbers don't change until the blockchain has changed
@@ -59,7 +68,7 @@ class SimulationSendTransactions {
    * @returns the gas limit in ETH as a string
    */
   async gasLimitInETH(t: TransactionRequest) {
-    let estGas = await this.provider.estimateGas({ to: t.to, value: t.value });
+    let estGas = await this.provider.estimateGas(t);
     if (estGas.lte(21000)) {
       estGas = estGas.mul(1.2);
     }

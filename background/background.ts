@@ -1,4 +1,5 @@
 import { EtherscanProvider, Provider } from '@ethersproject/providers';
+import { Wallet } from 'ethers';
 import browser from 'webextension-polyfill';
 import WalletState from './WalletState';
 import { WalletStorage } from './WalletStorage';
@@ -6,8 +7,10 @@ import { WalletStorage } from './WalletStorage';
 export interface BackgroundWindowInterface {
   stateObj: {
     walletState: WalletState,
-    provider: Provider | null
+    provider: Provider | null,
   };
+
+  connectWallet: () => Promise<void>;
 }
 
 declare global {
@@ -17,7 +20,7 @@ declare global {
 
 window.stateObj = {
   walletState: new WalletState((browser.storage.local as WalletStorage)),
-  provider: null,
+  provider: new EtherscanProvider('ropsten', 'AZ8GS7UXX1A8MZX9ZH2Q1K3H9DPZXB2F68'),
 };
 
 window.stateObj.walletState.loadEncrypted()
@@ -25,4 +28,9 @@ window.stateObj.walletState.loadEncrypted()
     const myConsole: Console = console;
     myConsole.warn(`[Background] Could not load encrypted: ${reason}`);
   });
-window.stateObj.provider = new EtherscanProvider('ropsten');
+window.stateObj.provider = new EtherscanProvider('ropsten', 'AZ8GS7UXX1A8MZX9ZH2Q1K3H9DPZXB2F68');
+
+window.connectWallet = async () => {
+  window.stateObj.walletState.currentWallet = (await
+  window.stateObj.walletState.getWallet() as Wallet).connect(window.stateObj.provider as Provider);
+};
