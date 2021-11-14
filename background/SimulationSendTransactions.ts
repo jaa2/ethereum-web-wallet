@@ -109,16 +109,16 @@ class SimulationSendTransactions {
    * @param wallet the user's wallet
    * @returns the list of checks that the transaction passed in the simulation
    */
-  async simulateTransaction(to: string, from: string, amount: number,
+  async simulateTransaction(txReq: TransactionRequest,
     data: BytesLike, wallet: Wallet) {
-    const t = await wallet.populateTransaction({ to, from, value: amount });
+    const t = await wallet.populateTransaction(txReq);
     if (t === null) {
       return null;
     }
     // Our Simulation Checks
     const code = await this.provider.getCode(t.to as string);
     let isEOA = false;
-    if (data !== '0x' && code === '0x') {
+    if (code === '0x') {
       isEOA = true;
     }
     let promises;

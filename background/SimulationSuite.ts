@@ -137,12 +137,12 @@ class SimulationSuite {
       const estMaxPFPG = estMaxPriorityFeePerGas.toNumber();
       const maxFPG = maxFeePerGas.toNumber();
       const estMaxFPG = estMaxFeePerGas.toNumber();
-      // console.log("max priority fee per gas: ", maxPFPG);
-      // console.log("est max priority fee per gas: ", estMaxPFPG);
-      // console.log("max fee per gas: ", maxFPG);
-      // console.log("est max fee per gas: ", estMaxFPG);
+      // console.log('max priority fee per gas: ', maxPFPG);
+      // console.log('est max priority fee per gas: ', estMaxPFPG);
+      // console.log('max fee per gas: ', maxFPG);
+      // console.log('est max fee per gas: ', estMaxFPG);
       if ((maxPFPG >= estMaxPFPG) && (maxPFPG <= estMaxPFPG * 2)
-                && (maxFPG >= estMaxFPG * 1.03) && (maxFPG <= estMaxFPG * 3)) {
+                && (maxFPG >= estMaxFPG * 1.1) && (maxFPG <= estMaxFPG * 3)) {
         return true;
       }
       return false;

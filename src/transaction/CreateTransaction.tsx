@@ -1,4 +1,5 @@
-import { Link } from 'react-router-dom';
+/* eslint-disable no-param-reassign */
+import { Link, useHistory } from 'react-router-dom';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
@@ -6,6 +7,54 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 
 import './CreateTransaction.scss';
+import { Provider, TransactionRequest } from '@ethersproject/abstract-provider';
+import { BigNumber, Wallet } from 'ethers';
+import SimulationSendTransactions from '../../background/SimulationSendTransactions';
+
+/**
+ * Ensures that the inputs of address and amount are valid before sending
+ * the transaction
+ * @param addressInput The destination address of the transaction
+ * @param amountInput The amount being sent
+ */
+async function ValidateInputs(addressElem: HTMLInputElement, amountElem: HTMLInputElement) {
+  addressElem.style.borderColor = 'inherit';
+  amountElem.style.borderColor = 'inherit';
+  const addressInput = addressElem.value;
+  const amountInput = amountElem.value;
+
+  const addressRegex = /0x[0-9a-f]{0,42}/;
+  const amountRegex = /([1-9]\d*|0)(\.\d{1,8})?/;
+  const isAddressValid = addressRegex.test(addressInput);
+  const isAmountValid = amountRegex.test(amountInput);
+  if (isAddressValid && isAmountValid) {
+    const provider = window.stateObj.provider as Provider;
+    const wallet = await window.stateObj.walletState.getWallet() as Wallet;
+    // create transaction request object
+    // TODO: Also npm run build not working?
+    const txReq: TransactionRequest = {
+      to: addressInput,
+      value: BigNumber.from(amountInput),
+      from: await wallet.getAddress(),
+    };
+
+    // Execute simulations and go to simulations page
+    const simulations: SimulationSendTransactions = new SimulationSendTransactions(provider);
+    const simulationChecks = simulations.simulateTransaction(txReq, '0x', wallet);
+
+    // TODO: populate simulation results page with the simulations checks
+    console.log(simulationChecks);
+    useHistory().push('/SimulationResults');
+  }
+
+  if (!isAddressValid) {
+    addressElem.style.borderColor = 'red';
+  }
+
+  if (!isAmountValid) {
+    amountElem.style.borderColor = 'red';
+  }
+}
 
 function CreateTransaction() {
   return (
@@ -56,9 +105,9 @@ function CreateTransaction() {
           <FontAwesomeIcon className="fa-icon" icon={faArrowCircleLeft} size="2x" />
         </Link>
         <span>
-          <Link to="/SimulationResults">
-            <button id="test" className="bottom-button" type="button">Test Transaction</button>
-          </Link>
+          {/* <Link to="/SimulationResults"> */}
+          <button id="test" className="bottom-button" type="button" onClick={() => ValidateInputs((document.getElementById('to-address-input') as HTMLInputElement), (document.getElementById('amount-input') as HTMLInputElement))}>Test Transaction</button>
+          {/* </Link> */}
           <FontAwesomeIcon id="help-test" className="fa-icon" icon={faQuestionCircle} />
         </span>
       </div>
