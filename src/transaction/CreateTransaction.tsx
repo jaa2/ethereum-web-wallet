@@ -44,10 +44,11 @@ async function TestTransaction(addressElem: HTMLInputElement, amountElem: HTMLIn
         to: addressInput,
         value: BigNumber.from(amountInput),
         from: await wallet.getAddress(),
+        data: '0x',
       };
 
       // Execute simulations and go to simulations page
-      const simulationChecks = transactionController.simulateTransaction(txReq, '0x', wallet);
+      const simulationChecks = transactionController.simulateTransaction(txReq, wallet);
 
       // TODO: populate simulation results page with the simulations checks
       return simulationChecks;
@@ -72,10 +73,10 @@ function CreateTransaction() {
   const onTestTransaction = async () => {
     const addressElem = (document.getElementById('to-address-input') as HTMLInputElement);
     const amountElem = (document.getElementById('amount-input') as HTMLInputElement);
-    const simulationsExist: Map<string, Boolean> | null = await
-    TestTransaction(addressElem, amountElem);
+    const simulationsExist = await TestTransaction(addressElem, amountElem);
     if (simulationsExist) {
-      navigate('/SimulationResults');
+      console.log('ran 1');
+      navigate('/SimulationResults', { state: { simulationChecks: simulationsExist } });
     } else {
       throw new Error('Failed to get simulations.');
     }

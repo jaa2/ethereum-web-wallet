@@ -1,12 +1,15 @@
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faGasPump, faFire, faCheckCircle } from '@fortawesome/free-solid-svg-icons';
+import { faGasPump, faFire } from '@fortawesome/free-solid-svg-icons';
 import { faEthereum } from '@fortawesome/free-brands-svg-icons';
 
 import './SimulationResults.scss';
 
 function SimulationResults() {
+  console.log('ran 2');
+  const { simulationChecks } = useLocation().state;
+  console.log(simulationChecks);
   return (
     <div id="simulation-results">
 
@@ -42,7 +45,7 @@ function SimulationResults() {
       <div id="simulation-text"><h1><b>Simulation Successful!</b></h1></div>
 
       <div id="checklist">
-        <div id="item">
+        {/* <div id="item">
           <FontAwesomeIcon icon={faCheckCircle} />
           <h4> Known Token</h4>
         </div>
@@ -67,7 +70,7 @@ function SimulationResults() {
         <div id="item">
           <FontAwesomeIcon icon={faCheckCircle} />
           <h4> Reasonable gas price</h4>
-        </div>
+        </div> */}
       </div>
 
       <h1>Token Transfers</h1>
