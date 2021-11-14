@@ -1,7 +1,7 @@
 @import '../common/colors';
 
 #simulation-results {
-    width: 33vw;
+    width: 75vw;
     min-width: 500px;
   
     margin: auto;
@@ -24,10 +24,9 @@
     }
 
     #top-box{   
-    border-style:solid;
-    background-color: lightgray;
         #transaction-details {
             width: 100%;
+            width: 65vw;
             
             display: flex;
             flex-direction: row;
