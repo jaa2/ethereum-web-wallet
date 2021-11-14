@@ -2,7 +2,7 @@ import { Interface } from '@ethersproject/abi';
 import { Provider, TransactionRequest } from '@ethersproject/abstract-provider';
 import { getAddress } from '@ethersproject/address';
 import { BigNumber } from '@ethersproject/bignumber';
-import ERC20ABI from '../erc20abi.json';
+import ERC20ABI from './erc20abi.json';
 
 // Source: https://ethereum.stackexchange.com/questions/11144/how-to-decode-input-data-from-a-transaction
 // To decode transaction data

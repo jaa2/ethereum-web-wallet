@@ -26,6 +26,7 @@
     "@types/react-dom": "^17.0.10",
     "@types/react-router": "^5.1.17",
     "@types/webextension-polyfill": "^0.8.1",
+    "background": "file:./background",
     "chai-as-promised": "^7.1.1",
     "ethers": "^5.5.1",
     "history": "5",

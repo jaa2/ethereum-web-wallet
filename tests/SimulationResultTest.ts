@@ -5,7 +5,7 @@ import { expect } from 'chai';
 import { Provider, EtherscanProvider, TransactionRequest } from '@ethersproject/providers';
 import { Transaction } from 'ethers';
 import { parseEther } from '@ethersproject/units';
-import SimulationSuite from '../background/SimulationSuite';
+import SimulationSuite from '../src/SimulationSuite';
 
 function TransactionToRequest(t: Transaction) {
   if (t === null) {

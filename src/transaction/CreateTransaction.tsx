@@ -1,5 +1,5 @@
 /* eslint-disable no-param-reassign */
-import { Link, useHistory } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
@@ -9,7 +9,9 @@ import {
 import './CreateTransaction.scss';
 import { Provider, TransactionRequest } from '@ethersproject/abstract-provider';
 import { BigNumber, Wallet } from 'ethers';
-import SimulationSendTransactions from '../../background/SimulationSendTransactions';
+import { BackgroundWindowInterface } from 'background/background';
+import browser from 'webextension-polyfill';
+import SimulationSendTransactions from '../SimulationSendTransactions';
 
 /**
  * Ensures that the inputs of address and amount are valid before sending
@@ -17,34 +19,41 @@ import SimulationSendTransactions from '../../background/SimulationSendTransacti
  * @param addressInput The destination address of the transaction
  * @param amountInput The amount being sent
  */
-async function ValidateInputs(addressElem: HTMLInputElement, amountElem: HTMLInputElement) {
+async function TestTransaction(addressElem: HTMLInputElement, amountElem: HTMLInputElement) {
   addressElem.style.borderColor = 'inherit';
   amountElem.style.borderColor = 'inherit';
   const addressInput = addressElem.value;
   const amountInput = amountElem.value;
 
-  const addressRegex = /0x[0-9a-f]{0,42}/;
+  const addressRegex = /0x[0-9a-f]{1,42}/;
   const amountRegex = /([1-9]\d*|0)(\.\d{1,8})?/;
   const isAddressValid = addressRegex.test(addressInput);
   const isAmountValid = amountRegex.test(amountInput);
   if (isAddressValid && isAmountValid) {
-    const provider = window.stateObj.provider as Provider;
-    const wallet = await window.stateObj.walletState.getWallet() as Wallet;
-    // create transaction request object
-    // TODO: Also npm run build not working?
-    const txReq: TransactionRequest = {
-      to: addressInput,
-      value: BigNumber.from(amountInput),
-      from: await wallet.getAddress(),
-    };
+    const window: BackgroundWindowInterface = await browser.runtime.getBackgroundPage();
+    const state = window.stateObj;
+    const provider = state.provider as Provider;
+    const wallet = await state.walletState.getWallet() as Wallet;
+    const transactionController: SimulationSendTransactions = new
+    SimulationSendTransactions(provider);
 
-    // Execute simulations and go to simulations page
-    const simulations: SimulationSendTransactions = new SimulationSendTransactions(provider);
-    const simulationChecks = simulations.simulateTransaction(txReq, '0x', wallet);
+    document.getElementById('amount-in-usd')!.innerHTML = await transactionController.currentETHtoUSD().toString().concat(' USD');
 
-    // TODO: populate simulation results page with the simulations checks
-    console.log(simulationChecks);
-    useHistory().push('/SimulationResults');
+    if (wallet !== null) {
+      // create transaction request object
+      const txReq: TransactionRequest = {
+        to: addressInput,
+        value: BigNumber.from(amountInput),
+        from: await wallet.getAddress(),
+      };
+
+      // Execute simulations and go to simulations page
+      const simulationChecks = transactionController.simulateTransaction(txReq, '0x', wallet);
+
+      // TODO: populate simulation results page with the simulations checks
+      console.log(simulationChecks);
+      useNavigate()('/SimulationResults');
+    }
   }
 
   if (!isAddressValid) {
@@ -77,15 +86,16 @@ function CreateTransaction() {
         </div>
         <div className="field no-unit-field">
           <h4 id="to-address-label">To:</h4>
-          <select id="to-address-input" name="to-address">
+          <input id="to-address-input" type="text" name="to" />
+          {/* <select id="to-address-input" name="to-address">
             <option>Timmy Turner (0x98173ae89374dc83a89909234a)</option>
-          </select>
+          </select> */}
         </div>
         <div className="field">
           <h4 id="amount-label">Amount:</h4>
           <div className="currency-conversion">
             <input id="amount-input" type="text" name="amount" />
-            <h5>USD</h5>
+            <h5 id="amount-in-usd">USD</h5>
           </div>
           <h4 id="eth" className="unit">ETH</h4>
         </div>
@@ -106,7 +116,7 @@ function CreateTransaction() {
         </Link>
         <span>
           {/* <Link to="/SimulationResults"> */}
-          <button id="test" className="bottom-button" type="button" onClick={() => ValidateInputs((document.getElementById('to-address-input') as HTMLInputElement), (document.getElementById('amount-input') as HTMLInputElement))}>Test Transaction</button>
+          <button id="test" className="bottom-button" type="button" onClick={() => TestTransaction((document.getElementById('to-address-input') as HTMLInputElement), (document.getElementById('amount-input') as HTMLInputElement))}>Test Transaction</button>
           {/* </Link> */}
           <FontAwesomeIcon id="help-test" className="fa-icon" icon={faQuestionCircle} />
         </span>

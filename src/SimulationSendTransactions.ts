@@ -18,7 +18,7 @@ class SimulationSendTransactions {
   /**
    * Returns the USD amount of 1 ETH
    */
-  async currentETHtoUSD() {
+  async currentETHtoUSD():Promise<BigNumber> {
     const abi = ['function latestAnswer() public view returns (int256)'];
     const chainlinkETHUSDFeed = new Contract('0x0x5f4eC3Df9cbd43714FE2740f5E3616155c5b8419',
       abi, this.provider);
