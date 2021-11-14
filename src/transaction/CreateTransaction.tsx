@@ -29,7 +29,7 @@ function CreateTransaction() {
         <div className="field no-unit-field">
           <h4 id="to-address-label">To:</h4>
           <select id="to-address-input" name="to-address">
-            <option>Timmy Turner (0x98173ae89374dc83a89909234a)</option>
+            <option> (0x98173ae89374dc83a89909234a)</option>
           </select>
         </div>
         <div className="field">

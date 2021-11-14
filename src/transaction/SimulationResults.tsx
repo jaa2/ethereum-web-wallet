@@ -5,6 +5,7 @@ import { faGasPump, faFire, faCheckCircle } from '@fortawesome/free-solid-svg-ic
 import { faEthereum } from '@fortawesome/free-brands-svg-icons';
 
 import './SimulationResults.scss';
+import { TokenTransferBox } from './TokenTransferBox';
 
 function SimulationResults() {
   return (
@@ -12,8 +13,8 @@ function SimulationResults() {
 
       <div id="top-box">
         <h1>Transaction Details</h1>
-        <h3>0x51092...094ef to Timmy Turner (0x98173...)</h3>
-        <h3><b>Contract interaction: Transfer 1 ETH to Timmy Turner</b></h3>
+        <h3>0x51092...094ef to (0x98173...)</h3>
+        <h3><b>Contract interaction: Transfer 1 ETH</b></h3>
         <div id="transaction-details">
           <div id="gas-fee">
             <FontAwesomeIcon className="fa-icon" icon={faGasPump} size="2x" />
@@ -25,7 +26,7 @@ function SimulationResults() {
           <div id="amount">
             <FontAwesomeIcon className="fa-icon" icon={faEthereum} size="2x" />
             <h5>
-              ETH sent to &quot;Timmy Turner&quot;
+              ETH sent
               <h3> 1 ETH </h3>
             </h5>
           </div>
@@ -71,6 +72,7 @@ function SimulationResults() {
       </div>
 
       <h1>Token Transfers</h1>
+      <TokenTransferBox />
       <h4>
         0x51092...094ef to
         <b>Timmy Turner</b>
