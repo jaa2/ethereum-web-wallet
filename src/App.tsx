@@ -1,4 +1,6 @@
-import { Routes, Route, Link } from 'react-router-dom';
+import {
+  Routes, Route, Link, useLocation,
+} from 'react-router-dom';
 
 import NavigationDebug from './debug/NavigationDebug';
 
@@ -16,14 +18,22 @@ import CreateTransaction from './transaction/CreateTransaction';
 import ReplaceTransaction from './transaction/ReplaceTransaction';
 import SimulationResults from './transaction/SimulationResults';
 
+import './App.scss';
+
 // TODO: Gate off routes based on if the user has authenticated or not
 
 function App() {
   return (
     <div className="App">
-      <Link to="/NavigationDebug">
-        <button type="button">Navigation Debug</button>
-      </Link>
+      <div id="debug-bar">
+        <Link className="debug-control" to="/NavigationDebug">
+          <button type="button">Navigation Debug</button>
+        </Link>
+
+        <Link className="debug-control" to={useLocation().pathname} target="_blank">
+          <button type="button">Open in New Window</button>
+        </Link>
+      </div>
 
       <Routes>
         <Route path="/NavigationDebug" element={<NavigationDebug />} />
