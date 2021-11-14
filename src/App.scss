@@ -1,0 +1,21 @@
+@import './common/colors';
+
+.App {
+  .fa-icon {
+    color: $icon-color
+  }
+
+  #debug-bar {
+    width: 100%;
+    min-width: 400px;
+  
+    margin: 10px auto;
+  
+    display: flex;
+    justify-content: space-around;
+  
+    .debug-control {
+      margin: 10px;
+    }
+  }
+}
