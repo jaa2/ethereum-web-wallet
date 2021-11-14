@@ -2,7 +2,7 @@
 
 #wallet-setup {
   width: 33vw;
-  min-width: 400px;
+  min-width: 500px;
 
   margin: auto;
   padding: 10px;
@@ -11,22 +11,6 @@
   flex-direction: column;
   justify-content: space-evenly;
   align-items: center;
-
-  text-align: center;
-
-  .fa-icon {
-    color: $icon-color;
-  }
-
-  .link {
-    color: $text-color;
-    text-decoration: none;
-  }
-
-  .hoverable:hover {
-    background-color: $hover-button-color;
-    cursor: pointer;
-  }
 
   #wallet-setup-header {
     width: 100%;
@@ -41,15 +25,9 @@
     }
   }
 
-  #wallet-setup-create-wallet {
-    width: fit-content;
-    height: fit-content;
-
-    padding: 10px;
-  }
-
   #wallet-setup-other-options {
     width: 100%;
+    height: auto;
     
     display: flex;
     flex-direction: row;
@@ -61,11 +39,6 @@
 
       margin: 5px;
       padding: 10px;
-    
-      display: flex;
-      flex-direction: row;
-      justify-content: space-evenly;
-      align-items: center;
     }
 
     #wallet-setup-import-key {
@@ -73,11 +46,6 @@
 
       margin: 5px;
       padding: 10px;
-    
-      display: flex;
-      flex-direction: horizontal;
-      justify-content: space-evenly;
-      align-items: center;
     }
   }
 }
