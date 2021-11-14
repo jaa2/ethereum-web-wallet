@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPlus } from '@fortawesome/free-solid-svg-icons';
+import { faPlus, faArrowCircleLeft } from '@fortawesome/free-solid-svg-icons';
 
 import './CreateNewWallet.scss';
 
@@ -41,7 +41,7 @@ function CreateNewWallet() {
       <div id="create-phrase-match-elements">
         <p id="create-phrase-info-match" className="phrase-info">Success. Your phrases match!</p>
         <Link id="create-phrase-continue-link" className="link hoverable" to="/Home" onClick={NewWalletCreated}>
-          <h4>Continue</h4>
+          <button type="button" className="btn btn-success">Continue</button>
         </Link>
       </div>
     );
@@ -61,23 +61,25 @@ function CreateNewWallet() {
 
   return (
     <div id="create-new-wallet">
-      <Link id="back-button" to="/Home">
-        <button className="button" type="button">Back</button>
+      <Link id="back-link" className="back-icon link hoverable" to="/WalletSetup">
+        <FontAwesomeIcon className="fa-icon" icon={faArrowCircleLeft} size="2x" />
       </Link>
       <div id="align-center">
         <FontAwesomeIcon className="fa-icon" icon={faPlus} size="4x" />
         <h1>Create New Wallet</h1>
-        <div id="border-red">
-          <h4>
+        <div className="alert alert-dismissible alert-danger">
+          <p>
             Your
-            <b>secret recovery phrase</b>
+            <b> secret recovery phrase</b>
             {' '}
             can be used to restore your wallet on a different device.
             You should write it down and store it in a very safe place.
             {' '}
-          </h4>
-          <h4>
-            BEWARE! Anyone who has access to your secret recovery phrase has
+          </p>
+          <p>
+            <strong>BEWARE! </strong>
+            Anyone who has access to your secret recovery phrase has
+            {' '}
             <b>
               access to
               all of the funds in your wallet
@@ -86,13 +88,19 @@ function CreateNewWallet() {
             and can steal them at any time.
             Do NOT share the secret recovery phrase with anyone,
             and do not enter it into any website.
-          </h4>
+          </p>
         </div>
-        <div id="create-phrase-entry" className="field-entry">
-          <h5 id="create-phrase-phrase-label">Phrase</h5>
-          <input id="create-phrase-phrase-input" type="phrase" name="phrase" onChange={handlePhrase} />
-          <h5 id="create-phrase-confirm-phrase-label">Repeat your secret recovery phrase below to confirm it is written down correctly:</h5>
-          <input id="create-phrase-confirm-phrase-input" type="phrase" name="confirm phrase" onChange={handleConfirmPhrase} />
+        <div className="form-group">
+          <label htmlFor="create-phrase-phrase-input" className="form-label mt-4">
+            Secret Recovery Phrase
+            <input className="form-control" id="create-phrase-phrase-input" type="phrase" name="phrase" onChange={handlePhrase} />
+          </label>
+        </div>
+        <div className="form-group">
+          <label htmlFor="create-phrase-confirm-phrase-input" className="form-label mt-4">
+            Confirm Secret Recovery Phrase
+            <input className="form-control" id="create-phrase-confirm-phrase-input" type="phrase" name="confirm phrase" onChange={handleConfirmPhrase} />
+          </label>
         </div>
         {phraseMatchElements}
       </div>
