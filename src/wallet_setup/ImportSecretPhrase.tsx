@@ -7,22 +7,21 @@ import './ImportSecretPhrase.scss';
 
 function ImportSecretPhrase() {
   return (
-    <div>
-      <Link id="back-link" className="back-icon link hoverable" to="/WalletSetup">
+    <div className="container">
+      <Link className="back-icon" to="/WalletSetup">
         <FontAwesomeIcon className="fa-icon" icon={faArrowCircleLeft} size="2x" />
       </Link>
-      <div id="import-secret-phrase">
+      <div className="container">
         <FontAwesomeIcon className="fa-icon" icon={faCloudUploadAlt} size="4x" />
         <h1>Import Secret Recovery Phrase</h1>
-        <h3>Enter your 12-word secret recovery phrase below.</h3>
-        <textarea cols={40} rows={4} />
-
-        <div id="match-elements">
-          <p id="info-match" className="info">Success. This is a valid wallet account!</p>
-          <Link to="/CreatePassword">
-            <button className="bottom-button" type="button">Continue</button>
-          </Link>
+        <p>Enter your 12-word secret recovery phrase below.</p>
+        <div className="form-group">
+          <textarea className="form-control is-valid" id="secret-phrase" rows={4} />
+          <div className="valid-feedback">Success. This is a valid wallet account!</div>
         </div>
+        <Link to="/CreatePassword">
+          <button type="button" className="btn btn-success">Continue</button>
+        </Link>
       </div>
     </div>
   );

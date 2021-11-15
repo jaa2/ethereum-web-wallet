@@ -14,48 +14,41 @@ function ReplaceTransaction() {
         <FontAwesomeIcon className="copy fa-icon" icon={faCopy} />
       </div>
 
-      <div className="header">
-        <FontAwesomeIcon className="fa-icon" icon={faPaperPlane} size="4x" />
-        <h1>Replace Transaction</h1>
-      </div>
+      <FontAwesomeIcon className="fa-icon" icon={faPaperPlane} size="4x" />
+      <h1>Replace Transaction</h1>
 
       <div className="field-entry">
-        <div className="field no-unit-field">
-          <h4 id="from-address-label">From:</h4>
-          <p>0x510928a823b892093ac83094ef</p>
+        <div className="form-group">
+          <fieldset disabled>
+            <label className="form-label" htmlFor="fromAdress">From:</label>
+            <input className="form-control" id="fromAdress" type="text" placeholder="0x510928a823b892093ac83094ef" disabled />
+          </fieldset>
         </div>
-        <div className="field no-unit-field">
-          <h4 id="to-address-label">To:</h4>
-          <p>Timmy Turner (0x98173ae89374dc83a89909234a)</p>
+        <div className="form-group">
+          <fieldset disabled>
+            <label className="form-label" htmlFor="toAddress">To:</label>
+            <input className="form-control" id="toAddress" type="text" placeholder="James Austgen (0x98173ae89374dc83a89909234a)" disabled />
+          </fieldset>
         </div>
-        <div className="field">
-          <h4 id="amount-label">Amount:</h4>
-          <div className="currency-conversion">
-            <input id="amount-input" type="text" name="amount" />
-            <h5>USD</h5>
-          </div>
-          <h4 id="eth" className="unit">ETH</h4>
-        </div>
-        {/* <div className="field">
-            <h4 id="gas-label">Gas Fee:</h4>
-            <div className="currency-conversion">
-              <input id="gas-input" type="text" name="gas" />
-              <h5>USD</h5>
+        <div className="form-group">
+          <label htmlFor="amount" className="form-label mt-4">Amount</label>
+          <div className="form-group">
+            <div className="input-group mb-3">
+              <input type="text" className="form-control" id="amount" aria-label="Amount" />
+              <span className="input-group-text">ETH</span>
             </div>
-            <h4 className="unit">Gwei</h4>
-            <FontAwesomeIcon className="fa-icon" icon={faQuestionCircle} />
-          </div> */}
+          </div>
+        </div>
       </div>
-
       <div className="button-container">
         <Link to="/Home">
-          <button id="discard" className="bottom-button" type="button">Discard Changes</button>
+          <button type="button" className="btn btn-danger">Discard Changes</button>
         </Link>
         <span>
-          <Link to="/SimulationResults">
-            <button id="test" className="bottom-button" type="button">Test Transaction</button>
+          <Link className="back-icon" to="/SimulationResults">
+            <button type="button" className="btn btn-info">Test Transaction</button>
           </Link>
-          <FontAwesomeIcon className="fa-icon" icon={faQuestionCircle} />
+          <FontAwesomeIcon id="help-test" className="fa-icon" icon={faQuestionCircle} />
         </span>
       </div>
     </div>
