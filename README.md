@@ -35,4 +35,8 @@ You can load a temporary add-on using the following steps. Both browsers have a 
 You have to reload the extension in the browser after every build. There should be a "reload" button.
 
 #### Enabling the log tracer
-Our wallet has a special feature that lets users view the (probable) token transfers emitted by a transaction *prior* to the transaction actually being sent. To enable this feature, you must be running an Ethereum node matching your target network with the RPC endpoint enabled on 8545, the default port. Currently, we only support Chromium
+Our wallet has a special feature that lets users view the (probable) token transfers emitted by a
+transaction *prior* to the transaction actually being sent. To enable this feature, you must be
+running `geth` matching your target network with the RPC endpoint enabled on 8545, the
+default port, and the debug namespace enabled. For this feature, we currently only support
+Chromium-like browsers.
