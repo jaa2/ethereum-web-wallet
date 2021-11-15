@@ -1,5 +1,5 @@
 import { Wallet } from '@ethersproject/wallet';
-import { ethers } from 'ethers';
+import { ethers, Signer, VoidSigner } from 'ethers';
 import { WalletStorage } from './WalletStorage';
 
 /**
@@ -53,10 +53,31 @@ export default class WalletState {
 
   /**
      * Get the wallet object for an immediate operation.
+     * This function is dangerous, as the object it returns can be used to sign transactions.
      * @returns A wallet object, if it exists
      */
   async getWallet(): Promise<Wallet | null> {
     return this.currentWallet;
+  }
+
+  /**
+     * Get the wallet object for an immediate operation.
+     * @returns A wallet object, if it exists
+     */
+  async getWalletSafe(): Promise<Signer | null> {
+    if (this.currentWallet !== null) {
+      return new VoidSigner(this.currentWallet.address);
+    } if (this.encryptedWalletJSON !== null) {
+      try {
+        const jobj: any = JSON.parse(this.encryptedWalletJSON);
+        if ('address' in jobj) {
+          return new VoidSigner(jobj.address as string);
+        }
+      } catch (e) {
+        return null;
+      }
+    }
+    return null;
   }
 
   /**
