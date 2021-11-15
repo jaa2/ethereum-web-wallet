@@ -9,7 +9,9 @@ import './SimulationResults.scss';
 function SimulationResults() {
   console.log('ran 2');
   const { simulationChecks } = useLocation().state;
+  const { txReq } = useLocation().state;
   console.log(simulationChecks);
+  console.log(txReq);
   return (
     <div id="simulation-results">
 
