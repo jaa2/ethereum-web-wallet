@@ -11,6 +11,7 @@ import { EtherscanProvider, TransactionResponse } from '@ethersproject/providers
 import { ethers, Signer } from 'ethers';
 import React, { useEffect } from 'react';
 import { BackgroundWindowInterface } from '../background/background';
+import UserState from './common/UserState';
 
 /**
  * Get a list of recent transactions
@@ -27,7 +28,6 @@ Promise<Array<TransactionResponse>> {
   const { provider } = backgroundWindow.stateObj;
   if (provider !== null && 'getHistory' in provider) {
     const addr: string = await signer.getAddress();
-    // const txCount = await (provider as Provider).getTransactionCount(addr);
     const txs = await (provider as EtherscanProvider).getHistory(addr);
     txs.sort((a: TransactionResponse, b: TransactionResponse) => {
       if (a.blockNumber === undefined && b.blockNumber === undefined) {
@@ -39,24 +39,10 @@ Promise<Array<TransactionResponse>> {
       }
       return b.blockNumber - a.blockNumber;
     });
-    // txs = txs.filter((a: TransactionResponse) => (a.nonce <= txCount));
     return txs;
   }
 
   return new Array<TransactionResponse>();
-}
-
-/**
- * Fetch the user's address, even if the wallet is encrypted
- * @returns the user's address
- */
-async function getAddress(): Promise<string | null> {
-  const backgroundWindow: BackgroundWindowInterface = await browser.runtime.getBackgroundPage();
-  const signer: Signer | null = await backgroundWindow.stateObj.walletState.getWalletSafe();
-  if (signer === null) {
-    return null;
-  }
-  return ethers.utils.getAddress(await signer.getAddress());
 }
 
 function Home() {
@@ -68,7 +54,7 @@ function Home() {
   [string, (matchState: string) => void] = React.useState<string>('defa11add2e55');
 
   useEffect(() => {
-    getAddress().then((newAddress) => {
+    UserState.getAddress().then((newAddress) => {
       if (newAddress !== null) {
         setAddress(newAddress);
       }
@@ -93,7 +79,11 @@ function Home() {
     }
     transactionList.push(
       <p>
-        <b>{type}</b>
+        <b>
+          {type}
+          :
+        </b>
+        {' '}
         {currentTransactions[i].nonce}
         {' '}
         (
