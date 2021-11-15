@@ -6,7 +6,7 @@ import { WalletStorage } from './WalletStorage';
 export interface BackgroundWindowInterface {
   stateObj: {
     walletState: WalletState,
-    provider: Provider | null
+    provider: Provider | null,
   };
 }
 

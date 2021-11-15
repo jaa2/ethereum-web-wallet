@@ -26,7 +26,7 @@ function ReplaceTransaction() {
         </div>
         <div className="field no-unit-field">
           <h4 id="to-address-label">To:</h4>
-          <p>Timmy Turner (0x98173ae89374dc83a89909234a)</p>
+          <p>0x98173ae89374dc83a89909234a</p>
         </div>
         <div className="field">
           <h4 id="amount-label">Amount:</h4>

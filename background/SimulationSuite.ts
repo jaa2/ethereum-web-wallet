@@ -1,5 +1,5 @@
 import { Interface } from '@ethersproject/abi';
-import { Provider } from '@ethersproject/abstract-provider';
+import { FeeData, Provider } from '@ethersproject/abstract-provider';
 import { getAddress } from '@ethersproject/address';
 import { Transaction } from '@ethersproject/transactions';
 import { BigNumber } from '@ethersproject/bignumber';
@@ -101,14 +101,14 @@ class SimulationSuite {
   /**
      * Returns true if the transaction's gas price is not too high or too low
      * @param t Transaction to test
+     * @param feeData Time-relevant fee data
      * @returns true if the transaction matches the function description
      */
-  async isGasPriceReasonable(t: Transaction): Promise<Boolean> {
+  static async isGasPriceReasonable(t: Transaction, feeData: FeeData): Promise<Boolean> {
     if (t === null || t === undefined) {
       return false;
     }
 
-    const feeData = await this.provider.getFeeData();
     const { type } = t;
     if (type === null) {
       return false;
@@ -131,10 +131,6 @@ class SimulationSuite {
       const estMaxPFPG = estMaxPriorityFeePerGas.toNumber();
       const maxFPG = maxFeePerGas.toNumber();
       const estMaxFPG = estMaxFeePerGas.toNumber();
-      // console.log("max priority fee per gas: ", maxPFPG);
-      // console.log("est max priority fee per gas: ", estMaxPFPG);
-      // console.log("max fee per gas: ", maxFPG);
-      // console.log("est max fee per gas: ", estMaxFPG);
       if ((maxPFPG >= estMaxPFPG) && (maxPFPG <= estMaxPFPG * 2)
                 && (maxFPG >= estMaxFPG * 1.03) && (maxFPG <= estMaxFPG * 3)) {
         return true;
