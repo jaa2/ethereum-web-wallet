@@ -70,11 +70,11 @@ function ImportSecretPhrase() {
   }
 
   return (
-    <div>
-      <Link id="back-link" className="back-icon link hoverable" to="/WalletSetup">
+    <div className="container">
+      <Link className="back-icon" to="/WalletSetup">
         <FontAwesomeIcon className="fa-icon" icon={faArrowCircleLeft} size="2x" />
       </Link>
-      <div id="import-secret-phrase">
+      <div className="container">
         <FontAwesomeIcon className="fa-icon" icon={faCloudUploadAlt} size="4x" />
         <h1>Import Secret Recovery Phrase</h1>
         <h3>Enter your 12-word secret recovery phrase below.</h3>

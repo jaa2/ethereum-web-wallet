@@ -1,7 +1,7 @@
 import { Link, useLocation } from 'react-router-dom';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faGasPump, faFire } from '@fortawesome/free-solid-svg-icons';
+import { faGasPump, faFire, faCheckCircle } from '@fortawesome/free-solid-svg-icons';
 import { faEthereum } from '@fortawesome/free-brands-svg-icons';
 
 import './SimulationResults.scss';
@@ -13,87 +13,94 @@ function SimulationResults() {
   console.log(txReq);
   return (
     <div id="simulation-results">
-
-      <div id="top-box">
-        <h1>Transaction Details</h1>
-        <h3>0x51092...094ef to Timmy Turner (0x98173...)</h3>
-        <h3><b>Contract interaction: Transfer 1 ETH to Timmy Turner</b></h3>
-        <div id="transaction-details">
-          <div id="gas-fee">
-            <FontAwesomeIcon className="fa-icon" icon={faGasPump} size="2x" />
-            <h5>
-              At Most
-              <h3> 130 Gwei </h3>
-            </h5>
-          </div>
-          <div id="amount">
-            <FontAwesomeIcon className="fa-icon" icon={faEthereum} size="2x" />
-            <h5>
-              ETH sent to &quot;Timmy Turner&quot;
-              <h3> 1 ETH </h3>
-            </h5>
-          </div>
-          <div id="max-tx-fee">
-            <FontAwesomeIcon className="fa-icon" icon={faFire} size="2x" />
-            <h5>
-              Max tx fee   Gas limit: 46,142
-              <h3> 0.00035201 ETH </h3>
-            </h5>
-          </div>
+      <div className="card border-info mb-3">
+        <div className="card-body">
+          <h4 className="card-title">Transaction Details</h4>
+          <p className="card-text">
+            <div id="top-box">
+              <p>0x51092...094ef to James Augsten (0x98173...)</p>
+              <p><b>Contract interaction: Transfer 1 ETH to James Augsten</b></p>
+              <div id="transaction-details">
+                <div id="gas-fee">
+                  <FontAwesomeIcon className="fa-icon" icon={faGasPump} size="2x" />
+                  <p>
+                    At Most
+                    <h3> 130 Gwei </h3>
+                  </p>
+                </div>
+                <div id="amount">
+                  <FontAwesomeIcon className="fa-icon" icon={faEthereum} size="2x" />
+                  <p>
+                    Sent to &quot;James Augsten&quot;
+                    <h3> 1 ETH </h3>
+                  </p>
+                </div>
+                <div id="max-tx-fee">
+                  <FontAwesomeIcon className="fa-icon" icon={faFire} size="2x" />
+                  <p>
+                    Gas limit: 46,142
+                    Max tx fee
+                    <h3> .00035 ETH </h3>
+                  </p>
+                </div>
+              </div>
+            </div>
+          </p>
         </div>
       </div>
 
-      <div id="simulation-text"><h1><b>Simulation Successful!</b></h1></div>
+      <div id="simulation-text"><h1>Simulation Successful!</h1></div>
 
-      <div id="checklist">
-        {/* <div id="item">
-          <FontAwesomeIcon icon={faCheckCircle} />
-          <h4> Known Token</h4>
-        </div>
-        <div id="item">
-          <FontAwesomeIcon icon={faCheckCircle} />
-          <h4> Simulation gas: 40,190 (87.1% of limit)</h4>
-        </div>
-        <div id="item">
-          <FontAwesomeIcon icon={faCheckCircle} />
-          <h4> Simulation tx fee: 0.003580 ETH</h4>
-        </div>
-      </div>
       <div id="checklist">
         <div id="item">
           <FontAwesomeIcon icon={faCheckCircle} />
-          <h4> Sufficient ETH for gas fee</h4>
+          Known Token
         </div>
         <div id="item">
           <FontAwesomeIcon icon={faCheckCircle} />
-          <h4> Token sent to non-contract address</h4>
+          Gas: 40,190 (87.1% of limit)
         </div>
         <div id="item">
           <FontAwesomeIcon icon={faCheckCircle} />
-          <h4> Reasonable gas price</h4>
-        </div> */}
+          Tx fee: 0.003580 ETH
+        </div>
       </div>
-
-      <h1>Token Transfers</h1>
-      <h4>
+      <div id="checklist">
+        <div id="item">
+          <FontAwesomeIcon icon={faCheckCircle} />
+          Sufficient ETH for gas fee
+        </div>
+        <div id="item">
+          <FontAwesomeIcon icon={faCheckCircle} />
+          Token sent to non-contract address
+        </div>
+        <div id="item">
+          <FontAwesomeIcon icon={faCheckCircle} />
+          Reasonable gas price
+        </div>
+      </div>
+      <h1> </h1>
+      <h3>Token Transfers</h3>
+      <p>
         0x51092...094ef to
-        <b>Timmy Turner</b>
+        {' '}
+        <b>James Augsten</b>
         {' '}
         for 1 ETH
         {' '}
-      </h4>
+      </p>
 
       <div id="bottom-buttons">
         <Link to="/Home">
-          <button className="button reject-transaction" type="button">Reject Transaction</button>
+          <button type="button" className="btn btn-primary">Reject Transaction</button>
         </Link>
 
         <Link to="/CreateTransaction">
-          <button className="button edit-transaction" type="button">Edit Transaction</button>
+          <button type="button" className="btn btn-info">Edit Transaction</button>
         </Link>
 
         <Link to="/Home">
-          <button className="button send-transaction" type="button">Send Transaction</button>
+          <button type="button" className="btn btn-success">Send Transaction</button>
         </Link>
       </div>
     </div>

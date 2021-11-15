@@ -1,12 +1,8 @@
 @import '../common/colors';
 
-.fa-icon {
-    color: $icon-color
-}
-
 .container {
     width: 33vw;
-    min-width: 400px;
+    min-width: 600px;
   
     margin: 5px auto;
     padding: 10px;
@@ -39,18 +35,7 @@
         }
 
         .copy {
-            padding: 10px;
-        }
-    }
-
-    .header {
-        display:flex;
-        flex-direction: row;
-        align-items: center;
-        justify-content: center;
-            
-        h1 {
-            padding: 10px;
+            margin: 10px;
         }
     }
 
@@ -59,82 +44,20 @@
         display: flex;
         flex-direction: column;
         text-align: left;
-
-        .field {
-            display: flex;
-            flex-direction: row;
-            justify-content: center;
-
-            padding: 5px;
-
-            h4 {
-                margin-right: 5px;
-            }
-
-            .unit {
-                margin-left: 5px;
-            }
-
-            #eth {
-                padding-right: 25px;
-            }
-        }
-
-        .no-unit-field {
-            margin-right: 5px;
-        }
-
-        h5 {
-            margin: 2px;
-            color: $grey;
-        }
-
-        p {
-            padding-top: 5px; 
-        }
-
-        .currency-conversion {
-            margin-top: 5px;
-
-            input {
-                padding: 10px;
-            }
-        }
-
-        .fa-icon {
-            margin: auto 2px;
-            padding-bottom: 10px;
-        }
     }
 
     .button-container {
-        width: 80%;
         display: flex;
         flex-direction: row;
         justify-content: center;
-        padding: 10px;
+        align-items: center;
 
-        .bottom-button {
-            padding: 8px;
+        button {
             margin: 10px;
-        }
+        }     
 
-        #discard {
-            background-color: $light-red;
-            color: white;
-        }
-
-        #test {
-            background-color: $light-blue;
-        }
-
-        .fa-icon {
-            margin-top: 10px;
-            margin-right: 5px;
-        }
-
-        #help-test {
-            margin-right: 20px;
+        .back-icon {
+            align-self: center;
         }
     }
 }

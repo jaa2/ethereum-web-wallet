@@ -26,22 +26,28 @@ function WalletSetup() {
         <h1>Ethereum Web Wallet</h1>
       </div>
 
-      <h1>Wallet Setup</h1>
+      <h2>Wallet Setup</h2>
 
-      <Link id="wallet-setup-create-wallet" className="link hoverable" to="/CreateNewWallet" onClick={CreateNewWallet}>
-        <FontAwesomeIcon className="fa-icon" icon={faPlus} size="3x" />
-        <h2>Create New Wallet</h2>
+      <Link id="wallet-setup-create-wallet" to="/CreateNewWallet" onClick={CreateNewWallet}>
+        <button type="button" id="wallet-setup-create-wallet-button" className="btn btn-outline-secondary">
+          <FontAwesomeIcon className="fa-icon" icon={faPlus} size="3x" />
+          <p className="text-primary">Create New Wallet</p>
+        </button>
       </Link>
 
       <div id="wallet-setup-other-options">
-        <Link id="wallet-setup-import-phrase" className="link hoverable" to="/ImportSecretPhrase" onClick={ImportSecretPhrase}>
-          <FontAwesomeIcon className="fa-icon" icon={faCloudUploadAlt} size="2x" />
-          <h4>Import Secret Recovery Phrase</h4>
+        <Link id="wallet-setup-import-phrase" to="/ImportSecretPhrase" onClick={ImportSecretPhrase}>
+          <button type="button" id="wallet-setup-import-phrase-button" className="btn btn-outline-secondary">
+            <FontAwesomeIcon className="fa-icon" icon={faCloudUploadAlt} size="2x" />
+            <p className="text-primary">Import Secret Recovery Phrase</p>
+          </button>
         </Link>
 
-        <Link id="wallet-setup-import-key" className="link hoverable" to="/ImportPrivateKey" onClick={ImportPrivateKey}>
-          <FontAwesomeIcon className="fa-icon" icon={faKey} size="2x" />
-          <h4>Import Wallet by Private Key</h4>
+        <Link id="wallet-setup-import-key" to="/ImportPrivateKey" onClick={ImportPrivateKey}>
+          <button type="button" id="wallet-setup-import-key-button" className="btn btn-outline-secondary">
+            <FontAwesomeIcon className="fa-icon" icon={faKey} size="2x" />
+            <p className="text-primary">Import Wallet by Private Key</p>
+          </button>
         </Link>
       </div>
     </div>
