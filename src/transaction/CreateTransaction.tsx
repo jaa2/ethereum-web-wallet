@@ -75,9 +75,6 @@ function CreateTransaction() {
     const amountElem = (document.getElementById('amount-input') as HTMLInputElement);
     const validatedTransaction = await TestTransaction(addressElem, amountElem);
     if (validatedTransaction) {
-      console.log('ran 1');
-      console.log('simulations', validatedTransaction.simulationChecks);
-      console.log('txreq', validatedTransaction.txReq);
       navigate('/SimulationResults', { state: { simulationChecks: validatedTransaction.simulationChecks, txReq: validatedTransaction.txReq } });
     } else {
       throw new Error('Failed to get simulations.');

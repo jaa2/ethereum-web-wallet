@@ -3,7 +3,7 @@
 
 import { expect } from 'chai';
 import { Provider, EtherscanProvider, TransactionRequest } from '@ethersproject/providers';
-import { Transaction } from 'ethers';
+import { BigNumber, Transaction } from 'ethers';
 import { parseEther } from '@ethersproject/units';
 import SimulationSuite from '../src/SimulationSuite';
 
@@ -107,7 +107,11 @@ describe('SimulationResults tests', () => {
     // Transaction's gas price is reasonable
     const t: Transaction = await provider.getTransaction('0x6a44268d33924f4f36223013d17da57ff98325bf246152214c044c055da4cbf5');
     const tReq = TransactionToRequest(t);
-    expect(await sr.isGasPriceReasonable(tReq)).to.be.true;
+    expect(await SimulationSuite.isGasPriceReasonable(tReq, {
+      maxFeePerGas: BigNumber.from(2500000020),
+      maxPriorityFeePerGas: BigNumber.from(2500000000),
+      gasPrice: BigNumber.from(2500000020),
+    })).to.be.true;
     await delay(1000);
 
     // // Transaction's gas price is too high

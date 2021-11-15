@@ -30,7 +30,6 @@ class SimulationSendTransactions {
         / 10 ** 8) * amount;
       return priceInUSD;
     } catch (e) {
-      console.log(e);
       return 0;
     }
   }
@@ -132,13 +131,13 @@ class SimulationSendTransactions {
     let promises;
     if (isEOA) {
       promises = Promise.all([this.simulationSuite.isGasLimitEnough(t),
-        this.simulationSuite.isGasPriceReasonable(t),
+        SimulationSuite.isGasPriceReasonable(t, await this.provider.getFeeData()),
         SimulationSuite.isAddressValid(t),
         SimulationSuite.isTotalMoreThanWallet(t, await wallet.getBalance()),
         this.simulationSuite.isDataSentToEOA(t)]);
     } else {
       promises = Promise.all([this.simulationSuite.isGasLimitEnough(t),
-        this.simulationSuite.isGasPriceReasonable(t),
+        SimulationSuite.isGasPriceReasonable(t, await this.provider.getFeeData()),
         SimulationSuite.isAddressValid(t),
         SimulationSuite.isTotalMoreThanWallet(t, await wallet.getBalance()),
         this.simulationSuite.isTokenTransferToContract(t)]);

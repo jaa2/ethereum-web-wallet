@@ -1,5 +1,5 @@
 import { Interface } from '@ethersproject/abi';
-import { Provider, TransactionRequest } from '@ethersproject/abstract-provider';
+import { FeeData, Provider, TransactionRequest } from '@ethersproject/abstract-provider';
 import { getAddress } from '@ethersproject/address';
 import { BigNumber } from '@ethersproject/bignumber';
 import ERC20ABI from './erc20abi.json';
@@ -109,12 +109,12 @@ class SimulationSuite {
      * @param t Transaction to test
      * @returns true if the transaction matches the function description
      */
-  async isGasPriceReasonable(t: TransactionRequest | null): Promise<Boolean> {
+  static async isGasPriceReasonable(t: TransactionRequest | null, feeData: FeeData):
+  Promise<Boolean> {
     if (t === null) {
       return false;
     }
 
-    const feeData = await this.provider.getFeeData();
     const { type } = t;
     if (type === null) {
       return false;
@@ -137,10 +137,6 @@ class SimulationSuite {
       const estMaxPFPG = estMaxPriorityFeePerGas.toNumber();
       const maxFPG = maxFeePerGas.toNumber();
       const estMaxFPG = estMaxFeePerGas.toNumber();
-      // console.log('max priority fee per gas: ', maxPFPG);
-      // console.log('est max priority fee per gas: ', estMaxPFPG);
-      // console.log('max fee per gas: ', maxFPG);
-      // console.log('est max fee per gas: ', estMaxFPG);
       if ((maxPFPG >= estMaxPFPG) && (maxPFPG <= estMaxPFPG * 2)
                 && (maxFPG >= estMaxFPG * 1.1) && (maxFPG <= estMaxFPG * 3)) {
         return true;

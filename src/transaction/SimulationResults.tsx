@@ -7,7 +7,6 @@ import { faEthereum } from '@fortawesome/free-brands-svg-icons';
 import './SimulationResults.scss';
 
 function SimulationResults() {
-  console.log('ran 2');
   const { simulationChecks } = useLocation().state;
   const { txReq } = useLocation().state;
   console.log(simulationChecks);
