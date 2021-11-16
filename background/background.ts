@@ -25,4 +25,4 @@ window.stateObj.walletState.loadEncrypted()
     const myConsole: Console = console;
     myConsole.warn(`[Background] Could not load encrypted: ${reason}`);
   });
-window.stateObj.provider = new EtherscanProvider('ropsten');
+window.stateObj.provider = new EtherscanProvider('ropsten', 'AZ8GS7UXX1A8MZX9ZH2Q1K3H9DPZXB2F68');
