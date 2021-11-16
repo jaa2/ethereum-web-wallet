@@ -39,7 +39,7 @@ function CreateNewWallet() {
   if (phraseMatchState === 'match') {
     phraseMatchElements = (
       <div id="create-phrase-match-elements">
-        <p id="create-phrase-info-match" className="phrase-info">Success. Your phrases match!</p>
+        <p id="create-phrase-info-match" className="phrase-info text-success">Success. Your phrases match!</p>
         <Link id="create-phrase-continue-link" className="link hoverable" to="/Home" onClick={NewWalletCreated}>
           <button type="button" className="btn btn-success">Continue</button>
         </Link>
@@ -48,7 +48,7 @@ function CreateNewWallet() {
   } else if (phraseMatchState === 'mismatch') {
     phraseMatchElements = (
       <div id="create-phrase-match-elements">
-        <p id="create-phrase-info-mismatch" className="phrase-info">Uh oh. Your phrases don&apos;t match!</p>
+        <p id="create-phrase-info-mismatch" className="phrase-info text-danger">Uh oh. Your phrases don&apos;t match!</p>
       </div>
     );
   } else {
@@ -91,16 +91,14 @@ function CreateNewWallet() {
           </p>
         </div>
         <div className="form-group">
-          <label htmlFor="create-phrase-phrase-input" className="form-label mt-4">
-            Secret Recovery Phrase
+          <label htmlFor="create-phrase-phrase-input" className="form-label mt-4">Secret Recovery Phrase</label>
+          <div className="input-group mb-3">
             <input className="form-control" id="create-phrase-phrase-input" type="phrase" name="phrase" onChange={handlePhrase} />
-          </label>
-        </div>
-        <div className="form-group">
-          <label htmlFor="create-phrase-confirm-phrase-input" className="form-label mt-4">
-            Confirm Secret Recovery Phrase
+          </div>
+          <label htmlFor="create-phrase-confirm-phrase-input" className="form-label mt-4">Confirm Secret Recovery Phrase</label>
+          <div className="input-group mb-3">
             <input className="form-control" id="create-phrase-confirm-phrase-input" type="phrase" name="confirm phrase" onChange={handleConfirmPhrase} />
-          </label>
+          </div>
         </div>
         {phraseMatchElements}
       </div>
