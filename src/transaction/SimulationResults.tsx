@@ -25,7 +25,7 @@ const App = () => {
         <Modal.Header>
           <div id="max-tx-fee">
             <h3>
-              <FontAwesomeIcon className="fa-icon" icon={faFire} size="2x" color="#085394" />
+              <FontAwesomeIcon className="fa-icon" icon={faFire} size="2x" color="#489aca" />
               {' '}
               Adjust Gas
             </h3>
