@@ -12,6 +12,7 @@ import { BigNumber, Wallet } from 'ethers';
 import { BackgroundWindowInterface } from 'background/background';
 import browser from 'webextension-polyfill';
 import SimulationSendTransactions from '../SimulationSendTransactions';
+import SimulationSuite from '../SimulationSuite';
 
 /**
  * Ensures that the inputs of address and amount are valid before sending
@@ -25,9 +26,9 @@ async function TestTransaction(addressElem: HTMLInputElement, amountElem: HTMLIn
   const addressInput = addressElem.value;
   const amountInput = amountElem.value;
 
-  const addressRegex = /0x[0-9a-f]{1,42}/;
-  const amountRegex = /([1-9]\d*|0)(\.\d{1,8})?/;
-  const isAddressValid = addressRegex.test(addressInput);
+  const addressRegex = /^0x[0-9a-fA-F]{1,42}$/;
+  const amountRegex = /^([1-9]\d*|0)((\.\d{1,8})?)$/;
+  let isAddressValid = addressRegex.test(addressInput);
   const isAmountValid = amountRegex.test(amountInput);
   if (isAddressValid && isAmountValid) {
     const window: BackgroundWindowInterface = await browser.runtime.getBackgroundPage();
@@ -47,22 +48,24 @@ async function TestTransaction(addressElem: HTMLInputElement, amountElem: HTMLIn
         data: '0x',
       };
 
-      // Execute simulations and go to simulations page
-      const simulationChecks = await transactionController.simulateTransaction(txReq, wallet);
+      if (!(await SimulationSuite.isAddressValid(txReq))) {
+        isAddressValid = false;
+      } else {
+        // Execute simulations and go to simulations page
+        const simulationChecks = await transactionController.simulateTransaction(txReq, wallet);
 
-      // TODO: populate simulation results page with the simulations checks
-      return { simulationChecks, txReq };
+        // TODO: populate simulation results page with the simulations checks
+        return { simulationChecks, txReq };
+      }
     }
   }
 
   if (!isAddressValid) {
-    addressElem.style.borderColor = 'red';
-    return null;
+    addressElem.style.border = '5px solid #ff0000';
   }
 
   if (!isAmountValid) {
-    amountElem.style.borderColor = 'red';
-    return null;
+    amountElem.style.border = '5px solid #ff0000';
   }
 
   return null;
@@ -71,8 +74,8 @@ async function TestTransaction(addressElem: HTMLInputElement, amountElem: HTMLIn
 function CreateTransaction() {
   const navigate: NavigateFunction = useNavigate();
   const onTestTransaction = async () => {
-    const addressElem = (document.getElementById('to-address-input') as HTMLInputElement);
-    const amountElem = (document.getElementById('amount-input') as HTMLInputElement);
+    const addressElem = (document.getElementById('toAddress') as HTMLInputElement);
+    const amountElem = (document.getElementById('amount') as HTMLInputElement);
     const validatedTransaction = await TestTransaction(addressElem, amountElem);
     if (validatedTransaction) {
       navigate('/SimulationResults', { state: { simulationChecks: validatedTransaction.simulationChecks, txReq: validatedTransaction.txReq } });
@@ -102,7 +105,7 @@ function CreateTransaction() {
         </div>
         <div className="form-group">
           <label className="col-form-label mt-4" htmlFor="toAddress">To:</label>
-          <input type="text" className="form-control" placeholder="James Austgen (0x98173ae89374dc83a89909234a)" id="toAddress" />
+          <input type="text" className="form-control" placeholder="0x98173ae89374dc83a89909234a" id="toAddress" />
         </div>
         <div className="form-group">
           <label htmlFor="amount" className="form-label mt-4">Amount</label>
@@ -111,6 +114,11 @@ function CreateTransaction() {
               <input type="text" className="form-control" id="amount" aria-label="Amount" />
               <span className="input-group-text">ETH</span>
             </div>
+          </div>
+        </div>
+        <div className="field">
+          <div className="currency-conversion">
+            <h5 id="amount-in-usd">USD</h5>
           </div>
         </div>
       </div>

@@ -71,9 +71,13 @@ class SimulationSuite {
       return false;
     }
 
-    const code = await this.provider.getCode(t.to as string);
-    if ((t.data !== undefined || t.data !== null) && t.data !== '0x' && code === '0x') {
-      return true;
+    try {
+      const code = await this.provider.getCode(t.to as string);
+      if ((t.data !== undefined || t.data !== null) && t.data !== '0x' && code === '0x') {
+        return true;
+      }
+    } catch {
+      return false;
     }
 
     return false;
@@ -120,42 +124,42 @@ class SimulationSuite {
       return false;
     }
 
-    if (type === 2) {
-      const maxPriorityFeePerGas = t.maxPriorityFeePerGas as BigNumber;
-      const maxFeePerGas = t.maxFeePerGas as BigNumber;
-      if (maxFeePerGas === undefined || maxPriorityFeePerGas === undefined) {
+    try {
+      if (type === 2) {
+        const maxPriorityFeePerGas = t.maxPriorityFeePerGas as BigNumber;
+        const maxFeePerGas = t.maxFeePerGas as BigNumber;
+        if (maxFeePerGas === undefined || maxPriorityFeePerGas === undefined) {
+          return false;
+        }
+        const estMaxPriorityFeePerGas = feeData.maxPriorityFeePerGas;
+        const estMaxFeePerGas = feeData.maxFeePerGas;
+        if (estMaxPriorityFeePerGas === null || estMaxFeePerGas === null) {
+          return false;
+        }
+        const maxPFPG = maxPriorityFeePerGas.toNumber();
+        const estMaxPFPG = estMaxPriorityFeePerGas.toNumber();
+        const maxFPG = maxFeePerGas.toNumber();
+        const estMaxFPG = estMaxFeePerGas.toNumber();
+        if ((maxPFPG >= estMaxPFPG) && (maxPFPG <= estMaxPFPG * 2)
+                  && (maxFPG >= estMaxFPG * 1.1) && (maxFPG <= estMaxFPG * 3)) {
+          return true;
+        }
         return false;
       }
-
-      const estMaxPriorityFeePerGas = feeData.maxPriorityFeePerGas;
-      const estMaxFeePerGas = feeData.maxFeePerGas;
-      if (estMaxPriorityFeePerGas === null || estMaxFeePerGas === null) {
+      const tGasPrice = t.gasPrice as BigNumber;
+      const estGasPrice = feeData.gasPrice;
+      if (tGasPrice === undefined || estGasPrice === null) {
         return false;
       }
-
-      const maxPFPG = maxPriorityFeePerGas.toNumber();
-      const estMaxPFPG = estMaxPriorityFeePerGas.toNumber();
-      const maxFPG = maxFeePerGas.toNumber();
-      const estMaxFPG = estMaxFeePerGas.toNumber();
-      if ((maxPFPG >= estMaxPFPG) && (maxPFPG <= estMaxPFPG * 2)
-                && (maxFPG >= estMaxFPG * 1.1) && (maxFPG <= estMaxFPG * 3)) {
-        return true;
+      const estGasPrice50 = estGasPrice.toNumber() * 0.5;
+      if (estGasPrice.toNumber() - estGasPrice50 >= tGasPrice.toNumber()
+          || estGasPrice.toNumber() + estGasPrice50 <= tGasPrice.toNumber()) {
+        return false;
       }
+      return true;
+    } catch {
       return false;
     }
-    const tGasPrice = t.gasPrice as BigNumber;
-    const estGasPrice = feeData.gasPrice;
-    if (tGasPrice === undefined || estGasPrice === null) {
-      return false;
-    }
-
-    const estGasPrice50 = estGasPrice.toNumber() * 0.5;
-
-    if (estGasPrice.toNumber() - estGasPrice50 >= tGasPrice.toNumber()
-        || estGasPrice.toNumber() + estGasPrice50 <= tGasPrice.toNumber()) {
-      return false;
-    }
-    return true;
   }
 
   // NOTE: All networks have different address spaces but of the same capacity
@@ -202,30 +206,34 @@ class SimulationSuite {
       return true;
     }
 
-    let tGasPrice = t.gasPrice as BigNumber;
-    const tGasLimit = t.gasLimit;
-    if (tGasLimit === null || tGasLimit === undefined) {
-      return false;
-    }
-
-    const tMaxFeePerGas = t.maxFeePerGas as BigNumber;
-    const tMaxPriorityFeePerGas = t.maxPriorityFeePerGas as BigNumber;
-    if (tGasPrice === null || tGasPrice === undefined) {
-      if (tMaxFeePerGas !== undefined && tMaxPriorityFeePerGas !== undefined) {
-        tGasPrice = (tMaxFeePerGas.add(tMaxPriorityFeePerGas));
-      } else {
+    try {
+      let tGasPrice = t.gasPrice as BigNumber;
+      const tGasLimit = t.gasLimit;
+      if (tGasLimit === null || tGasLimit === undefined) {
         return false;
       }
-    }
 
-    const tGasTotalFees = tGasPrice.mul(tGasLimit);
+      const tMaxFeePerGas = t.maxFeePerGas as BigNumber;
+      const tMaxPriorityFeePerGas = t.maxPriorityFeePerGas as BigNumber;
+      if (tGasPrice === null || tGasPrice === undefined) {
+        if (tMaxFeePerGas !== undefined && tMaxPriorityFeePerGas !== undefined) {
+          tGasPrice = (tMaxFeePerGas.add(tMaxPriorityFeePerGas));
+        } else {
+          return false;
+        }
+      }
 
-    const amount = t.value as BigNumber;
-    if (amount.add(tGasTotalFees).gt(balance)) {
+      const tGasTotalFees = tGasPrice.mul(tGasLimit);
+
+      const amount = t.value as BigNumber;
+      if (amount.add(tGasTotalFees).gt(balance)) {
+        return true;
+      }
+
+      return false;
+    } catch {
       return true;
     }
-
-    return false;
   }
 
   /**
