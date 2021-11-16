@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faUserSecret } from '@fortawesome/free-solid-svg-icons';
+import { faKey } from '@fortawesome/free-solid-svg-icons';
 
 import './ImportPrivateKey.scss';
 
@@ -26,9 +26,14 @@ function ImportPrivateKey() {
   if (privateKeyMatchState === 'match') {
     privateKeyMatchElements = (
       <div id="correct-private-key">
-        <p id="correct-private-key-info" className="private-key-info">Successful Login!</p>
+        {/* <p id="correct-private-key-info" className="private-key-info">Successful Login!</p> */}
+        {/* <div className="form-group">
+          <textarea className="form-control is-valid" id="secret-phrase" rows={1} />
+          <div className="valid-feedback">Success. This is a valid wallet account!</div>
+        </div> */}
         <Link id="correct-private-key-continue-link" className="link hoverable" to="/Home" onClick={CorrectPrivateKey}>
-          <h4>Continue</h4>
+          {/* <h4>Continue</h4> */}
+          <button type="button" className="btn btn-success">Continue</button>
         </Link>
       </div>
     );
@@ -42,22 +47,23 @@ function ImportPrivateKey() {
 
   return (
     <div id="import-private-key">
-      <FontAwesomeIcon className="fa-icon" icon={faUserSecret} size="4x" />
+      <FontAwesomeIcon className="fa-icon" icon={faKey} size="4x" />
 
       <h1>Import Private Key</h1>
 
-      <h4>Enter your private key below</h4>
+      <p>Enter your private key below</p>
       <div id="enter-private-key-entry" className="field-entry">
         {/* <input id="private-key-input" type="text" name="privateKey"
               onChange={handlePrivateKey} /> */}
-        <input id="private-key-input" type="text" name="privateKey" />
+        {/* <input id="private-key-input" type="text" name="privateKey" /> */}
+        <input type="text" id="private-key-input" className="form-control" placeholder="Enter Private Key" />
       </div>
 
       {privateKeyMatchElements}
 
-      <Link to="/CreatePassword">
+      {/* <Link to="/CreatePassword">
         <button className="continue-button" type="button">Continue</button>
-      </Link>
+      </Link> */}
 
     </div>
 
