@@ -65,7 +65,7 @@ function SimulationResults() {
     <div id="simulation-results">
       <div className="card border-info mb-3">
         <div className="card-body">
-          <h4 className="card-title">Transaction Details</h4>
+          <h3 className="card-title">Transaction Details</h3>
           <p className="card-text">
             <div id="top-box">
               <p>0x51092...094ef to James Augsten (0x98173...)</p>
