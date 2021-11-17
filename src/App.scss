@@ -1,13 +1,21 @@
-#debug-bar {
-  width: 50vw;
-  min-width: 400px;
+@import './common/colors';
 
-  margin: 10px auto;
+.App {
+  .fa-icon {
+    color: $icon-color
+  }
 
-  display: flex;
-  justify-content: space-around;
-
-  .debug-control {
-    margin: 10px;
+  #debug-bar {
+    width: 100%;
+    min-width: 400px;
+  
+    margin: 10px auto;
+  
+    display: flex;
+    justify-content: space-around;
+  
+    .debug-control {
+      margin: 10px;
+    }
   }
 }

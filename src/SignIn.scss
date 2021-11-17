@@ -1,0 +1,17 @@
+@import 'common/colors';
+
+#sign-in {
+  width: 33vw;
+  min-width: 500px;
+
+  margin: auto;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+  align-items: center;
+
+  .fa-icon {
+    color: $icon-color;
+  }
+}

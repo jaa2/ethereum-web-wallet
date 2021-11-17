@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPlus } from '@fortawesome/free-solid-svg-icons';
+import { faPlus, faArrowCircleLeft } from '@fortawesome/free-solid-svg-icons';
 import browser from 'webextension-polyfill';
 import { Wallet } from 'ethers';
 
@@ -63,16 +63,16 @@ function CreateNewWallet() {
   if (phraseMatchState === 'match') {
     phraseMatchElements = (
       <div id="create-phrase-match-elements">
-        <p id="create-phrase-info-match" className="phrase-info">Success. Your phrases match!</p>
+        <p id="create-phrase-info-match" className="phrase-info text-success">Success. Your phrases match!</p>
         <Link id="create-phrase-continue-link" className="link hoverable" to="/CreatePassword" onClick={NewWalletCreated}>
-          <h4>Continue</h4>
+          <button type="button" className="btn btn-success">Continue</button>
         </Link>
       </div>
     );
   } else if (phraseMatchState === 'mismatch') {
     phraseMatchElements = (
       <div id="create-phrase-match-elements">
-        <p id="create-phrase-info-mismatch" className="phrase-info">Uh oh. Your phrases don&apos;t match!</p>
+        <p id="create-phrase-info-mismatch" className="phrase-info text-danger">Uh oh. Your phrases don&apos;t match!</p>
       </div>
     );
   } else {
@@ -85,13 +85,13 @@ function CreateNewWallet() {
 
   return (
     <div id="create-new-wallet">
-      <Link id="back-button" to="/WalletSetup">
-        <button className="button" type="button">Back</button>
+      <Link id="back-link" className="back-icon link hoverable" to="/WalletSetup">
+        <FontAwesomeIcon className="fa-icon" icon={faArrowCircleLeft} size="2x" />
       </Link>
       <div className="align-center">
         <FontAwesomeIcon className="fa-icon" icon={faPlus} size="4x" />
         <h1>Create New Wallet</h1>
-        <div className="border-red">
+        <div className="alert alert-dismissible alert-danger">
           <p>
             Your
             <b> secret recovery phrase</b>
@@ -101,7 +101,8 @@ function CreateNewWallet() {
             {' '}
           </p>
           <p>
-            BEWARE! Anyone who has access to your secret recovery phrase has
+            <strong>BEWARE! </strong>
+            Anyone who has access to your secret recovery phrase has
             {' '}
             <b>
               access to
@@ -113,11 +114,13 @@ function CreateNewWallet() {
             and do not enter it into any website.
           </p>
         </div>
-        <div id="create-phrase-entry" className="field-entry">
-          <h5 id="create-phrase-phrase-label">Phrase</h5>
+        <div className="form-group">
+          <h5 id="create-phrase-phrase-label">Secret Recovery Phrase</h5>
           <p id="create-phrase-phrase-input">{phrase}</p>
-          <h5 id="create-phrase-confirm-phrase-label">Repeat your secret recovery phrase below to confirm it is written down correctly:</h5>
-          <input id="create-phrase-confirm-phrase-input" type="phrase" name="confirm phrase" onChange={handleConfirmPhrase} />
+          <label htmlFor="create-phrase-confirm-phrase-input" className="form-label mt-4">Confirm Secret Recovery Phrase</label>
+          <div className="input-group mb-3">
+            <input className="form-control" id="create-phrase-confirm-phrase-input" type="phrase" name="confirm phrase" onChange={handleConfirmPhrase} />
+          </div>
         </div>
         {phraseMatchElements}
       </div>

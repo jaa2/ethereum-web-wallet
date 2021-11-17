@@ -65,8 +65,8 @@ function CreatePassword() {
   if (passwordMatchState === 'match') {
     passwordMatchElements = (
       <div id="create-password-match-elements">
-        <p id="create-password-info-match" className="password-info">Success. Your passwords match!</p>
-        <button type="button" id="create-password-continue-link" className="link hoverable" onClick={handlePasswordCompleted}>
+        <p id="create-password-info-match" className="password-info text-success">Success. Your passwords match!</p>
+        <button type="button" id="create-password-continue-link" className="btn btn-outline-primary" onClick={handlePasswordCompleted}>
           Continue
         </button>
       </div>
@@ -74,13 +74,13 @@ function CreatePassword() {
   } else if (passwordMatchState === 'mismatch') {
     passwordMatchElements = (
       <div id="create-password-match-elements">
-        <p id="create-password-info-mismatch" className="password-info">Uh oh. Your passwords don&apos;t match!</p>
+        <p id="create-password-info-mismatch" className="password-info text-danger">Uh oh. Your passwords don&apos;t match!</p>
       </div>
     );
   } else {
     passwordMatchElements = (
       <div id="create-password-match-elements">
-        <p id="create-password-info-empty" className="password-info" />
+        <p id="create-password-info-warning" className="form-text text-warning">Make sure to not share this password with anyone else!</p>
       </div>
     );
   }
@@ -99,15 +99,18 @@ function CreatePassword() {
       <FontAwesomeIcon className="fa-icon" icon={faUnlock} size="4x" />
       <h1>Create a Password</h1>
       <h3>
-        To make your wallet easy to access, create a strong password at least 8 characters
+        To access your wallet, create a strong password that is at least 8 characters
         long.
       </h3>
-      <div id="create-password-entry" className="field-entry">
-        <h5 id="create-password-password-label">Password</h5>
-        <input id="create-password-password-input" type="password" name="password" onChange={handlePassword} />
-        <h5 id="create-password-confirm-password-label">Confirm Password</h5>
-        <input id="create-password-confirm-password-input" type="password" name="confirm password" onChange={handleConfirmPassword} />
+      <div id="create-password-password-entry" className="form-group mb-3">
+        <label className="form-label" htmlFor="sign-in-password-input">Password</label>
+        <input type="password" id="create-password-password-input" className="form-control" onChange={handlePassword} placeholder="Password" />
       </div>
+      <div id="create-password-confirm-password-entry" className="form-group mb-3">
+        <label className="form-label" htmlFor="sign-in-confirm-password-input">Confirm Password</label>
+        <input type="password" id="create-password-confirm-password-input" className="form-control" onChange={handleConfirmPassword} placeholder="Confirm Password" />
+      </div>
+
       {passwordMatchElements}
     </div>
   );
