@@ -1,28 +1,132 @@
-import { Link, useLocation } from 'react-router-dom';
+/* eslint-disable react/destructuring-assignment */
+/* eslint-disable react/prop-types */
+import {
+  Link, NavigateFunction, useLocation, useNavigate,
+} from 'react-router-dom';
 import React from 'react';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faFire, faCheckCircle, faEdit } from '@fortawesome/free-solid-svg-icons';
+// import {
+//   faFire, faCheckCircle, faEdit, faTimesCircle,
+// } from '@fortawesome/free-solid-svg-icons';
+import {
+  faFire, faEdit, faCheckCircle,
+} from '@fortawesome/free-solid-svg-icons';
 import { faEthereum } from '@fortawesome/free-brands-svg-icons';
 import Modal from 'react-bootstrap/Modal';
 
 import './SimulationResults.scss';
+import {
+  BigNumber, ethers, Wallet,
+} from 'ethers';
+import { BackgroundWindowInterface } from 'background/background';
+import { Provider, TransactionRequest } from '@ethersproject/abstract-provider';
+import browser from 'webextension-polyfill';
+import { TransactionResponse } from '@ethersproject/providers';
+import SimulationSendTransactions from '../SimulationSendTransactions';
 
-const App = () => {
+/**
+ * Get the object that can simulate and send a transaction
+ * @returns the object to simulate and send transactions
+ */
+async function getTransactionController() {
+  const window: BackgroundWindowInterface = await browser.runtime.getBackgroundPage();
+  const state = window.stateObj;
+  const provider = state.provider as Provider;
+  const transactionController: SimulationSendTransactions = new
+  SimulationSendTransactions(provider);
+
+  return transactionController;
+}
+
+/**
+ * Grabs the user's wallet
+ * @returns the wallet object from wallet state
+ */
+async function grabWallet() {
+  const window: BackgroundWindowInterface = await browser.runtime.getBackgroundPage();
+  const state = window.stateObj;
+  const wallet = await state.walletState.getWallet() as Wallet;
+  return wallet;
+}
+
+/**
+ * Grabs the wallet's provider
+ * @returns the provider from wallet state
+ */
+// async function getProvider() {
+//   const window: BackgroundWindowInterface = await browser.runtime.getBackgroundPage();
+//   const state = window.stateObj;
+//   const provider = state.provider as Provider;
+//   return provider;
+// }
+
+/**
+ * Returns true by checking if all simulation checks passed
+ * @param simulationChecks simulation checks with simulation check as key and boolean as value
+ * @returns true if simulationChecks match the function description
+ */
+function areAllSimulationsPassed(simulationChecks:Map<string, Boolean>):Boolean {
+  let ret = true;
+  simulationChecks.forEach((value: Boolean) => {
+    if (!value) {
+      ret = false;
+    }
+  });
+
+  return ret;
+}
+
+const App = (props:
+{ t:
+{
+  gasLimit: any;
+  maxFeePerGas: ethers.BigNumberish;
+  maxPriorityFeePerGas: ethers.BigNumberish;
+};
+onClose:
+(arg0:
+{
+  simulationChecks: Map<string, Boolean>; t: ethers.providers.TransactionRequest;
+})
+=>
+void; }) => {
   const [isOpen, setIsOpen] = React.useState(false);
 
   const showModal = () => {
     setIsOpen(true);
   };
 
-  const hideModal = () => {
-    setIsOpen(false);
+  const hideModal = async (hasEditedGas: Boolean) => {
+    if (hasEditedGas) {
+      // reassign parameters related to gas for transaction
+      const tRequest = props.t;
+      tRequest.gasLimit = BigNumber.from((document.getElementById('gasLimit') as HTMLInputElement).value);
+      tRequest.maxFeePerGas = ethers.utils.parseUnits((document.getElementById('mfpg') as HTMLInputElement).value, 'gwei');
+      tRequest.maxPriorityFeePerGas = ethers.utils.parseUnits((document.getElementById('mpfpg') as HTMLInputElement).value, 'gwei');
+
+      const transactionController = await getTransactionController();
+      const wallet = await grabWallet();
+      const checksAndTx = await transactionController.simulateTransaction(tRequest, wallet);
+      const passedAllSimulations = areAllSimulationsPassed(checksAndTx.simulationChecks);
+      if (passedAllSimulations) {
+        props.onClose(checksAndTx);
+        // TODO: Fix - have to have modal pass data back to the simulation results component
+        // Updating page from resimulations
+        setIsOpen(false);
+      } else {
+        // TODO: Need banner, notification, or snackbar indicating failed simulation checks
+        setIsOpen(true);
+      }
+    } else {
+      setIsOpen(false);
+    }
   };
 
   return (
     <>
       <FontAwesomeIcon className="fa-icon" icon={faEdit} onClick={showModal} cursor="pointer" />
-      <Modal show={isOpen} onHide={hideModal}>
+      <Modal show={isOpen} onHide={() => hideModal(false)}>
         <Modal.Header>
           <div id="max-tx-fee">
             <h3>
@@ -37,35 +141,144 @@ const App = () => {
             <div className="form-group">
               <label className="form-label mt-4" htmlFor="gas-limit"> Gas Limit</label>
               <div className="input-group mb-3">
-                <input type="text" className="form-control" />
+                <input id="gasLimit" type="text" className="form-control" placeholder={BigNumber.from(props.t.gasLimit).toString()} />
               </div>
               <label className="form-label mt-4" htmlFor="gas-limit"> Max fee per gas</label>
               <div className="input-group mb-3">
-                <input type="text" className="form-control" aria-label="Amount (to the nearest dollar)" />
+                <input
+                  id="mfpg"
+                  type="text"
+                  className="form-control"
+                  aria-label="Amount (to the nearest dollar)"
+                  placeholder={ethers.utils.formatUnits(props.t.maxFeePerGas, 'gwei')}
+                />
                 <span className="input-group-text">Gwei</span>
               </div>
               <label className="form-label mt-4" htmlFor="gas-limit"> Max priority fee per gas</label>
               <div className="input-group mb-3">
-                <input type="text" className="form-control" aria-label="Amount (to the nearest dollar)" />
+                <input
+                  id="mpfpg"
+                  type="text"
+                  className="form-control"
+                  aria-label="Amount (to the nearest dollar)"
+                  placeholder={ethers.utils.formatUnits(props.t.maxPriorityFeePerGas, 'gwei')}
+                />
                 <span className="input-group-text">Gwei</span>
               </div>
             </div>
           </div>
         </Modal.Body>
         <Modal.Footer>
-          <button type="button" className="btn btn-secondary" onClick={hideModal}>Cancel</button>
-          <button type="button" className="btn btn-primary" onClick={hideModal}>Save</button>
+          <button type="button" className="btn btn-secondary" onClick={() => hideModal(false)}>Cancel</button>
+          <button type="button" className="btn btn-primary" onClick={() => hideModal(true)}>Save</button>
         </Modal.Footer>
       </Modal>
     </>
   );
 };
 
+/**
+ * Creates HTML elements for all simulation checks
+ * @param simulationChecks simulation checks with simulation check as key and boolean as value
+ */
+// function createSimulationElements(simulationChecks:Map<string, Boolean>) {
+//   // eslint-disable-next-line @typescript-eslint/no-use-before-define
+//   let counter = 0;
+//   const table = document.getElementById('simulation-table');
+//   console.log(table);
+//   let tr = document.createElement('tr');
+//   tr.className = 'table-secondary';
+//   simulationChecks.forEach((value: Boolean, key: string) => {
+//     if (counter % 3 === 0 && counter !== 0) {
+//       table?.appendChild(tr);
+//       tr = document.createElement('tr');
+//       tr.className = 'table-secondary';
+//     }
+
+//     let td = null;
+//     if (!value) {
+//       td = document.createElement('td');
+//       // td.align = 'left';
+//       const span = document.createElement('span');
+//       span.textContent = '&#10003;';
+//       td.appendChild(span);
+//       td.textContent = key;
+//     } else {
+//       td = document.createElement('td');
+//       // td.align = 'left';
+//       const span = document.createElement('span');
+//       span.textContent = '&#33;';
+//       td.appendChild(span);
+//       td.textContent = key;
+//     }
+
+//     counter += 1;
+//     tr.appendChild(td);
+//   });
+
+//   table?.appendChild(tr);
+// }
+
 function SimulationResults() {
+  const navigate: NavigateFunction = useNavigate();
+  const onSendTransaction = async (txReq: TransactionRequest) => {
+    const wallet = await grabWallet();
+    try {
+      // Doesn't the await force the user to stay on the simulations page?
+      // Also, may just want to stash this as part of the global state
+      // along with the transaction request object
+      const tResp: TransactionResponse = await wallet.sendTransaction(txReq);
+      // Should not be navigating to home like this and passing the state of the
+      // response like this because if the same method of grabbing the state
+      // is done, then I would need some sort of global state boolean
+      // that recognizes when a transaction has been sent in order to
+      // properly update the home page
+      navigate('/Home', { state: { tResp } });
+    } catch (e) {
+      // TODO: Probably want this as a little banner, notification, or snackbar
+      throw new Error(String(e));
+    }
+  };
+
   const { simulationChecks } = useLocation().state;
   const { txReq } = useLocation().state;
-  console.log(simulationChecks);
-  console.log(txReq);
+  const { contractOrEOA } = useLocation().state;
+
+  // Labels/Variables to populate info on page
+
+  let source = txReq.from;
+  source = source.substring(0, 7).concat('...'.concat(source.substring(source.length - 3, source.length)));
+  let dest = txReq.to;
+  dest = dest.substring(0, 7).concat('...'.concat(dest.substring(dest.length - 3, dest.length)));
+
+  const sourceToDest = source.concat(' to '.concat(dest));
+  let transferLabel: string;
+  if (contractOrEOA === '0x') {
+    transferLabel = 'Basic Transfer';
+  } else {
+    transferLabel = 'Contract Interaction';
+  }
+
+  const tAmount = ethers.utils.formatEther(txReq.value).concat(' ETH');
+  let gasLimit = 'Gas Limit: '.concat((BigNumber.from(txReq.gasLimit)).toString().concat('; Max Gas Fee'));
+  let totalGasFee = SimulationSendTransactions.totalGasFeeInETH(txReq)?.concat(' ETH');
+  let totalTransactionFee = SimulationSendTransactions.totalTransactionFeeInETH(txReq)?.concat(' ETH');
+
+  let simulationStatus = 'Simulation Successful!';
+  if (!areAllSimulationsPassed(simulationChecks)) {
+    simulationStatus = 'Simulation Failed!';
+  }
+
+  function handleClose(checksAndTx:any) {
+    const { t } = checksAndTx;
+    // TODO: update simulation checks
+
+    // update gas limit, max fee per gas, max priority fee per gas
+    gasLimit = 'Gas Limit: '.concat((BigNumber.from(t.gasLimit)).toString().concat('; Max Gas Fee'));
+    totalGasFee = SimulationSendTransactions.totalGasFeeInETH(t)?.concat(' ETH');
+    totalTransactionFee = SimulationSendTransactions.totalTransactionFeeInETH(t)?.concat(' ETH');
+  }
+
   return (
     <div id="simulation-results">
       <div className="card border-info mb-3">
@@ -73,24 +286,48 @@ function SimulationResults() {
           <h3 className="card-title">Transaction Details</h3>
           <p className="card-text">
             <div id="top-box">
-              <p>0x51092...094ef to James Augsten (0x98173...)</p>
-              <p><b>Contract interaction: Transfer 1 ETH to James Augsten</b></p>
+              <p>{sourceToDest}</p>
+              <p><b>{transferLabel}</b></p>
+              {/* <p><b>Contract Interaction</b></p> */}
               <div id="transaction-details">
                 <div id="amount">
                   <FontAwesomeIcon className="fa-icon" icon={faEthereum} size="2x" />
                   <p>
-                    Sent to &quot;James Augsten&quot;
-                    <h3> 1 ETH </h3>
+                    Sent to &quot;
+                    {dest}
+                    &quot;
+                    <h3>
+                      {' '}
+                      {tAmount}
+                      {' '}
+                    </h3>
                   </p>
                 </div>
                 <div id="max-tx-fee">
                   <FontAwesomeIcon className="fa-icon" icon={faFire} size="2x" />
                   <p>
-                    Gas limit: 46,142
-                    Max tx fee
-                    <h3> .00035 ETH </h3>
+                    {gasLimit}
+                    <h3>
+                      {' '}
+                      {totalGasFee}
+                      {' '}
+                    </h3>
                   </p>
-                  <App />
+                  <App
+                    t={txReq}
+                    // eslint-disable-next-line react/jsx-no-bind
+                    onClose={handleClose}
+                  />
+                </div>
+                <div id="total-fee">
+                  <p>
+                    Total Fee to Send Transaction
+                    <h3>
+                      {' '}
+                      {totalTransactionFee}
+                      {' '}
+                    </h3>
+                  </p>
                 </div>
               </div>
             </div>
@@ -98,10 +335,10 @@ function SimulationResults() {
         </div>
       </div>
 
-      <div id="simulation-text"><h1>Simulation Successful!</h1></div>
+      <div id="simulation-text"><h1>{simulationStatus}</h1></div>
 
       <table className="table table-hover">
-        <tbody>
+        <tbody id="simulation-table">
           <tr className="table-secondary">
             <td align="left">
               <FontAwesomeIcon icon={faCheckCircle} />
@@ -139,7 +376,7 @@ function SimulationResults() {
         </tbody>
       </table>
 
-      <h1> </h1>
+      {/* <h1> </h1>
       <h3>Token Transfers</h3>
       <p>
         0x51092...094ef to
@@ -148,7 +385,7 @@ function SimulationResults() {
         {' '}
         for 1 ETH
         {' '}
-      </p>
+      </p> */}
       <div id="bottom-buttons">
         <Link to="/Home">
           <button type="button" className="btn btn-primary">Reject Transaction</button>
@@ -159,7 +396,7 @@ function SimulationResults() {
         </Link>
 
         <Link to="/Home">
-          <button type="button" className="btn btn-success">Send Transaction</button>
+          <button type="button" className="btn btn-success" onClick={() => onSendTransaction(txReq)}>Send Transaction</button>
         </Link>
       </div>
     </div>

@@ -97,15 +97,15 @@ class SimulationSuite {
     // https://ethereum.stackexchange.com/questions/109990/how-to-determine-if-a-pending-transaction-will-revert
     try {
       const estGas = await this.provider.estimateGas({ to: t.to, data: t.data, value: t.value });
-      const tGasLimt = t.gasLimit as BigNumber;
-      if (tGasLimt.gt(estGas)) {
-        return false;
+      const tGasLimit = BigNumber.from(t.gasLimit);
+      if (tGasLimit.gte(estGas)) {
+        return true;
       }
     } catch {
       return false;
     }
 
-    return true;
+    return false;
   }
 
   /**
@@ -126,8 +126,8 @@ class SimulationSuite {
 
     try {
       if (type === 2) {
-        const maxPriorityFeePerGas = t.maxPriorityFeePerGas as BigNumber;
-        const maxFeePerGas = t.maxFeePerGas as BigNumber;
+        const maxPriorityFeePerGas = BigNumber.from(t.maxPriorityFeePerGas);
+        const maxFeePerGas = BigNumber.from(t.maxFeePerGas);
         if (maxFeePerGas === undefined || maxPriorityFeePerGas === undefined) {
           return false;
         }
@@ -146,7 +146,7 @@ class SimulationSuite {
         }
         return false;
       }
-      const tGasPrice = t.gasPrice as BigNumber;
+      const tGasPrice = BigNumber.from(t.gasPrice);
       const estGasPrice = feeData.gasPrice;
       if (tGasPrice === undefined || estGasPrice === null) {
         return false;
@@ -207,26 +207,28 @@ class SimulationSuite {
     }
 
     try {
-      let tGasPrice = t.gasPrice as BigNumber;
-      const tGasLimit = t.gasLimit;
-      if (tGasLimit === null || tGasLimit === undefined) {
-        return false;
-      }
+      let tGasPrice = BigNumber.from(0);
+      const tGasLimit = BigNumber.from(t.gasLimit);
+      const { type } = t;
 
-      const tMaxFeePerGas = t.maxFeePerGas as BigNumber;
-      const tMaxPriorityFeePerGas = t.maxPriorityFeePerGas as BigNumber;
-      if (tGasPrice === null || tGasPrice === undefined) {
-        if (tMaxFeePerGas !== undefined && tMaxPriorityFeePerGas !== undefined) {
-          tGasPrice = (tMaxFeePerGas.add(tMaxPriorityFeePerGas));
-        } else {
-          return false;
+      if (type === 2) {
+        const tMaxFeePerGas = BigNumber.from(t.maxFeePerGas);
+        const tMaxPriorityFeePerGas = BigNumber.from(t.maxPriorityFeePerGas);
+        if (tMaxFeePerGas === undefined || tMaxPriorityFeePerGas === undefined) {
+          return true;
+        }
+
+        tGasPrice = tMaxFeePerGas.add(tMaxPriorityFeePerGas);
+      } else {
+        tGasPrice = BigNumber.from(t.gasPrice);
+        if (tGasPrice === undefined) {
+          return true;
         }
       }
 
-      const tGasTotalFees = tGasPrice.mul(tGasLimit);
-
-      const amount = t.value as BigNumber;
-      if (amount.add(tGasTotalFees).gt(balance)) {
+      const tTotalGasFees = tGasLimit.mul(tGasPrice);
+      const amount = BigNumber.from(t.value);
+      if (amount.add(tTotalGasFees).gt(balance)) {
         return true;
       }
 

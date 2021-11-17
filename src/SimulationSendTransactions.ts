@@ -52,7 +52,7 @@ class SimulationSendTransactions {
    */
   async isTransactionMined(t: Transaction) {
     try {
-      const transactionReceipt = await this.provider.getTransactionReceipt(t.hash as string);
+      const transactionReceipt = await this.provider.getTransactionReceipt(String(t.hash));
       if (transactionReceipt !== null && transactionReceipt.blockNumber !== null) {
         return true;
       }
@@ -83,13 +83,15 @@ class SimulationSendTransactions {
     }
   }
 
+  // source:
+  // https://ethereum.stackexchange.com/questions/84004/ethers-formatetherwei-with-max-4-decimal-places/97885
   /**
-   * Calculates the total transaction fee in ETH
+   * Calculates the total gas fee in ETH
    * @param t Transaction
-   * @returns the total transaction fee in ETH as a string
+   * @returns the total gas fee in ETH as a string
    */
-  static totalTransactionFeeInETH(t: Transaction) {
-    const tGasLimit = t.gasLimit;
+  static totalGasFeeInETH(t: TransactionRequest) {
+    const tGasLimit = BigNumber.from(t.gasLimit);
     const { type } = t;
     if (type === null) {
       return null;
@@ -97,22 +99,46 @@ class SimulationSendTransactions {
 
     let tGasPrice = BigNumber.from(0);
     if (type === 2) {
-      const tMaxFeePerGas = t.maxFeePerGas;
-      const tMaxPriorityFeePerGas = t.maxPriorityFeePerGas;
-      if (tMaxFeePerGas === undefined || tMaxPriorityFeePerGas === undefined) {
-        return null;
-      }
+      const tMaxFeePerGas = BigNumber.from(t.maxFeePerGas);
+      const tMaxPriorityFeePerGas = BigNumber.from(t.maxPriorityFeePerGas);
 
       tGasPrice = tMaxFeePerGas.add(tMaxPriorityFeePerGas);
     } else {
-      tGasPrice = t.gasPrice as BigNumber;
-      if (tGasPrice === undefined) {
-        return null;
-      }
+      tGasPrice = BigNumber.from(t.gasPrice);
+    }
+
+    let tTotalGasFees = ethers.utils.formatEther(tGasLimit.mul(tGasPrice));
+    tTotalGasFees = String(Math.round((+tTotalGasFees) * 10 ** 5) / 10 ** 5);
+    return tTotalGasFees;
+  }
+
+  // Source:
+  // https://ethereum.stackexchange.com/questions/84004/ethers-formatetherwei-with-max-4-decimal-places/97885
+  /**
+   * Calculates the total transaction fee in ETH
+   * @param t Transaction
+   * @returns the total transaction fee in ETH as a string
+   */
+  static totalTransactionFeeInETH(t: TransactionRequest) {
+    const tGasLimit = BigNumber.from(t.gasLimit);
+    const { type } = t;
+    if (type === null) {
+      return null;
+    }
+
+    let tGasPrice = BigNumber.from(0);
+    if (type === 2) {
+      const tMaxFeePerGas = BigNumber.from(t.maxFeePerGas);
+      const tMaxPriorityFeePerGas = BigNumber.from(t.maxPriorityFeePerGas);
+
+      tGasPrice = tMaxFeePerGas.add(tMaxPriorityFeePerGas);
+    } else {
+      tGasPrice = BigNumber.from(t.gasPrice);
     }
 
     const tTotalGasFees = tGasLimit.mul(tGasPrice);
-    const tTotal = ethers.utils.formatEther(tTotalGasFees.add(t.value));
+    let tTotal = ethers.utils.formatEther(tTotalGasFees.add(BigNumber.from(t.value)));
+    tTotal = String(Math.round((+tTotal) * 10 ** 5) / 10 ** 5);
     return tTotal;
   }
 
@@ -129,7 +155,7 @@ class SimulationSendTransactions {
       const t = await wallet.populateTransaction(txReq);
 
       // Our Simulation Checks
-      const code = await this.provider.getCode(t.to as string);
+      const code = await this.provider.getCode(String(t.to));
       let isEOA = false;
       if (code === '0x') {
         isEOA = true;
@@ -149,14 +175,14 @@ class SimulationSendTransactions {
 
       const simResults = await promises;
       // Simulation Check = Key; Boolean = Value
-      const passedChecks = new Map([
+      const simulationChecks = new Map([
         ['Gas Limit is Reasonable', simResults[0]],
         ['Gas Price is Reasonable', simResults[1]],
         ['Address is Valid', true],
-        ['Total is more than Wallet', simResults[2]],
-        ['Data is sent correctly', simResults[3] === false]]);
+        ['Total Fee is not More than Wallet', simResults[2] === false],
+        ['Data is Sent Correctly', simResults[3] === false]]);
 
-      return passedChecks;
+      return { simulationChecks, t };
     } catch (e) {
       throw new Error(e as string);
     }
@@ -168,7 +194,7 @@ class SimulationSendTransactions {
    * @returns the transaction hash and the promise from sending t
    */
   async sendTransaction(t: Transaction) {
-    const tHash = t.hash as string;
+    const tHash = String(t.hash);
     const response = await this.provider.sendTransaction(tHash);
     return { hash: tHash, response };
   }

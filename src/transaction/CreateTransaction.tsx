@@ -8,7 +8,7 @@ import {
 
 import './CreateTransaction.scss';
 import { Provider, TransactionRequest } from '@ethersproject/abstract-provider';
-import { BigNumber, Wallet } from 'ethers';
+import { ethers, Wallet } from 'ethers';
 import { BackgroundWindowInterface } from 'background/background';
 import browser from 'webextension-polyfill';
 import SimulationSendTransactions from '../SimulationSendTransactions';
@@ -45,16 +45,20 @@ async function TestTransaction(addressElem: HTMLInputElement, amountElem: HTMLIn
     document.getElementById('amount-in-usd')!.innerHTML = (await transactionController.currentETHtoUSD(+amountInput)).toString().concat(' USD');
     if (wallet !== null) {
       // finish creating create transaction request object
-      txReq.value = BigNumber.from(amountInput);
+      txReq.value = ethers.utils.parseEther(amountInput);
       txReq.from = await wallet.getAddress();
       txReq.data = '0x';
       txReq.gasLimit = await transactionController.getGasLimit(txReq);
 
       // Execute simulations and go to simulations page
-      const simulationChecks = await transactionController.simulateTransaction(txReq, wallet);
+      const checksAndTx = await transactionController.simulateTransaction(txReq, wallet);
+      const contractOrEOA = await provider.getCode(addressInput);
 
-      // TODO: populate simulation results page with the simulations checks
-      return { simulationChecks, txReq };
+      return {
+        simulationChecks: checksAndTx.simulationChecks,
+        txReq: checksAndTx.t,
+        contractOrEOA,
+      };
     }
   }
 
@@ -75,8 +79,16 @@ function CreateTransaction() {
     const addressElem = (document.getElementById('toAddress') as HTMLInputElement);
     const amountElem = (document.getElementById('amount') as HTMLInputElement);
     const validatedTransaction = await TestTransaction(addressElem, amountElem);
+
     if (validatedTransaction) {
-      navigate('/SimulationResults', { state: { simulationChecks: validatedTransaction.simulationChecks, txReq: validatedTransaction.txReq } });
+      navigate('/SimulationResults', {
+        state: {
+          simulationChecks: validatedTransaction.simulationChecks,
+          txReq: validatedTransaction.txReq,
+          contractOrEOA: validatedTransaction.contractOrEOA,
+        // eslint-disable-next-line @typescript-eslint/comma-dangle
+        }
+      });
     }
   };
 
