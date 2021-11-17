@@ -33,7 +33,12 @@ function SignIn() {
 
   let progressBar: JSX.Element = <div />;
   if (decryptionProgress !== undefined) {
-    progressBar = <ProgressBar className="progress-instant" max={1} now={decryptionProgress} />;
+    progressBar = (
+      <div>
+        <div className="small mt-3 text-center">Decrypting wallet...</div>
+        <ProgressBar className="progress-instant" max={1} now={decryptionProgress} />
+      </div>
+    );
   }
 
   const canUnlock: boolean = (decryptionProgress === undefined);
