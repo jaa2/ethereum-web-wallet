@@ -64,7 +64,7 @@ function CreateNewWallet() {
   if (phraseMatchState === 'match') {
     phraseMatchElements = (
       <div id="create-phrase-match-elements">
-        <p id="create-phrase-info-match" className="phrase-info">Success. Your phrases match!</p>
+        <p id="create-phrase-info-match" className="phrase-info text-success">Success. Your phrases match!</p>
         <Link id="create-phrase-continue-link" className="link hoverable" to="/Home" onClick={NewWalletCreated}>
           <button type="button" className="btn btn-success">Continue</button>
         </Link>
@@ -73,7 +73,7 @@ function CreateNewWallet() {
   } else if (phraseMatchState === 'mismatch') {
     phraseMatchElements = (
       <div id="create-phrase-match-elements">
-        <p id="create-phrase-info-mismatch" className="phrase-info">Uh oh. Your phrases don&apos;t match!</p>
+        <p id="create-phrase-info-mismatch" className="phrase-info text-danger">Uh oh. Your phrases don&apos;t match!</p>
       </div>
     );
   } else {
