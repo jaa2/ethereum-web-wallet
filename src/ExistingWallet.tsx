@@ -1,26 +1,40 @@
 import React, { useEffect } from 'react';
 import { NavigateFunction, useNavigate } from 'react-router-dom';
+import UserState, { WalletStatus } from './common/UserState';
 
 function ExistingWallet() {
-  const [hasExistingWallet, setHasExistingWallet]:
-  [string, (hasExistingWallet: string) => void] = React.useState<string>('undefined');
+  const [walletStatus, setWalletStatus]:
+  [WalletStatus, (walletStatus: WalletStatus) => void] = React.useState<
+  WalletStatus>(WalletStatus.UNKNOWN);
 
   const navigate: NavigateFunction = useNavigate();
 
   useEffect(() => {
-    // This is just to test. This will be updated with wallet logic.
-    setHasExistingWallet('false');
+    // Find the current status
+    UserState.getWalletStatus()
+      .then((newWalletStatus: WalletStatus) => setWalletStatus(newWalletStatus));
   }, []);
 
   useEffect(() => {
-    if (hasExistingWallet !== 'undefined') {
-      if (hasExistingWallet === 'true') {
-        navigate('/SignIn');
-      } else {
-        navigate('/WalletSetup');
+    if (walletStatus !== WalletStatus.UNKNOWN) {
+      switch (walletStatus) {
+        case WalletStatus.WALLET_ENCRYPTED:
+          navigate('/SignIn');
+          break;
+        case WalletStatus.NO_WALLET:
+          navigate('/WalletSetup');
+          break;
+        case WalletStatus.WALLET_LOADED:
+          navigate('/Home');
+          break;
+        default:
+          // Should not happen
+          console.error('Unknown wallet status:', walletStatus); // eslint-disable-line
+          navigate('/Home');
+          break;
       }
     }
-  }, [hasExistingWallet]);
+  }, [walletStatus]);
 
   return (
     <div />
