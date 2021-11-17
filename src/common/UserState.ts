@@ -2,6 +2,7 @@ import { ethers, Signer } from 'ethers';
 import browser from 'webextension-polyfill';
 
 import { BackgroundWindowInterface } from '../../background/background';
+import WalletState from '../../background/WalletState';
 
 /**
  * Indicates the current status of the wallet
@@ -47,5 +48,15 @@ export default class UserState {
         : WalletStatus.WALLET_LOADED;
     }
     return WalletStatus.NO_WALLET;
+  }
+
+  /**
+   * Find the WalletState object of the wallet
+   * @returns a WalletState object
+   */
+  static async getWalletState(): Promise<WalletState> {
+    const backgroundWindow: BackgroundWindowInterface = await browser.runtime.getBackgroundPage();
+    const { walletState } = backgroundWindow.stateObj;
+    return walletState;
   }
 }

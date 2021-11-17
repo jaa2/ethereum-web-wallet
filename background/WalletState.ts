@@ -116,7 +116,7 @@ export default class WalletState {
      * @param progressCallback Callback function accepting a number between 0 and 1,
      * the progress of decrypting the wallet.
      */
-  async decryptWallet(password: string, progressCallback?: { (progress: Number): any }):
+  async decryptWallet(password: string, progressCallback?: { (progress: number): any }):
   Promise<void> {
     if (this.encryptedWalletJSON === null) {
       // Load encrypted wallet information if it hasn't already been loaded
