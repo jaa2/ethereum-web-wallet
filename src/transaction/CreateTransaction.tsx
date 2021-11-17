@@ -26,7 +26,7 @@ function CreateTransaction() {
             <input className="form-control" id="fromAdress" type="text" placeholder="0x510928a823b892093ac83094ef" disabled />
           </fieldset>
         </div>
-        <div className="form-group">
+      <div className="form-group">
           <label className="col-form-label mt-4" htmlFor="toAddress">To:</label>
           <input type="text" className="form-control" placeholder="" id="toAddress" />
         </div>
