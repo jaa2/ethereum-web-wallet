@@ -3,25 +3,49 @@ import { Link } from 'react-router-dom';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlus, faArrowCircleLeft } from '@fortawesome/free-solid-svg-icons';
+import browser from 'webextension-polyfill';
+import { Wallet } from 'ethers';
 
+import { BackgroundWindowInterface } from '../../background/background';
 import './CreateNewWallet.scss';
 
 function NewWalletCreated() {
 
 }
 
+async function loadNewWallet(): Promise<string | null> {
+  // Create a new wallet
+  const backgroundWindow: BackgroundWindowInterface = await browser.runtime.getBackgroundPage();
+  const { walletState } = backgroundWindow.stateObj;
+  const walletCreated: boolean = await walletState.createWallet(false, null);
+
+  // Show secret recovery phrase
+  const wallet: Wallet | null = !walletCreated ? null : await walletState.getWallet();
+  if (walletCreated && wallet !== null) {
+    return wallet.mnemonic.phrase;
+  }
+
+  // Wallet not created
+  throw new Error('Could not create new random wallet');
+}
+
 function CreateNewWallet() {
   const [phraseMatchState, setPhraseMatchState]: [string, (matchState: string) => void] = React.useState<string>('empty');
 
   const [phrase, setPhrase]: [string, (phrase: string) => void] = React.useState<string>('');
-  const handlePhrase = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setPhrase(event.target.value);
-  };
 
   const [confirmPhrase, setConfirmPhrase]: [string, (confirmPhrase: string) => void] = React.useState<string>('');
   const handleConfirmPhrase = (event: React.ChangeEvent<HTMLInputElement>) => {
     setConfirmPhrase(event.target.value);
   };
+
+  useEffect(() => {
+    loadNewWallet().then((newPhrase) => {
+      if (newPhrase !== null) {
+        setPhrase(newPhrase);
+      }
+    });
+  }, []);
 
   useEffect(() => {
     // TODO: add more phrase authentication (length, char type, etc.)
@@ -39,8 +63,8 @@ function CreateNewWallet() {
   if (phraseMatchState === 'match') {
     phraseMatchElements = (
       <div id="create-phrase-match-elements">
-        <p id="create-phrase-info-match" className="phrase-info">Success. Your phrases match!</p>
-        <Link id="create-phrase-continue-link" className="link hoverable" to="/Home" onClick={NewWalletCreated}>
+        <p id="create-phrase-info-match" className="phrase-info text-success">Success. Your phrases match!</p>
+        <Link id="create-phrase-continue-link" className="link hoverable" to="/CreatePassword" onClick={NewWalletCreated}>
           <button type="button" className="btn btn-success">Continue</button>
         </Link>
       </div>
@@ -48,7 +72,7 @@ function CreateNewWallet() {
   } else if (phraseMatchState === 'mismatch') {
     phraseMatchElements = (
       <div id="create-phrase-match-elements">
-        <p id="create-phrase-info-mismatch" className="phrase-info">Uh oh. Your phrases don&apos;t match!</p>
+        <p id="create-phrase-info-mismatch" className="phrase-info text-danger">Uh oh. Your phrases don&apos;t match!</p>
       </div>
     );
   } else {
@@ -64,7 +88,7 @@ function CreateNewWallet() {
       <Link id="back-link" className="back-icon link hoverable" to="/WalletSetup">
         <FontAwesomeIcon className="fa-icon" icon={faArrowCircleLeft} size="2x" />
       </Link>
-      <div id="align-center">
+      <div className="align-center">
         <FontAwesomeIcon className="fa-icon" icon={faPlus} size="4x" />
         <h1>Create New Wallet</h1>
         <div className="alert alert-dismissible alert-danger">
@@ -91,16 +115,12 @@ function CreateNewWallet() {
           </p>
         </div>
         <div className="form-group">
-          <label htmlFor="create-phrase-phrase-input" className="form-label mt-4">
-            Secret Recovery Phrase
-            <input className="form-control" id="create-phrase-phrase-input" type="phrase" name="phrase" onChange={handlePhrase} />
-          </label>
-        </div>
-        <div className="form-group">
-          <label htmlFor="create-phrase-confirm-phrase-input" className="form-label mt-4">
-            Confirm Secret Recovery Phrase
+          <h5 id="create-phrase-phrase-label">Secret Recovery Phrase</h5>
+          <p id="create-phrase-phrase-input">{phrase}</p>
+          <label htmlFor="create-phrase-confirm-phrase-input" className="form-label mt-4">Confirm Secret Recovery Phrase</label>
+          <div className="input-group mb-3">
             <input className="form-control" id="create-phrase-confirm-phrase-input" type="phrase" name="confirm phrase" onChange={handleConfirmPhrase} />
-          </label>
+          </div>
         </div>
         {phraseMatchElements}
       </div>
