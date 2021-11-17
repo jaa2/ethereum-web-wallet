@@ -66,21 +66,20 @@ class SimulationSendTransactions {
   // TODO: This function should enter the gas limit for a transaction request
   // Need a global version of the TransactionRequest?
   /**
-   * Calculates the gas limit in ETH
+   * Calculates the gas limit for a transaction request object
    * @param t Transaction
    * @returns the gas limit in ETH as a string
    */
-  async gasLimitInETH(t: TransactionRequest) {
+  async getGasLimit(t: TransactionRequest) {
     try {
       let estGas = await this.provider.estimateGas(t);
-      if (estGas.lte(21000)) {
-        estGas = estGas.mul(1.2);
+      if (estGas.gte(BigNumber.from(21000))) {
+        estGas = BigNumber.from(estGas.toNumber() * 1.2);
       }
 
-      const gasLimitEth = ethers.utils.formatEther(estGas);
-      return gasLimitEth;
+      return estGas;
     } catch {
-      return '-1';
+      return BigNumber.from(0);
     }
   }
 
@@ -90,38 +89,31 @@ class SimulationSendTransactions {
    * @returns the total transaction fee in ETH as a string
    */
   static totalTransactionFeeInETH(t: Transaction) {
-    if (t === null) {
+    const tGasLimit = t.gasLimit;
+    const { type } = t;
+    if (type === null) {
       return null;
     }
-    try {
-      const tGasLimit = t.gasLimit;
-      const { type } = t;
-      if (type === null) {
+
+    let tGasPrice = BigNumber.from(0);
+    if (type === 2) {
+      const tMaxFeePerGas = t.maxFeePerGas;
+      const tMaxPriorityFeePerGas = t.maxPriorityFeePerGas;
+      if (tMaxFeePerGas === undefined || tMaxPriorityFeePerGas === undefined) {
         return null;
       }
 
-      let tGasPrice = BigNumber.from(0);
-      if (type === 2) {
-        const tMaxFeePerGas = t.maxFeePerGas;
-        const tMaxPriorityFeePerGas = t.maxPriorityFeePerGas;
-        if (tMaxFeePerGas === undefined || tMaxPriorityFeePerGas === undefined) {
-          return null;
-        }
-
-        tGasPrice = tMaxFeePerGas.add(tMaxPriorityFeePerGas);
-      } else {
-        tGasPrice = t.gasPrice as BigNumber;
-        if (tGasPrice === undefined) {
-          return null;
-        }
+      tGasPrice = tMaxFeePerGas.add(tMaxPriorityFeePerGas);
+    } else {
+      tGasPrice = t.gasPrice as BigNumber;
+      if (tGasPrice === undefined) {
+        return null;
       }
-
-      const tTotalGasFees = tGasLimit.mul(tGasPrice);
-      const tTotal = ethers.utils.formatEther(tTotalGasFees.add(t.value));
-      return tTotal;
-    } catch {
-      return '-1';
     }
+
+    const tTotalGasFees = tGasLimit.mul(tGasPrice);
+    const tTotal = ethers.utils.formatEther(tTotalGasFees.add(t.value));
+    return tTotal;
   }
 
   /**
@@ -135,6 +127,7 @@ class SimulationSendTransactions {
   async simulateTransaction(txReq: TransactionRequest, wallet: Wallet) {
     try {
       const t = await wallet.populateTransaction(txReq);
+
       // Our Simulation Checks
       const code = await this.provider.getCode(t.to as string);
       let isEOA = false;
@@ -164,35 +157,8 @@ class SimulationSendTransactions {
         ['Data is sent correctly', simResults[3] === false]]);
 
       return passedChecks;
-    } catch {
-      const code = await this.provider.getCode(txReq.to as string);
-      let isEOA = false;
-      if (code === '0x') {
-        isEOA = true;
-      }
-      let promises;
-      if (isEOA) {
-        promises = Promise.all([this.simulationSuite.isGasLimitEnough(txReq),
-          SimulationSuite.isGasPriceReasonable(txReq, await this.provider.getFeeData()),
-          SimulationSuite.isTotalMoreThanWallet(txReq, await wallet.getBalance()),
-          this.simulationSuite.isDataSentToEOA(txReq)]);
-      } else {
-        promises = Promise.all([this.simulationSuite.isGasLimitEnough(txReq),
-          SimulationSuite.isGasPriceReasonable(txReq, await this.provider.getFeeData()),
-          SimulationSuite.isTotalMoreThanWallet(txReq, await wallet.getBalance()),
-          this.simulationSuite.isTokenTransferToContract(txReq)]);
-      }
-
-      const simResults = await promises;
-      // Simulation Check = Key; Boolean = Value
-      const passedChecks = new Map([
-        ['Gas Limit is Reasonable', simResults[0]],
-        ['Gas Price is Reasonable', simResults[1]],
-        ['Address is Valid', true],
-        ['Total is more than Wallet', simResults[2]],
-        ['Data is sent correctly', simResults[3] === false]]);
-
-      return passedChecks;
+    } catch (e) {
+      throw new Error(e as string);
     }
   }
 

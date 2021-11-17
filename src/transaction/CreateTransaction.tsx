@@ -26,9 +26,13 @@ async function TestTransaction(addressElem: HTMLInputElement, amountElem: HTMLIn
   const addressInput = addressElem.value;
   const amountInput = amountElem.value;
 
-  const addressRegex = /^0x[0-9a-fA-F]{1,42}$/;
+  const txReq : TransactionRequest = {
+    to: addressInput,
+  };
+
   const amountRegex = /^([1-9]\d*|0)((\.\d{1,8})?)$/;
-  let isAddressValid = addressRegex.test(addressInput);
+
+  const isAddressValid = await SimulationSuite.isAddressValid(txReq);
   const isAmountValid = amountRegex.test(amountInput);
   if (isAddressValid && isAmountValid) {
     const window: BackgroundWindowInterface = await browser.runtime.getBackgroundPage();
@@ -40,23 +44,17 @@ async function TestTransaction(addressElem: HTMLInputElement, amountElem: HTMLIn
 
     document.getElementById('amount-in-usd')!.innerHTML = (await transactionController.currentETHtoUSD(+amountInput)).toString().concat(' USD');
     if (wallet !== null) {
-      // create transaction request object
-      const txReq: TransactionRequest = {
-        to: addressInput,
-        value: BigNumber.from(amountInput),
-        from: await wallet.getAddress(),
-        data: '0x',
-      };
+      // finish creating create transaction request object
+      txReq.value = BigNumber.from(amountInput);
+      txReq.from = await wallet.getAddress();
+      txReq.data = '0x';
+      txReq.gasLimit = await transactionController.getGasLimit(txReq);
 
-      if (!(await SimulationSuite.isAddressValid(txReq))) {
-        isAddressValid = false;
-      } else {
-        // Execute simulations and go to simulations page
-        const simulationChecks = await transactionController.simulateTransaction(txReq, wallet);
+      // Execute simulations and go to simulations page
+      const simulationChecks = await transactionController.simulateTransaction(txReq, wallet);
 
-        // TODO: populate simulation results page with the simulations checks
-        return { simulationChecks, txReq };
-      }
+      // TODO: populate simulation results page with the simulations checks
+      return { simulationChecks, txReq };
     }
   }
 
@@ -79,8 +77,6 @@ function CreateTransaction() {
     const validatedTransaction = await TestTransaction(addressElem, amountElem);
     if (validatedTransaction) {
       navigate('/SimulationResults', { state: { simulationChecks: validatedTransaction.simulationChecks, txReq: validatedTransaction.txReq } });
-    } else {
-      throw new Error('Failed to get simulations.');
     }
   };
 
