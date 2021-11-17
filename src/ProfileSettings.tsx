@@ -17,9 +17,9 @@ function ProfileSettings() {
             <FontAwesomeIcon className="fa-icon" icon={faHome} size="1x" />
             <h6>Home</h6>
           </Link>
-          <Link id="wallet-setup-import-key" className="link hoverable" to="/SignIn">
+          <Link id="wallet-setup-import-key" className="link hoverable" to="/Unlock">
             <FontAwesomeIcon className="fa-icon" icon={faLock} size="1x" />
-            <h6>SignIn</h6>
+            <h6>Unlock</h6>
           </Link>
         </div>
         <div id="profile-picture-edit">
