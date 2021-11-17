@@ -79,7 +79,7 @@ function ImportSecretPhrase() {
         <h1>Import Secret Recovery Phrase</h1>
         <p>Enter your 12-word secret recovery phrase below.</p>
         <div className="form-group">
-          <textarea 
+          <textarea
             className="form-control is-valid"
             id="secret-phrase"
             disabled={inputDisabled}

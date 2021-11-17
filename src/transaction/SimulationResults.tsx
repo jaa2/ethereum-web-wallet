@@ -61,7 +61,7 @@ const GasOptions = () => {
     </>
   );
 };
-    
+
 function SimulationResults() {
   const tx: TransactionRequest = {
     from: '0xd67e28a63cfa5381d3d346d905e2f1a6471bde11',
@@ -69,7 +69,7 @@ function SimulationResults() {
     data: '0x414bf389000000000000000000000000b4fbf271143f4fbf7b91a5ded31805e42b2208d60000000000000000000000001f9840a85d5af5bf1d1762f925bdaddc4201f9840000000000000000000000000000000000000000000000000000000000000bb8000000000000000000000000d67e28a63cfa5381d3d346d905e2f1a6471bde11000000000000000000000000000000000000000000000000000000016191490900000000000000000000000000000000000000000000000000038d7ea4c680000000000000000000000000000000000000000000000000000002fa215d28153b0000000000000000000000000000000000000000000000000000000000000000',
     value: '0x38d7ea4c68000',
   };
-  
+
   return (
     <div id="simulation-results">
       <div className="card border-info mb-3">
@@ -142,7 +142,7 @@ function SimulationResults() {
           </tr>
         </tbody>
       </table>
-      
+
       <h1>Token Transfers</h1>
       <TokenTransferBox tx={tx} />
       <p>
@@ -153,7 +153,7 @@ function SimulationResults() {
         for 1 ETH
         {' '}
       </p>
-      
+
       <div id="bottom-buttons">
         <Link to="/Home">
           <button type="button" className="btn btn-primary">Reject Transaction</button>
