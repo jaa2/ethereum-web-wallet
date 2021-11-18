@@ -15,3 +15,9 @@
     color: $icon-color;
   }
 }
+
+.progress-instant {
+  div {
+    transition: width 0s !important;
+  }
+}
