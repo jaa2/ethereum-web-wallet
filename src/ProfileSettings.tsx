@@ -1,10 +1,10 @@
 import { Link } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
-  faUserCircle, faEdit, faHome, faCopy,
+  faUserCircle, faEdit, faHome,
 } from '@fortawesome/free-solid-svg-icons';
 import './ProfileSettings.scss';
-// import { faUserCircle, faHome } from '@fortawesome/free-solid-svg-icons';
+import AddressBox from './common/AddressBox';
 
 function ProfileSettings() {
   return (
@@ -13,9 +13,8 @@ function ProfileSettings() {
         <Link className="back-icon" to="/WalletSetup">
           <FontAwesomeIcon className="fa-icon" icon={faHome} size="2x" />
         </Link>
-        <h1>Profile & Settings</h1>
+        <h1>Settings</h1>
       </div>
-      {/* <FontAwesomeIcon className="fa-icon" icon={faUserCircle} size="4x" /> */}
       <div className="content-container">
         <div className="profile-left-section">
           <div className="profile-picture-edit">
@@ -25,9 +24,6 @@ function ProfileSettings() {
             <div className="edit-pic-section">
               <FontAwesomeIcon className="fa-icon" icon={faEdit} size="1x" />
             </div>
-            {/* <div className="form-group">
-              <input className="form-control" type="file" id="formFile" />
-            </div> */}
           </div>
           <div className="profile-name-edit">
             <div>
@@ -37,14 +33,11 @@ function ProfileSettings() {
               <FontAwesomeIcon className="fa-icon" icon={faEdit} size="1x" />
             </div>
           </div>
-          <div className="user">
-            <div className="address">0x510928a823b...</div>
-            <FontAwesomeIcon className="copy fa-icon" icon={faCopy} />
-          </div>
+          {/* TODO: get address from state */}
+          <AddressBox address="0x510928a823b" />
         </div>
         <div id="profile-right-section">
           <div id="delay-selection">
-            {/* <form> */}
             <fieldset>
               <legend className="mt-1">Delay Time</legend>
               <div className="form-group">
@@ -56,7 +49,6 @@ function ProfileSettings() {
                 </select>
               </div>
             </fieldset>
-            {/* </form> */}
           </div>
           <div id="dark-mode">
             <fieldset>
