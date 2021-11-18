@@ -1,80 +1,73 @@
+@import 'common/colors';
+
+// TODO: cleanup unused scss
 #profile-settings {
   margin: auto;
   padding: 10px;
+
   display: flex;
+  flex-direction: column;
+  // justify-content: space-evenly;
+  // align-items: center;
+  // display: inline-block;
+  // text-align: center;
   
-  #profile-left-section {
-    margin:10px;
-    #settings-nav {
-      #wallet-setup-create-wallet {
-        width: fit-content;
-        height: fit-content;
+  .content-container {
+    display: flex;
+    justify-content: space-evenly;
     
-        // padding: 10px;
-      }
-  
-      #wallet-setup-import-key {
-        width: 50%;
-        display: flex;
-        // flex-direction: horizontal;
-      }
-      #settings-nav-button {
-        // display: flex;
-        // float: left;
-        // padding-left: 0;
-        // margin: 10px;
-        
-      }
-      
+  } 
+  .profile-name-edit {
+    display: flex;
+    justify-content: space-evenly;
 
-    }
-    
+  }
 
-    .profile-name-edit {
+  .profile-picture-edit {
+    display: flex;
+    justify-content: space-evenly;
+    flex-direction: row;
+
+    .pic-section {
       align-items: center;
-      display: flex;
-      text-align: center;
-      
-
-    }
-    .text {
-      margin: 5px;
-      text-align: center;
-
-    }
-    .fa-icon {
-      margin: 5px;
     }
 
+    .edit-pic-section {
+      vertical-align: bottom;
+
+    }
   }
 
-  #profile-right-section {
-    margin:10px;
-
-    .h3 {
-      margin:10px;
-    }
-    #delay-selection {
-      margin:5px;
-      // display: inline-block;
-
-      #delay-selection-content {
-        display: inline-block;
-        padding: 5px;
-      }
-    }
-
+  .user {
+    display:flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    align-self: flex-start;
     
-  }
+    .avatar {
+        border-radius: 100%;
+        border: $icon-color solid 1px;
+        height: 25px;
+        width: 25px;
+        margin: 5px;
+    }
 
-  #dark-mode{
-    margin:5px;
-    
+    .address {
+        background-color: $light-blue;
+        padding: 10px;
+    }
 
-    #dark-mode-content {
-      display: inline-block;
-      padding: 5px;
+    .copy {
+        margin: 10px;
     }
   }
-  
+
+  .button-container {
+    display:flex;
+    align-items: center;
+    justify-content: center;
+    margin: 10px;
+
+  }
 }
