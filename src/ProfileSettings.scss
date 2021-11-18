@@ -1,16 +1,11 @@
 @import 'common/colors';
 
-// TODO: cleanup unused scss
 #profile-settings {
   margin: auto;
   padding: 10px;
 
   display: flex;
   flex-direction: column;
-  // justify-content: space-evenly;
-  // align-items: center;
-  // display: inline-block;
-  // text-align: center;
   
   .content-container {
     display: flex;
@@ -35,31 +30,6 @@
     .edit-pic-section {
       vertical-align: bottom;
 
-    }
-  }
-
-  .user {
-    display:flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: center;
-    align-self: flex-start;
-    
-    .avatar {
-        border-radius: 100%;
-        border: $icon-color solid 1px;
-        height: 25px;
-        width: 25px;
-        margin: 5px;
-    }
-
-    .address {
-        background-color: $light-blue;
-        padding: 10px;
-    }
-
-    .copy {
-        margin: 10px;
     }
   }
 
