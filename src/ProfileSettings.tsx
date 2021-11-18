@@ -9,14 +9,13 @@ import AddressBox from './common/AddressBox';
 function ProfileSettings() {
   return (
     <div id="profile-settings">
-      <div className="container">
-        <Link className="back-icon" to="/WalletSetup">
-          <FontAwesomeIcon className="fa-icon" icon={faHome} size="2x" />
-        </Link>
-        <h1>Settings</h1>
-      </div>
       <div className="content-container">
         <div className="profile-left-section">
+          <div id="settings-nav">
+            <Link id="wallet-setup-import-key" className="link hoverable" to="/Home">
+              <FontAwesomeIcon className="fa-icon" icon={faHome} size="2x" />
+            </Link>
+          </div>
           <div className="profile-picture-edit">
             <div className="pic-section">
               <FontAwesomeIcon className="fa-icon" icon={faUserCircle} size="9x" />

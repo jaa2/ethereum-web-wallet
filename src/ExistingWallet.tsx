@@ -19,7 +19,7 @@ function ExistingWallet() {
     if (walletStatus !== WalletStatus.UNKNOWN) {
       switch (walletStatus) {
         case WalletStatus.WALLET_ENCRYPTED:
-          navigate('/SignIn');
+          navigate('/Unlock');
           break;
         case WalletStatus.NO_WALLET:
           navigate('/WalletSetup');

@@ -43,7 +43,7 @@
     "start": "react-scripts start",
     "build": "react-scripts build && parcel build --dist-dir build/ background/background.html",
     "test": "react-scripts test",
-    "test-backend": "env TS_NODE_COMPILER_OPTIONS='{\"module\": \"commonjs\" }' mocha -r ts-node/register 'tests/**/*.ts' --timeout 10000",
+    "test-backend": "env TS_NODE_COMPILER_OPTIONS='{\"module\": \"commonjs\" }' mocha -r ts-node/register 'tests/**/*.ts' --timeout 20000",
     "lint": "node ./node_modules/eslint/bin/eslint.js ./",
     "eject": "react-scripts eject"
   },
