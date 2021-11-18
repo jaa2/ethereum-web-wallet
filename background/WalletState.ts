@@ -192,4 +192,16 @@ export default class WalletState {
     });
     return true;
   }
+
+  /**
+   * "Locks" a wallet by clearing the currentWallet variable.
+   * @returns true if a wallet was locked, false if no wallet was available to be locked
+   */
+  lockWallet(): boolean {
+    if (this.currentWallet !== null) {
+      this.currentWallet = null;
+      return true;
+    }
+    return false;
+  }
 }

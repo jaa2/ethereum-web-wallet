@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unused-expressions */
+
 import { Wallet } from '@ethersproject/wallet';
 import chai, { expect } from 'chai';
 import chaiAsPromised from 'chai-as-promised';
@@ -28,5 +30,21 @@ describe('WalletState tests', () => {
     await state2.loadEncrypted();
     await state2.decryptWallet(password);
     expect(((await state2.getWallet()) as Wallet).privateKey === key);
+  });
+
+  it('Clears the wallet when lockWallet is called', async () => {
+    const storage: WalletStorage = new MemoryStorage();
+    // Create
+    const state1: WalletState = new WalletState(storage);
+    await state1.createWallet(false, null);
+    expect(await state1.getWallet()).to.be.not.null;
+    // Save and lock the wallet
+    expect(await state1.saveEncryptedWallet(false, 'password'), 'Save wallet').to.be.true;
+    expect(state1.lockWallet()).to.be.true;
+    // Verify that wallet now is null
+    expect(await state1.getWallet()).to.be.null;
+    await state1.loadEncrypted();
+    expect(state1.isStateLoaded, 'Wallet state is loaded').to.be.true;
+    expect(await state1.getWallet()).to.be.null;
   });
 });
