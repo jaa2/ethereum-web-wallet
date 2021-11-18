@@ -48,10 +48,10 @@ function Unlock() {
   }
 
   return (
-    <div>
+    <div className="unlock-page">
       <FontAwesomeIcon className="fa-icon" icon={faLock} size="3x" />
       <h1>Unlock Your Wallet</h1>
-      <div className="form-group mb-3 unlock-page">
+      <div className="form-group mb-3">
         <label className="form-label" htmlFor="unlock-password-input">Password</label>
         <input type="password" id="unlock-password-input" className="form-control" onChange={handlePassword} placeholder="Password" />
         {invalidFeedback}
