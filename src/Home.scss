@@ -1,97 +1,83 @@
 @import 'common/colors';
 
-.fa-icon {
-    color: $icon-color
-}
-
-.container {
-    width: 33vw;
-    min-width: 400px;
+#home {
+  margin: 5px auto;
+  padding: 10px;
   
-    margin: 5px auto;
-    padding: 10px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+  align-items: center;
   
+  text-align: center;
+  
+  h1 {
+    color: $icon-color;
+    margin: 2px;
+  }
+  
+  h2 {
+    color : $grey;
+    margin: 2px;
+  }
+  
+  .top-bar {
     display: flex;
-    flex-direction: column;
-    justify-content: space-evenly;
-    align-items: center;
-  
-    text-align: center;
-
-    h1 {
-        color: $icon-color;
-        margin: 2px;
-    }
-
-    h2 {
-        color : $grey;
-        margin: 2px;
-    }
-
-    .top-bar {
+    flex-direction: row;
+    justify-content: space-between;
+    width: 100%;
+    
+    .user {
+      display:flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: center;
+      align-self: flex-start;
+      
+      .avatar {
+        border-radius: 100%;
+        border: $icon-color solid 1px;
+        width: 75px;
+        margin: 5px;
+      }
+      
+      #home-user-options {
         display: flex;
-        flex-direction: row;
-        justify-content: space-around;
-        width: 100%;
+        flex-direction: column;
+        
+        .option {
+          width: auto;
 
-        .user {
-            display:flex;
-            flex-direction: row;
-            align-items: center;
-            justify-content: center;
-            align-self: flex-start;
-            
-            .avatar {
-                border-radius: 100%;
-                border: $icon-color solid 1px;
-                height: 25px;
-                width: 25px;
-                margin: 5px;
-            }
+          display: flex;
+          flex-direction: row;
+          justify-content: flex-start;
+          align-items: center;
+          text-decoration: none;
 
-            .user-options {
-                display: flex;
-                flex-direction: column;
+          .icon-label {
+            margin-left: 10px;
+            vertical-align: middle;
+            margin-bottom: 0px;
+          }
 
-                .option {
-                    display:flex;
-                    flex-direction: row;
-                    justify-content: flex-start;
-                    align-items: center;
-
-                    .address {
-                        background-color: $light-blue;
-                        padding: 10px;
-                    }
-            
-                    .copy {
-                        padding: 10px;
-                    }
-
-                    .icon-label {
-                        margin-left: 20px;
-                    }
-                }
-            }
+          .fa-icon {
+            margin-left: 5px;
+          }
         }
-
-        .network {
-            align-self: flex-end;
-            margin-left: 50px;
-        }
+      }
     }
+  }
 
-    .row {
-        display: flex;
-        flex-direction: row;
-        justify-content: space-evenly;
-        width: 100%;
+  #assets {
+    width: 90%;
+    margin-bottom: 10px;
+  }
 
-        .table {
-            background-color: $grey;
-            min-width: 150px;
-            min-height: 150px;
-            margin-bottom: 10px;
-        }
+  #activity {
+    width: 90%;
+
+    a {
+      text-decoration: none;
     }
+  }
 }
