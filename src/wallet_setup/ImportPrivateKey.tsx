@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faUserSecret } from '@fortawesome/free-solid-svg-icons';
+import { faKey } from '@fortawesome/free-solid-svg-icons';
 
 import './ImportPrivateKey.scss';
 
@@ -42,7 +42,7 @@ function ImportPrivateKey() {
 
   return (
     <div id="import-private-key">
-      <FontAwesomeIcon className="fa-icon" icon={faUserSecret} size="4x" />
+      <FontAwesomeIcon className="fa-icon" icon={faKey} size="4x" />
 
       <h1>Import Private Key</h1>
 
@@ -56,7 +56,7 @@ function ImportPrivateKey() {
       {privateKeyMatchElements}
 
       <Link to="/CreatePassword">
-        <button className="continue-button" type="button">Continue</button>
+        <button className="continue-button btn btn-success" type="button">Continue</button>
       </Link>
 
     </div>
