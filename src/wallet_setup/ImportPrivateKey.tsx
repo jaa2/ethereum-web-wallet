@@ -61,9 +61,6 @@ function ImportPrivateKey() {
     privateKeyStatusElements = (
       <div className="content-container">
         <button type="button" className="btn btn-success" onClick={onValidPrivateKey}>Continue</button>
-        {/* <button type="button" className="link hoverable" onClick={onValidPrivateKey}>
-          <h4>Continue</h4>
-        </button> */}
       </div>
     );
   } else if (privateKeyStatus === 'encoding') {
@@ -81,20 +78,11 @@ function ImportPrivateKey() {
   }
 
   return (
-    // <div id="import-private-key">
-    //   <FontAwesomeIcon className="fa-icon" icon={faKey} size="4x" />
-
-    //   <h1>Import Private Key</h1>
-
-    //   <h4>Enter your private key below</h4>
-    //   <div id="enter-private-key-entry" className="field-entry">
-    //     <input id="private-key-input" type="text" name="privateKey" onChange={handlePrivateKey} />
-    
-    <div className="container">
+    <div id="import-private-key">
       <Link className="back-icon" to="/WalletSetup">
         <FontAwesomeIcon className="fa-icon" icon={faArrowCircleLeft} size="2x" />
       </Link>
-      <div id="import-private-key">
+      <div>
         <FontAwesomeIcon className="fa-icon" icon={faKey} size="4x" />
 
         <h1>Import Private Key</h1>
@@ -106,9 +94,7 @@ function ImportPrivateKey() {
       </div>
 
       {privateKeyStatusElements}
-
     </div>
-
   );
 }
 
