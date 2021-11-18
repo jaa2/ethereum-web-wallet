@@ -75,19 +75,9 @@
 
   #activity {
     width: 90%;
-  }
 
-  .row {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-evenly;
-    width: 100%;
-
-    .table {
-        background-color: $grey;
-        min-width: 150px;
-        min-height: 150px;
-        margin-bottom: 10px;
+    a {
+      text-decoration: none;
     }
   }
 }

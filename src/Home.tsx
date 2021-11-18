@@ -47,6 +47,14 @@ Promise<Array<TransactionResponse>> {
   return new Array<TransactionResponse>();
 }
 
+interface TransactionEntry {
+  type: string,
+  nonce: number,
+  date: string,
+  destination: string | undefined,
+  amount: string
+}
+
 function Home() {
   const [currentTransactions, setCurrentTransactions]:
   [Array<TransactionResponse>, (responses: Array<TransactionResponse>) => void] = React.useState<
@@ -66,7 +74,7 @@ function Home() {
     });
   }, []);
 
-  const transactionList: Array<JSX.Element> = [];
+  const transactionList: Array<TransactionEntry> = [];
   for (let i = 0; i < currentTransactions.length; i += 1) {
     // Find the date the transaction was included, if available
     let date:string = '';
@@ -79,28 +87,13 @@ function Home() {
     if (currentTransactions[i].to === address && currentTransactions[i].from !== address) {
       type = 'IN';
     }
-    transactionList.push(
-      <p>
-        <b>
-          {type}
-          :
-        </b>
-        {' '}
-        {currentTransactions[i].nonce}
-        {' '}
-        (
-        {date}
-        ):
-        {' '}
-        {currentTransactions[i].to}
-        {' '}
-        for
-        {' '}
-        {ethers.utils.formatEther(currentTransactions[i].value)}
-        {' '}
-        ETH
-      </p>,
-    );
+    transactionList.push({
+      type,
+      nonce: currentTransactions[i].nonce,
+      date,
+      destination: currentTransactions[i].to,
+      amount: ethers.utils.formatEther(currentTransactions[i].value),
+    });
   }
 
   return (
@@ -159,19 +152,25 @@ function Home() {
         <table id="activity-table" className="table table-hover">
           <thead>
             <tr>
-              <th scope="col">Time</th>
-              <th scope="col">Action</th>
-              <th scope="col">Gas Price</th>
-              <th scope="col">View</th>
+              <th scope="col">Type</th>
+              <th scope="col">Nonce</th>
+              <th scope="col">Date</th>
+              <th scope="col">Destination</th>
+              <th scope="col">Amount</th>
             </tr>
           </thead>
           <tbody>
-            <tr>
-              <th scope="row">16 minutes ago</th>
-              <td>Transfer 100 USDT to...</td>
-              <td>108.5 Gwei</td>
-              <td>Etherscan Link (WIP)</td>
-            </tr>
+            {
+              transactionList.map((transaction: TransactionEntry) => (
+                <tr>
+                  <th scope="row">{transaction.type}</th>
+                  <th>{transaction.nonce}</th>
+                  <th>{transaction.date}</th>
+                  <th>{transaction.destination}</th>
+                  <th>{transaction.amount}</th>
+                </tr>
+              ))
+            }
           </tbody>
         </table>
         <Link to="/CreateTransaction">
@@ -179,19 +178,6 @@ function Home() {
           <p>Send</p>
         </Link>
       </div>
-
-      {/* <div className="row">
-        <div>
-          <h3>Activity:</h3>
-          <div className="table">
-            {transactionList}
-          </div>
-          <Link to="/CreateTransaction">
-            <FontAwesomeIcon className="fa-icon" icon={faPaperPlane} size="3x" />
-            <p>Send</p>
-          </Link>
-        </div>
-      </div> */}
     </div>
   );
 }
