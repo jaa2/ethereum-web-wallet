@@ -31,8 +31,11 @@ function ImportPrivateKey() {
           <textarea className="form-control is-valid" id="secret-phrase" rows={1} />
           <div className="valid-feedback">Success. This is a valid wallet account!</div>
         </div> */}
-        <Link id="correct-private-key-continue-link" className="link hoverable" to="/Home" onClick={CorrectPrivateKey}>
-          {/* <h4>Continue</h4> */}
+        <div className="form-group has-success">
+          <input type="text" className="form-control is-valid" id="inputValid" placeholder="Enter Private Key" />
+          <div className="valid-feedback">Success!</div>
+        </div>
+        <Link id="correct-private-key-continue-link" className="link hoverable" to="/CreatePassword" onClick={CorrectPrivateKey}>
           <button type="button" className="btn btn-success">Continue</button>
         </Link>
       </div>
@@ -52,18 +55,8 @@ function ImportPrivateKey() {
       <h1>Import Private Key</h1>
 
       <p>Enter your private key below</p>
-      <div id="enter-private-key-entry" className="field-entry">
-        {/* <input id="private-key-input" type="text" name="privateKey"
-              onChange={handlePrivateKey} /> */}
-        {/* <input id="private-key-input" type="text" name="privateKey" /> */}
-        <input type="text" id="private-key-input" className="form-control" placeholder="Enter Private Key" />
-      </div>
 
       {privateKeyMatchElements}
-
-      {/* <Link to="/CreatePassword">
-        <button className="continue-button" type="button">Continue</button>
-      </Link> */}
 
     </div>
 
