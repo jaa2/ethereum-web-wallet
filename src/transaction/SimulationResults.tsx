@@ -17,7 +17,7 @@ import Modal from 'react-bootstrap/Modal';
 
 import './SimulationResults.scss';
 import {
-  BigNumber, ethers, Wallet,
+  BigNumber, BigNumberish, ethers, Wallet,
 } from 'ethers';
 import { BackgroundWindowInterface } from 'background/background';
 import { Provider, TransactionRequest } from '@ethersproject/abstract-provider';
@@ -104,6 +104,7 @@ const App = (
       const transactionController = await getTransactionController();
       const wallet = await grabWallet();
       const checksAndTx = await transactionController.simulateTransaction(tRequest, wallet);
+      // TODO: fix gas-related simulation tests and then replace true with passedAllSimulations
       const passedAllSimulations = areAllSimulationsPassed(checksAndTx.simulationChecks);
       console.log(passedAllSimulations);
       if (true) {
@@ -111,6 +112,7 @@ const App = (
         setIsOpen(false);
       } else {
         // TODO: Need banner, notification, or snackbar indicating failed simulation checks
+        // if any of the gas simulations fail, outline input with red border
         setIsOpen(true);
       }
     } else {
@@ -203,6 +205,10 @@ function SimulationResults() {
     }
   };
 
+  const onEditTransaction = (txReq: TransactionRequest) => {
+    navigate('/CreateTransaction', { state: { txReq } });
+  };
+
   const { simulationChecks } = useLocation().state;
   const { txReq } = useLocation().state;
   const { contractOrEOA } = useLocation().state;
@@ -222,13 +228,11 @@ function SimulationResults() {
     setData([t, simChecks]);
   };
 
-  console.log(data);
-
   // Labels/Variables to populate info on page
 
-  let source = txReq.from;
+  let source = String(data[0].from);
   source = source.substring(0, 7).concat('...'.concat(source.substring(source.length - 3, source.length)));
-  let dest = txReq.to;
+  let dest = String(data[0].to);
   dest = dest.substring(0, 7).concat('...'.concat(dest.substring(dest.length - 3, dest.length)));
 
   const sourceToDest = source.concat(' to '.concat(dest));
@@ -239,10 +243,10 @@ function SimulationResults() {
     transferLabel = 'Contract Interaction';
   }
 
-  const tAmount = ethers.utils.formatEther(txReq.value).concat(' ETH');
-  const gasLimit = 'Gas Limit: '.concat((BigNumber.from(txReq.gasLimit)).toString().concat('; Max Gas Fee'));
-  const totalGasFee = SimulationSendTransactions.totalGasFeeInETH(txReq)?.concat(' ETH');
-  const totalTransactionFee = SimulationSendTransactions.totalTransactionFeeInETH(txReq)?.concat(' ETH');
+  const tAmount = ethers.utils.formatEther(data[0].value as BigNumberish).concat(' ETH');
+  const gasLimit = 'Gas Limit: '.concat((BigNumber.from(data[0].gasLimit as BigNumberish)).toString().concat('; Max Gas Fee'));
+  const totalGasFee = SimulationSendTransactions.totalGasFeeInETH(data[0])?.concat(' ETH');
+  const totalTransactionFee = SimulationSendTransactions.totalTransactionFeeInETH(data[0])?.concat(' ETH');
 
   let simulationStatus = 'Simulation Successful!';
   if (!areAllSimulationsPassed(simulationChecks)) {
@@ -319,45 +323,6 @@ function SimulationResults() {
           </div>
         )))}
       </div>
-      {/* <table className="table table-hover">
-        <tbody id="simulation-table"> */}
-      {/* <tr className="table-secondary">
-            <td align="left">
-              <FontAwesomeIcon icon={faCheckCircle} />
-              {' '}
-              Known Token
-            </td>
-            <td align="left">
-              <FontAwesomeIcon icon={faCheckCircle} />
-              {' '}
-              Gas: 40,190 (87.1% of limit)
-            </td>
-            <td align="left">
-              <FontAwesomeIcon icon={faCheckCircle} />
-              {' '}
-              Tx fee: 0.003580 ETH
-            </td>
-          </tr>
-          <tr className="table-secondary">
-            <td align="left">
-              <FontAwesomeIcon icon={faCheckCircle} />
-              {' '}
-              Sufficient ETH for gas fee
-            </td>
-            <td align="left">
-              <FontAwesomeIcon icon={faCheckCircle} />
-              {' '}
-              Token sent to non-contract address
-            </td>
-            <td align="left">
-              <FontAwesomeIcon icon={faCheckCircle} />
-              {' '}
-              Reasonable gas price
-            </td>
-          </tr> */}
-      {/* </tbody>
-      </table> */}
-
       {/* <h1> </h1>
       <h3>Token Transfers</h3>
       <p>
@@ -373,12 +338,12 @@ function SimulationResults() {
           <button type="button" className="btn btn-primary">Reject Transaction</button>
         </Link>
 
-        <Link to="/CreateTransaction">
-          <button type="button" className="btn btn-primary">Edit Transaction</button>
-        </Link>
+        {/* <Link to={pathname:"/CreateTransaction", state: {txReq: data[0]}}> */}
+        <button type="button" className="btn btn-primary" onClick={() => onEditTransaction(data[0])}>Edit Transaction</button>
+        {/* </Link> */}
 
         <Link to="/Home">
-          <button type="button" className="btn btn-success" onClick={() => onSendTransaction(txReq)}>Send Transaction</button>
+          <button type="button" className="btn btn-success" onClick={() => onSendTransaction(data[0])}>Send Transaction</button>
         </Link>
       </div>
     </div>

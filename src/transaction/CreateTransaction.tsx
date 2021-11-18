@@ -1,5 +1,7 @@
 /* eslint-disable no-param-reassign */
-import { Link, NavigateFunction, useNavigate } from 'react-router-dom';
+import {
+  Link, NavigateFunction, useLocation, useNavigate,
+} from 'react-router-dom';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
@@ -8,7 +10,7 @@ import {
 
 import './CreateTransaction.scss';
 import { Provider, TransactionRequest } from '@ethersproject/abstract-provider';
-import { ethers, Wallet } from 'ethers';
+import { BigNumber, ethers, Wallet } from 'ethers';
 import { BackgroundWindowInterface } from 'background/background';
 import browser from 'webextension-polyfill';
 import SimulationSendTransactions from '../SimulationSendTransactions';
@@ -92,6 +94,14 @@ function CreateTransaction() {
     }
   };
 
+  const location = useLocation();
+  let dest = '';
+  let tAmount = '';
+  if (location.state !== null) {
+    dest = location.state.txReq.to;
+    tAmount = ethers.utils.formatEther(BigNumber.from(location.state.txReq.value).toString());
+  }
+
   return (
     <div className="container">
       <div className="user">
@@ -113,13 +123,13 @@ function CreateTransaction() {
         </div>
         <div className="form-group">
           <label className="col-form-label mt-4" htmlFor="toAddress">To:</label>
-          <input type="text" className="form-control" placeholder="" id="toAddress" />
+          <input type="text" className="form-control" placeholder={dest} id="toAddress" />
         </div>
         <div className="form-group">
           <label htmlFor="amount" className="form-label mt-4">Amount</label>
           <div className="form-group">
             <div className="input-group mb-3">
-              <input type="text" className="form-control" id="amount" aria-label="Amount" />
+              <input type="text" className="form-control" id="amount" placeholder={tAmount} aria-label="Amount" />
               <span className="input-group-text">ETH</span>
             </div>
           </div>
