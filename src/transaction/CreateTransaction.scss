@@ -41,6 +41,15 @@
         display: flex;
         flex-direction: column;
         text-align: left;
+
+        .disabled-field {
+            padding: 0;
+
+        }
+
+        .replace-from {
+            margin-bottom: 20px;
+        }
     }
 
     .button-container {

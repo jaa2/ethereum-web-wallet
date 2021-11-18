@@ -1,4 +1,5 @@
 import { Wallet } from '@ethersproject/wallet';
+import { ethers, Signer, VoidSigner } from 'ethers';
 import { WalletStorage } from './WalletStorage';
 
 /**
@@ -52,10 +53,31 @@ export default class WalletState {
 
   /**
      * Get the wallet object for an immediate operation.
+     * This function is dangerous, as the object it returns can be used to sign transactions.
      * @returns A wallet object, if it exists
      */
   async getWallet(): Promise<Wallet | null> {
     return this.currentWallet;
+  }
+
+  /**
+     * Get the wallet object for an immediate operation.
+     * @returns A wallet object, if it exists
+     */
+  async getWalletSafe(): Promise<Signer | null> {
+    if (this.currentWallet !== null) {
+      return new VoidSigner(this.currentWallet.address);
+    } if (this.encryptedWalletJSON !== null) {
+      try {
+        const jobj: any = JSON.parse(this.encryptedWalletJSON);
+        if ('address' in jobj) {
+          return new VoidSigner(jobj.address as string);
+        }
+      } catch (e) {
+        return null;
+      }
+    }
+    return null;
   }
 
   /**
@@ -114,15 +136,36 @@ export default class WalletState {
   /**
      * Creates a new random wallet
      * @param overwrite If true, a new wallet will be created even if one already exists
+     * @param privateKey If non-null, specifies the private key of the wallet
      * @returns true if the action succeeded following the overwrite argument
      */
-  async createWallet(overwrite: boolean): Promise<boolean> {
+  async createWallet(overwrite: boolean, privateKey: string | null): Promise<boolean> {
     if (!overwrite && (await this.willOverwrite())) {
       return false;
     }
 
     // Create the new wallet
-    this.currentWallet = Wallet.createRandom();
+    if (privateKey === null) {
+      this.currentWallet = Wallet.createRandom();
+    } else {
+      this.currentWallet = new ethers.Wallet(privateKey);
+    }
+    return true;
+  }
+
+  /**
+     * Creates a wallet from a secret recovery phrase
+     * @param overwrite If true, a new wallet will be created even if one already exists
+     * @param phrase The secret recovery phrase ('mnemonic')
+     * @returns true if the action succeeded following the overwrite argument
+     */
+  async createWalletFromPhrase(overwrite: boolean, phrase: string): Promise<boolean> {
+    if (!overwrite && (await this.willOverwrite())) {
+      return false;
+    }
+
+    // Create the new wallet
+    this.currentWallet = ethers.Wallet.fromMnemonic(phrase);
     return true;
   }
 
