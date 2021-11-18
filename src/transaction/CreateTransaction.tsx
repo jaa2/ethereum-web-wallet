@@ -9,7 +9,7 @@ import {
 import UserState from '../common/UserState';
 import AddressBox from '../common/AddressBox';
 
-import './Transaction.scss';
+import './CreateTransaction.scss';
 
 interface TransactionAction {
   action: String
