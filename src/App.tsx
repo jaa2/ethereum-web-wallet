@@ -14,8 +14,7 @@ import Home from './Home';
 import ProfileSettings from './ProfileSettings';
 import SignIn from './SignIn';
 
-import CreateTransaction from './transaction/CreateTransaction';
-import ReplaceTransaction from './transaction/ReplaceTransaction';
+import Transaction from './transaction/Transaction';
 import SimulationResults from './transaction/SimulationResults';
 
 import './App.scss';
@@ -51,8 +50,8 @@ function App() {
         <Route path="/ProfileSettings" element={<ProfileSettings />} />
         <Route path="/SignIn" element={<SignIn />} />
 
-        <Route path="/CreateTransaction" element={<CreateTransaction />} />
-        <Route path="/ReplaceTransaction" element={<ReplaceTransaction />} />
+        <Route path="/CreateTransaction" element={<Transaction action="Send" />} />
+        <Route path="/ReplaceTransaction" element={<Transaction action="Replace" />} />
         <Route path="/SimulationResults" element={<SimulationResults />} />
       </Routes>
     </div>

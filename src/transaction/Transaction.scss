@@ -1,0 +1,91 @@
+@import '../common/colors';
+
+.transaction-container {
+    margin: 5px auto;
+    padding: 10px;
+  
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+    align-items: center;
+  
+    text-align: center;
+
+    .top-bar {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        width: 100%;
+        
+        .user {
+          display:flex;
+          flex-direction: row;
+          align-items: center;
+          justify-content: center;
+          align-self: flex-start;
+          
+          .avatar {
+            border-radius: 100%;
+            border: $icon-color solid 1px;
+            width: 75px;
+            margin: 5px;
+          }
+          
+          #transaction-user-options {
+            display: flex;
+            flex-direction: column;
+            
+            .option {
+              width: auto;
+              padding: 0px; // reset bootstrap btn style
+    
+              display: flex;
+              flex-direction: row;
+              justify-content: flex-start;
+              align-items: center;
+              text-decoration: none;
+              
+              .icon-label {
+                margin-left: 10px;
+                vertical-align: middle;
+                margin-bottom: 0px;
+              }
+            }
+          }
+        }
+      }
+
+    .field-entry {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        text-align: left;
+
+        .disabled-field {
+            padding: 0;
+
+        }
+
+        .replace-from {
+            margin-bottom: 20px;
+        }
+    }
+
+    .bottom-options {
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+        align-items: center;
+
+        margin-top: 20px;
+
+        button {
+            margin: 10px;
+        }     
+
+        .back-icon {
+            align-self: center;
+        }
+    }
+}
+
