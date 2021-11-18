@@ -59,11 +59,9 @@ function ImportPrivateKey() {
 
   if (privateKeyStatus === 'valid') {
     privateKeyStatusElements = (
-      <div className="content-container">
-        <button type="button" className="btn btn-success" onClick={onValidPrivateKey}>Continue</button>
-        {/* <button type="button" className="link hoverable" onClick={onValidPrivateKey}>
+      <div>
+        <button type="button" className="link btn btn-success" onClick={onValidPrivateKey}>
           <h4>Continue</h4>
-        </button> */}
       </div>
     );
   } else if (privateKeyStatus === 'encoding') {

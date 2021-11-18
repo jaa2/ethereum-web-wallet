@@ -19,12 +19,13 @@ import ReplaceTransaction from './transaction/ReplaceTransaction';
 import SimulationResults from './transaction/SimulationResults';
 
 import './App.scss';
+import ExistingWallet from './ExistingWallet';
 
 // TODO: Gate off routes based on if the user has authenticated or not
 
 function App() {
   return (
-    <div className="App">
+    <div id="App">
       <div id="debug-bar">
         <Link className="debug-control" to="/NavigationDebug">
           <button type="button">Navigation Debug</button>
@@ -37,6 +38,8 @@ function App() {
 
       <Routes>
         <Route path="/NavigationDebug" element={<NavigationDebug />} />
+
+        <Route path="/ExistingWallet" element={<ExistingWallet />} />
 
         <Route path="/CreateNewWallet" element={<CreateNewWallet />} />
         <Route path="/CreatePassword" element={<CreatePassword />} />

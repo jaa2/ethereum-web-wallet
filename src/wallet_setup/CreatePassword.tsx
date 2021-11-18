@@ -98,10 +98,10 @@ function CreatePassword() {
     <div id="create-password">
       <FontAwesomeIcon className="fa-icon" icon={faUnlock} size="4x" />
       <h1>Create a Password</h1>
-      <h3>
+      <p className="password-hint-text">
         To access your wallet, create a strong password that is at least 8 characters
         long.
-      </h3>
+      </p>
       <div id="create-password-password-entry" className="form-group mb-3">
         <label className="form-label" htmlFor="sign-in-password-input">Password</label>
         <input type="password" id="create-password-password-input" className="form-control" onChange={handlePassword} placeholder="Password" />
