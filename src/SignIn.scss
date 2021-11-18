@@ -1,9 +1,6 @@
 @import 'common/colors';
 
 #sign-in {
-  width: 33vw;
-  min-width: 500px;
-
   margin: auto;
 
   display: flex;
@@ -13,5 +10,11 @@
 
   .fa-icon {
     color: $icon-color;
+  }
+}
+
+.progress-instant {
+  div {
+    transition: width 0s !important;
   }
 }

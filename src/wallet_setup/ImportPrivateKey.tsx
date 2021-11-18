@@ -81,6 +81,15 @@ function ImportPrivateKey() {
   }
 
   return (
+    // <div id="import-private-key">
+    //   <FontAwesomeIcon className="fa-icon" icon={faKey} size="4x" />
+
+    //   <h1>Import Private Key</h1>
+
+    //   <h4>Enter your private key below</h4>
+    //   <div id="enter-private-key-entry" className="field-entry">
+    //     <input id="private-key-input" type="text" name="privateKey" onChange={handlePrivateKey} />
+    
     <div className="container">
       <Link className="back-icon" to="/WalletSetup">
         <FontAwesomeIcon className="fa-icon" icon={faArrowCircleLeft} size="2x" />

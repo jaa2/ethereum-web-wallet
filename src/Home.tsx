@@ -1,17 +1,19 @@
-import { Link } from 'react-router-dom';
-
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import {
-  faCopy, faCog, faLock, faPaperPlane, faExchangeAlt,
-} from '@fortawesome/free-solid-svg-icons';
-import browser from 'webextension-polyfill';
-
-import './Home.scss';
-import { EtherscanProvider, TransactionResponse } from '@ethersproject/providers';
 import { ethers, Signer } from 'ethers';
 import React, { useEffect } from 'react';
+import { Link, NavigateFunction, useNavigate } from 'react-router-dom';
+import browser from 'webextension-polyfill';
+
+import { EtherscanProvider, TransactionResponse } from '@ethersproject/providers';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import {
+  faCog, faLock, faPaperPlane, faExchangeAlt,
+} from '@fortawesome/free-solid-svg-icons';
+
 import { BackgroundWindowInterface } from '../background/background';
 import UserState from './common/UserState';
+import AddressBox from './common/AddressBox';
+
+import './Home.scss';
 
 /**
  * Get a list of recent transactions
@@ -45,13 +47,21 @@ Promise<Array<TransactionResponse>> {
   return new Array<TransactionResponse>();
 }
 
+interface TransactionEntry {
+  type: string,
+  nonce: number,
+  date: string,
+  destination: string | undefined,
+  amount: string
+}
+
 function Home() {
   const [currentTransactions, setCurrentTransactions]:
   [Array<TransactionResponse>, (responses: Array<TransactionResponse>) => void] = React.useState<
   Array<TransactionResponse>
   >(Array<TransactionResponse>());
   const [address, setAddress]:
-  [string, (matchState: string) => void] = React.useState<string>('defa11add2e55');
+  [string, (matchState: string) => void] = React.useState<string>('0x510928a823b892093ac83904ef');
 
   useEffect(() => {
     UserState.getAddress().then((newAddress) => {
@@ -64,7 +74,15 @@ function Home() {
     });
   }, []);
 
-  const transactionList: Array<JSX.Element> = [];
+  const navigate: NavigateFunction = useNavigate();
+  const lockWallet = () => {
+    UserState.getWalletState().then((state) => {
+      state.lockWallet();
+      navigate('/SignIn');
+    });
+  };
+
+  const transactionList: Array<TransactionEntry> = [];
   for (let i = 0; i < currentTransactions.length; i += 1) {
     // Find the date the transaction was included, if available
     let date:string = '';
@@ -77,48 +95,36 @@ function Home() {
     if (currentTransactions[i].to === address && currentTransactions[i].from !== address) {
       type = 'IN';
     }
-    transactionList.push(
-      <p>
-        <b>
-          {type}
-          :
-        </b>
-        {' '}
-        {currentTransactions[i].nonce}
-        {' '}
-        (
-        {date}
-        ):
-        {' '}
-        {currentTransactions[i].to}
-        {' '}
-        for
-        {' '}
-        {ethers.utils.formatEther(currentTransactions[i].value)}
-        {' '}
-        ETH
-      </p>,
-    );
+    transactionList.push({
+      type,
+      nonce: currentTransactions[i].nonce,
+      date,
+      destination: currentTransactions[i].to,
+      amount: ethers.utils.formatEther(currentTransactions[i].value),
+    });
   }
 
   return (
-    <div className="container">
-      <div className="top-bar">
+    <div id="home">
+      <div className="top-bar mb-4">
         <div className="user">
-          <img src="../public/avatar.png" alt="avatar" className="avatar" />
-          <div className="user-options">
+          <img src="/avatar.png" alt="avatar" className="avatar" />
+          <div id="home-user-options">
             <div className="option">
-              <div className="address">{address}</div>
-              <FontAwesomeIcon className="copy fa-icon" icon={faCopy} />
+              <AddressBox address={address} />
             </div>
-            <Link className="option" to="/ProfileSettings">
-              <FontAwesomeIcon className="fa-icon" icon={faCog} size="2x" />
-              <p className="icon-label">Settings</p>
-            </Link>
-            <Link className="option" to="/SignIn">
-              <FontAwesomeIcon className="fa-icon" icon={faLock} size="2x" />
-              <p className="icon-label">Lock</p>
-            </Link>
+            {/* <Link className="option" to="/ProfileSettings">
+              <FontAwesomeIcon className="fa-icon" icon={faCog} size="1x" fixedWidth />
+              <p className="icon-label">Profile Settings</p>
+            </Link> */}
+            <button type="button" className="option btn btn-link" onClick={() => navigate('/ProfileSettings')}>
+              <FontAwesomeIcon className="fa-icon" icon={faCog} size="1x" fixedWidth />
+              <p className="icon-label">Profile Settings</p>
+            </button>
+            <button type="button" className="option btn btn-link" onClick={lockWallet}>
+              <FontAwesomeIcon className="fa-icon" icon={faLock} size="1x" fixedWidth />
+              <p className="icon-label">Lock Account</p>
+            </button>
           </div>
         </div>
         <div className="field no-unit-field">
@@ -127,25 +133,62 @@ function Home() {
           </select>
         </div>
       </div>
-      <h1>2.4529 ETH</h1>
-      <h2>7,632.05 USD</h2>
-      <div className="row">
-        <div>
-          <h3>Assets:</h3>
-          <div className="table" />
-          <FontAwesomeIcon className="fa-icon" icon={faExchangeAlt} size="3x" />
-          <p>Swap</p>
-        </div>
-        <div>
-          <h3>Activity:</h3>
-          <div className="table">
-            {transactionList}
-          </div>
-          <Link to="/CreateTransaction">
-            <FontAwesomeIcon className="fa-icon" icon={faPaperPlane} size="3x" />
-            <p>Send</p>
-          </Link>
-        </div>
+
+      <div id="total" className="m-2">
+        <h1>2.4529 ETH</h1>
+        <h2>7,632.05 USD</h2>
+      </div>
+
+      <div id="assets" className="m-2">
+        <label className="form-label" htmlFor="assets-table">Assets</label>
+        <table id="assets-table" className="table table-hover">
+          <thead>
+            <tr>
+              <th scope="col">Token</th>
+              <th scope="col">USD</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <th scope="row">1000 Tether (USDT)</th>
+              <td>$1000</td>
+            </tr>
+          </tbody>
+        </table>
+        <FontAwesomeIcon className="fa-icon" icon={faExchangeAlt} size="3x" />
+        <p>Swap</p>
+      </div>
+
+      <div id="activity" className="m-2">
+        <label className="form-label" htmlFor="activity-table">Recent Activity</label>
+        <table id="activity-table" className="table table-hover">
+          <thead>
+            <tr>
+              <th scope="col">Type</th>
+              <th scope="col">Nonce</th>
+              <th scope="col">Date</th>
+              <th scope="col">Destination</th>
+              <th scope="col">Amount</th>
+            </tr>
+          </thead>
+          <tbody>
+            {
+              transactionList.map((transaction: TransactionEntry) => (
+                <tr>
+                  <th scope="row">{transaction.type}</th>
+                  <th>{transaction.nonce}</th>
+                  <th>{transaction.date}</th>
+                  <th>{transaction.destination}</th>
+                  <th>{transaction.amount}</th>
+                </tr>
+              ))
+            }
+          </tbody>
+        </table>
+        <Link to="/CreateTransaction">
+          <FontAwesomeIcon className="fa-icon" icon={faPaperPlane} size="3x" />
+          <p>Send</p>
+        </Link>
       </div>
     </div>
   );

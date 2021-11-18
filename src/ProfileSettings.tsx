@@ -8,7 +8,7 @@ import './ProfileSettings.scss';
 
 function ProfileSettings() {
   return (
-    <div className="profile-settings">
+    <div id="profile-settings">
       <div className="container">
         <Link className="back-icon" to="/WalletSetup">
           <FontAwesomeIcon className="fa-icon" icon={faHome} size="2x" />
