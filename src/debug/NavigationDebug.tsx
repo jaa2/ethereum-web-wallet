@@ -4,7 +4,7 @@ import './NavigationDebug.scss';
 
 function NavigationDebug() {
   return (
-    <div className="navigation-debug">
+    <div id="navigation-debug">
       <div className="wallet-setup-nav-debug">
         <Link className="link" to="/CreateNewWallet">
           <button type="button">Create New Wallet</button>

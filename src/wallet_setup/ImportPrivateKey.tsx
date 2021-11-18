@@ -60,7 +60,7 @@ function ImportPrivateKey() {
   if (privateKeyStatus === 'valid') {
     privateKeyStatusElements = (
       <div>
-        <button type="button" className="link hoverable" onClick={onValidPrivateKey}>
+        <button type="button" className="link btn btn-success" onClick={onValidPrivateKey}>
           <h4>Continue</h4>
         </button>
       </div>

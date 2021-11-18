@@ -25,7 +25,7 @@ import ExistingWallet from './ExistingWallet';
 
 function App() {
   return (
-    <div className="App">
+    <div id="App">
       <div id="debug-bar">
         <Link className="debug-control" to="/NavigationDebug">
           <button type="button">Navigation Debug</button>

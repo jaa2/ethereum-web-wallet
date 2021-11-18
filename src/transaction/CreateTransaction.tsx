@@ -9,7 +9,7 @@ import './CreateTransaction.scss';
 
 function CreateTransaction() {
   return (
-    <div className="container">
+    <div id="create-transaction" className="transaction-container">
       <div className="user">
         <img src="../../avatar.png" alt="avatar" className="avatar" />
         <div className="address">0x510928a823b...</div>
