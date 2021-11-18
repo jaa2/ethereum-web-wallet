@@ -10,31 +10,50 @@
     align-items: center;
   
     text-align: center;
-    
-    .user {
-        display:flex;
+
+    .top-bar {
+        display: flex;
         flex-direction: row;
-        align-items: center;
-        justify-content: center;
-        align-self: flex-start;
+        justify-content: space-between;
+        width: 100%;
         
-        .avatar {
+        .user {
+          display:flex;
+          flex-direction: row;
+          align-items: center;
+          justify-content: center;
+          align-self: flex-start;
+          
+          .avatar {
             border-radius: 100%;
             border: $icon-color solid 1px;
-            height: 25px;
-            width: 25px;
+            width: 75px;
             margin: 5px;
+          }
+          
+          #transaction-user-options {
+            display: flex;
+            flex-direction: column;
+            
+            .option {
+              width: auto;
+              padding: 0px; // reset bootstrap btn style
+    
+              display: flex;
+              flex-direction: row;
+              justify-content: flex-start;
+              align-items: center;
+              text-decoration: none;
+              
+              .icon-label {
+                margin-left: 10px;
+                vertical-align: middle;
+                margin-bottom: 0px;
+              }
+            }
+          }
         }
-
-        .address {
-            background-color: $light-blue;
-            padding: 10px;
-        }
-
-        .copy {
-            margin: 10px;
-        }
-    }
+      }
 
     .field-entry {
         width: 100%;
@@ -52,11 +71,13 @@
         }
     }
 
-    .button-container {
+    .bottom-options {
         display: flex;
         flex-direction: row;
         justify-content: center;
         align-items: center;
+
+        margin-top: 20px;
 
         button {
             margin: 10px;
