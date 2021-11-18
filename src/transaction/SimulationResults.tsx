@@ -342,9 +342,9 @@ function SimulationResults() {
         <button type="button" className="btn btn-primary" onClick={() => onEditTransaction(data[0])}>Edit Transaction</button>
         {/* </Link> */}
 
-        <Link to="/Home">
-          <button type="button" className="btn btn-success" onClick={() => onSendTransaction(data[0])}>Send Transaction</button>
-        </Link>
+        {/* <Link to="/Home"> */}
+        <button type="button" className="btn btn-success" onClick={() => onSendTransaction(data[0])}>Send Transaction</button>
+        {/* </Link> */}
       </div>
     </div>
   );
