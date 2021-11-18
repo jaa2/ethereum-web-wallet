@@ -19,13 +19,13 @@ function ReplaceTransaction() {
 
       <div className="field-entry">
         <div className="form-group">
-          <fieldset disabled>
+          <fieldset disabled className="replace-from disabled-field">
             <label className="form-label" htmlFor="fromAdress">From:</label>
             <input className="form-control" id="fromAdress" type="text" placeholder="0x510928a823b892093ac83094ef" disabled />
           </fieldset>
         </div>
         <div className="form-group">
-          <fieldset disabled>
+          <fieldset disabled className="disabled-field">
             <label className="form-label" htmlFor="toAddress">To:</label>
             <input className="form-control" id="toAddress" type="text" placeholder="James Austgen (0x98173ae89374dc83a89909234a)" disabled />
           </fieldset>
@@ -42,7 +42,7 @@ function ReplaceTransaction() {
       </div>
       <div className="button-container">
         <Link to="/Home">
-          <button type="button" className="btn btn-danger">Discard Changes</button>
+          <button type="button" className="btn btn-primary">Discard Changes</button>
         </Link>
         <span>
           <Link className="back-icon" to="/SimulationResults">

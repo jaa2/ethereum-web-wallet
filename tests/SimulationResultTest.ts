@@ -2,7 +2,7 @@
 
 import { expect } from 'chai';
 import { Provider, EtherscanProvider } from '@ethersproject/providers';
-import { Transaction } from 'ethers';
+import { BigNumber, Transaction } from 'ethers';
 import { parseEther } from '@ethersproject/units';
 import SimulationSuite from '../background/SimulationSuite';
 
@@ -28,12 +28,11 @@ describe('SimulationResults tests', () => {
     // Token transfer to contract address
     let t: Transaction = await provider.getTransaction('0x04cb2b86afadc05ee00af7b9f5d58c676372ac7549bcfebc0c07012df4fe8690');
     expect(await sr.isTokenTransferToContract(t)).to.be.true;
-
     await delay(1000);
+
     // Call to contract address; not a token transfer
     t = await provider.getTransaction('0x26c10475f0e6a73b45ee73f54743c459f428efa899d0a4c6ec72d65dc23380f1');
     expect(await sr.isTokenTransferToContract(t)).to.be.false;
-
     await delay(1000);
 
     // Token transfer to non-contract address
@@ -45,13 +44,11 @@ describe('SimulationResults tests', () => {
     // Data sent to non-contract address
     let t: Transaction = await provider.getTransaction('0xeb0d50c3d14cfce8f84ae86ac4cde37d4913c6d6b331bf9a61197c3e1f0f27e5');
     expect(await sr.isDataSentToEOA(t)).to.be.true;
-
     await delay(1000);
 
     // Data sent to contract address
     t = await provider.getTransaction('0xbb13c1de1d4dd0aea8fc9e5ea22f4362c76d9a24d6ef7706e23eaae529820f70');
     expect(await sr.isDataSentToEOA(t)).to.be.false;
-
     await delay(1000);
 
     // No data sent
@@ -63,8 +60,8 @@ describe('SimulationResults tests', () => {
     // Transaction's gas limit is reasonable
     let t: Transaction = await provider.getTransaction('0xc0f9db74a248ef15b041b576878375213037bc83767ce22b3ae20972c032afcc');
     expect(await sr.isGasLimitEnough(t)).to.be.true;
-
     await delay(1000);
+
     // Transaction's gas limit is too low
     // var t: Transaction = await provider.getTransaction("");
     // expect(await sr.isGasLimitEnough(t)).to.be.false;
@@ -78,7 +75,11 @@ describe('SimulationResults tests', () => {
   it('Can determine that the gas price is reasonable', async () => {
     // Transaction's gas price is reasonable
     const t: Transaction = await provider.getTransaction('0x6a44268d33924f4f36223013d17da57ff98325bf246152214c044c055da4cbf5');
-    expect(await sr.isGasPriceReasonable(t)).to.be.true;
+    expect(await SimulationSuite.isGasPriceReasonable(t, {
+      maxFeePerGas: BigNumber.from(2500000020),
+      maxPriorityFeePerGas: BigNumber.from(2500000000),
+      gasPrice: BigNumber.from(2500000020),
+    })).to.be.true;
     await delay(1000);
 
     // // Transaction's gas price is too high
