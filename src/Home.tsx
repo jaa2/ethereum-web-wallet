@@ -115,7 +115,7 @@ function Home() {
               <FontAwesomeIcon className="fa-icon" icon={faCog} size="2x" />
               <p className="icon-label">Settings</p>
             </Link>
-            <Link className="option" to="/SignIn">
+            <Link className="option" to="/Unlock">
               <FontAwesomeIcon className="fa-icon" icon={faLock} size="2x" />
               <p className="icon-label">Lock</p>
             </Link>

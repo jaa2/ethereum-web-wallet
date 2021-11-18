@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
-  faUserCircle, faEdit, faHome, faLock,
+  faUserCircle, faEdit, faHome,
 } from '@fortawesome/free-solid-svg-icons';
 
 import './ProfileSettings.scss';
@@ -16,10 +16,6 @@ function ProfileSettings() {
           <Link id="wallet-setup-import-key" className="link hoverable" to="/Home">
             <FontAwesomeIcon className="fa-icon" icon={faHome} size="1x" />
             <h6>Home</h6>
-          </Link>
-          <Link id="wallet-setup-import-key" className="link hoverable" to="/SignIn">
-            <FontAwesomeIcon className="fa-icon" icon={faLock} size="1x" />
-            <h6>SignIn</h6>
           </Link>
         </div>
         <div id="profile-picture-edit">
