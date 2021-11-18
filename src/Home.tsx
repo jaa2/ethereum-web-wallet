@@ -13,7 +13,7 @@ function Home() {
   const address: string = '0x510928a823b892093ac83904ef';
 
   return (
-    <div className="container">
+    <div id="home">
       <div className="top-bar mb-4">
         <div className="user">
           <img src="/avatar.png" alt="avatar" className="avatar" />

@@ -7,7 +7,7 @@ import './ImportSecretPhrase.scss';
 
 function ImportSecretPhrase() {
   return (
-    <div className="container">
+    <div id="import-secret-phrase" className="container">
       <Link className="back-icon" to="/WalletSetup">
         <FontAwesomeIcon className="fa-icon" icon={faArrowCircleLeft} size="2x" />
       </Link>
