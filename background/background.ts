@@ -1,5 +1,6 @@
 import { EtherscanProvider, Provider } from '@ethersproject/providers';
 import browser from 'webextension-polyfill';
+import PendingTransactionStore from './PendingTransactionStore';
 import WalletState from './WalletState';
 import { WalletStorage } from './WalletStorage';
 
@@ -7,6 +8,7 @@ export interface BackgroundWindowInterface {
   stateObj: {
     walletState: WalletState,
     provider: Provider | null,
+    pendingTransactionStore: PendingTransactionStore
   };
 }
 
@@ -18,6 +20,7 @@ declare global {
 window.stateObj = {
   walletState: new WalletState((browser.storage.local as WalletStorage)),
   provider: null,
+  pendingTransactionStore: new PendingTransactionStore((browser.storage.local as WalletStorage)),
 };
 
 window.stateObj.walletState.loadEncrypted()

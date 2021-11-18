@@ -7,7 +7,10 @@ import Modal from 'react-bootstrap/Modal';
 import { TransactionRequest } from '@ethersproject/abstract-provider';
 
 import './SimulationResults.scss';
+import { ethers, Wallet } from 'ethers';
 import { TokenTransferBox } from './TokenTransferBox';
+import UserState from '../common/UserState';
+import WalletState from '../../background/WalletState';
 
 const GasOptions = () => {
   const [isOpen, setIsOpen] = React.useState(false);
@@ -69,6 +72,25 @@ function SimulationResults() {
     data: '0x414bf389000000000000000000000000b4fbf271143f4fbf7b91a5ded31805e42b2208d60000000000000000000000001f9840a85d5af5bf1d1762f925bdaddc4201f9840000000000000000000000000000000000000000000000000000000000000bb8000000000000000000000000d67e28a63cfa5381d3d346d905e2f1a6471bde11000000000000000000000000000000000000000000000000000000016191490900000000000000000000000000000000000000000000000000038d7ea4c680000000000000000000000000000000000000000000000000000002fa215d28153b0000000000000000000000000000000000000000000000000000000000000000',
     value: '0x38d7ea4c68000',
   };
+
+  async function sendSomething() {
+    const pendingTxStore = await UserState.getPendingTxStore();
+    const wallet: WalletState = await UserState.getWalletState();
+    const realWallet: Wallet | null = await wallet.getWallet();
+    if (realWallet === null) {
+      return;
+    }
+    const newTx: TransactionRequest = {
+      to: realWallet.address,
+      value: ethers.utils.parseEther('0.00001'),
+    };
+    const provider = await UserState.getProvider();
+    if (provider === null) {
+      return;
+    }
+    const response = await realWallet.connect(provider).sendTransaction(newTx);
+    await pendingTxStore.addPendingTransaction(response, true);
+  }
 
   return (
     <div id="simulation-results">
@@ -164,7 +186,7 @@ function SimulationResults() {
         </Link>
 
         <Link to="/Home">
-          <button type="button" className="btn btn-success">Send Transaction</button>
+          <button type="button" className="btn btn-success" onClick={sendSomething}>Send Transaction</button>
         </Link>
       </div>
     </div>
