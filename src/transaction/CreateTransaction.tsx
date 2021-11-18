@@ -15,7 +15,7 @@ interface TransactionAction {
   action: String
 }
 
-function Transaction(props: TransactionAction) {
+function CreateTransaction(props: TransactionAction) {
   const { action } = props;
 
   const [address, setAddress]:
@@ -102,4 +102,4 @@ function Transaction(props: TransactionAction) {
   );
 }
 
-export default Transaction;
+export default CreateTransaction;
