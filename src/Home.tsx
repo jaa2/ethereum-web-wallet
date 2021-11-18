@@ -1,6 +1,6 @@
 import { ethers, Signer } from 'ethers';
 import React, { useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, NavigateFunction, useNavigate } from 'react-router-dom';
 import browser from 'webextension-polyfill';
 
 import { EtherscanProvider, TransactionResponse } from '@ethersproject/providers';
@@ -74,6 +74,14 @@ function Home() {
     });
   }, []);
 
+  const navigate: NavigateFunction = useNavigate();
+  const lockWallet = () => {
+    UserState.getWalletState().then((state) => {
+      state.lockWallet();
+      navigate('/SignIn');
+    });
+  };
+
   const transactionList: Array<TransactionEntry> = [];
   for (let i = 0; i < currentTransactions.length; i += 1) {
     // Find the date the transaction was included, if available
@@ -105,14 +113,18 @@ function Home() {
             <div className="option">
               <AddressBox address={address} />
             </div>
-            <Link className="option" to="/ProfileSettings">
+            {/* <Link className="option" to="/ProfileSettings">
               <FontAwesomeIcon className="fa-icon" icon={faCog} size="1x" fixedWidth />
               <p className="icon-label">Profile Settings</p>
-            </Link>
-            <Link className="option" to="/SignIn">
+            </Link> */}
+            <button type="button" className="option btn btn-link" onClick={() => navigate('/ProfileSettings')}>
+              <FontAwesomeIcon className="fa-icon" icon={faCog} size="1x" fixedWidth />
+              <p className="icon-label">Profile Settings</p>
+            </button>
+            <button type="button" className="option btn btn-link" onClick={lockWallet}>
               <FontAwesomeIcon className="fa-icon" icon={faLock} size="1x" fixedWidth />
               <p className="icon-label">Lock Account</p>
-            </Link>
+            </button>
           </div>
         </div>
         <div className="field no-unit-field">

@@ -47,21 +47,18 @@
         
         .option {
           width: auto;
+          padding: 0px; // reset bootstrap btn style
 
           display: flex;
           flex-direction: row;
           justify-content: flex-start;
           align-items: center;
           text-decoration: none;
-
+          
           .icon-label {
             margin-left: 10px;
             vertical-align: middle;
             margin-bottom: 0px;
-          }
-
-          .fa-icon {
-            margin-left: 5px;
           }
         }
       }
