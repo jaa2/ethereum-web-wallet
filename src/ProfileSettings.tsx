@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
-  faUserCircle, faEdit, faHome,
+  faUserCircle, faEdit, faHome, faCopy,
 } from '@fortawesome/free-solid-svg-icons';
 import './ProfileSettings.scss';
 // import { faUserCircle, faHome } from '@fortawesome/free-solid-svg-icons';
@@ -11,25 +11,36 @@ function ProfileSettings() {
     <div className="profile-settings">
       <div className="container">
         <Link className="back-icon" to="/WalletSetup">
-          <FontAwesomeIcon className="back-icon" icon={faHome} size="2x" />
+          <FontAwesomeIcon className="fa-icon" icon={faHome} size="2x" />
         </Link>
         <h1>Profile & Settings</h1>
       </div>
       {/* <FontAwesomeIcon className="fa-icon" icon={faUserCircle} size="4x" /> */}
       <div className="content-container">
         <div className="profile-left-section">
-          <div id="profile-picture-edit">
-            <FontAwesomeIcon className="fa-icon" icon={faUserCircle} size="7x" />
-            <FontAwesomeIcon className="fa-icon" icon={faEdit} size="1x" />
+          <div className="profile-picture-edit">
+            <div className="pic-section">
+              <FontAwesomeIcon className="fa-icon" icon={faUserCircle} size="9x" />
+            </div>
+            <div className="edit-pic-section">
+              <FontAwesomeIcon className="fa-icon" icon={faEdit} size="1x" />
+            </div>
             {/* <div className="form-group">
               <input className="form-control" type="file" id="formFile" />
             </div> */}
           </div>
-          <div id="profile-name-edit">
-            <text>Name</text>
-            <FontAwesomeIcon className="fa-icon" icon={faEdit} size="1x" />
+          <div className="profile-name-edit">
+            <div>
+              <p>Name</p>
+            </div>
+            <div>
+              <FontAwesomeIcon className="fa-icon" icon={faEdit} size="1x" />
+            </div>
           </div>
-          <button type="button">0x51912454541...</button>
+          <div className="user">
+            <div className="address">0x510928a823b...</div>
+            <FontAwesomeIcon className="copy fa-icon" icon={faCopy} />
+          </div>
         </div>
         <div id="profile-right-section">
           <div id="delay-selection">
@@ -57,7 +68,7 @@ function ProfileSettings() {
           </div>
         </div>
       </div>
-      <div className="container">
+      <div className="button-container">
         <button type="button" className="btn btn-outline-danger">Delete Account</button>
       </div>
     </div>

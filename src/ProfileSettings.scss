@@ -1,3 +1,5 @@
+@import 'common/colors';
+
 .profile-settings {
   width: 33vw;
   min-width: 600px;
@@ -10,13 +12,63 @@
   // align-items: center;
   // display: inline-block;
   // text-align: center;
-  .back-icon {
-    align-self: flex-start;
-  }
   
   .content-container {
     display: flex;
     justify-content: space-evenly;
     
   } 
+  .profile-name-edit {
+    display: flex;
+    justify-content: space-evenly;
+
+  }
+
+  .profile-picture-edit {
+    display: flex;
+    justify-content: space-evenly;
+    flex-direction: row;
+
+    .pic-section {
+      align-items: center;
+    }
+
+    .edit-pic-section {
+      vertical-align: bottom;
+
+    }
+  }
+
+  .user {
+    display:flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    align-self: flex-start;
+    
+    .avatar {
+        border-radius: 100%;
+        border: $icon-color solid 1px;
+        height: 25px;
+        width: 25px;
+        margin: 5px;
+    }
+
+    .address {
+        background-color: $light-blue;
+        padding: 10px;
+    }
+
+    .copy {
+        margin: 10px;
+    }
+  }
+
+  .button-container {
+    display:flex;
+    align-items: center;
+    justify-content: center;
+    margin: 10px;
+
+  }
 }
