@@ -1,0 +1,22 @@
+#address-box {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  margin: 10px;
+  
+  #address-text {
+    width: 125px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  #icon {
+    vertical-align: middle;
+  }
+
+  #icon:hover {
+    cursor: pointer;
+  }
+}
+
