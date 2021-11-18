@@ -59,21 +59,22 @@ function ImportPrivateKey() {
 
   if (privateKeyStatus === 'valid') {
     privateKeyStatusElements = (
-      <div>
-        <button type="button" className="link hoverable" onClick={onValidPrivateKey}>
+      <div className="container">
+        <button type="button" className="btn btn-success" onClick={onValidPrivateKey}>Continue</button>
+        {/* <button type="button" className="link hoverable" onClick={onValidPrivateKey}>
           <h4>Continue</h4>
-        </button>
+        </button> */}
       </div>
     );
   } else if (privateKeyStatus === 'encoding') {
     privateKeyStatusElements = (
-      <div>
+      <div className="container">
         <p className="private-key-info">Your private key should be a hexidecimal string.</p>
       </div>
     );
   } else if (privateKeyStatus === 'length') {
     privateKeyStatusElements = (
-      <div>
+      <div className="container">
         <p className="private-key-info">Your private key should be 64 hex characters long.</p>
       </div>
     );
@@ -85,7 +86,7 @@ function ImportPrivateKey() {
 
       <h1>Import Private Key</h1>
 
-      <h4>Enter your private key below</h4>
+      <p>Enter your private key below</p>
       <div id="enter-private-key-entry" className="field-entry">
         <input id="private-key-input" type="text" name="privateKey" onChange={handlePrivateKey} />
       </div>
