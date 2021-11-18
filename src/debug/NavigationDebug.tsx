@@ -33,8 +33,8 @@ function NavigationDebug() {
         <Link className="link" to="/ProfileSettings">
           <button type="button">Profile Settings</button>
         </Link>
-        <Link className="link" to="/SignIn">
-          <button type="button">Sign In</button>
+        <Link className="link" to="/Unlock">
+          <button type="button">Unlock</button>
         </Link>
       </div>
 

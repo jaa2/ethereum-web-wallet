@@ -78,7 +78,7 @@ function Home() {
   const lockWallet = () => {
     UserState.getWalletState().then((state) => {
       state.lockWallet();
-      navigate('/SignIn');
+      navigate('/Unlock');
     });
   };
 
