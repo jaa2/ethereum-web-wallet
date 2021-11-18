@@ -77,20 +77,16 @@ function areAllSimulationsPassed(simulationChecks:Map<string, Boolean>):Boolean 
   return ret;
 }
 
-const App = (props:
-{ t:
-{
-  gasLimit: any;
-  maxFeePerGas: ethers.BigNumberish;
-  maxPriorityFeePerGas: ethers.BigNumberish;
-};
-onClose:
-(arg0:
-{
-  simulationChecks: Map<string, Boolean>; t: ethers.providers.TransactionRequest;
-})
-=>
-void; }) => {
+const App = (
+  props:
+  { t:
+  { gasLimit: any;
+    maxFeePerGas: ethers.BigNumberish;
+    maxPriorityFeePerGas: ethers.BigNumberish;
+  };
+  modalToSimulationResults: (arg0: ethers.providers.TransactionRequest,
+    arg1: Map<string, Boolean>) => void; },
+) => {
   const [isOpen, setIsOpen] = React.useState(false);
 
   const showModal = () => {
@@ -109,10 +105,9 @@ void; }) => {
       const wallet = await grabWallet();
       const checksAndTx = await transactionController.simulateTransaction(tRequest, wallet);
       const passedAllSimulations = areAllSimulationsPassed(checksAndTx.simulationChecks);
-      if (passedAllSimulations) {
-        props.onClose(checksAndTx);
-        // TODO: Fix - have to have modal pass data back to the simulation results component
-        // Updating page from resimulations
+      console.log(passedAllSimulations);
+      if (true) {
+        props.modalToSimulationResults(checksAndTx.t, checksAndTx.simulationChecks);
         setIsOpen(false);
       } else {
         // TODO: Need banner, notification, or snackbar indicating failed simulation checks
@@ -214,12 +209,20 @@ function SimulationResults() {
 
   // eslint-disable-next-line max-len
   const [simulationElements, setSimulationElements]: [[string, Boolean][], (simulationElements: [string, Boolean][]) => void ] = React.useState<[string, Boolean][]>([]);
-
   useEffect(() => {
     setSimulationElements(createSimulationElements(simulationChecks));
   }, []);
 
-  // createSimulationElements(simulationChecks);
+  const [data, setData]: [[TransactionRequest, Map<string, Boolean>],
+    // eslint-disable-next-line max-len
+    (data: [TransactionRequest, Map<string, Boolean>]) => void ] = React.useState([txReq, simulationChecks]);
+
+  const modalToSimulationResults = (t: ethers.providers.TransactionRequest,
+    simChecks: Map<string, Boolean>) => {
+    setData([t, simChecks]);
+  };
+
+  console.log(data);
 
   // Labels/Variables to populate info on page
 
@@ -237,23 +240,13 @@ function SimulationResults() {
   }
 
   const tAmount = ethers.utils.formatEther(txReq.value).concat(' ETH');
-  let gasLimit = 'Gas Limit: '.concat((BigNumber.from(txReq.gasLimit)).toString().concat('; Max Gas Fee'));
-  let totalGasFee = SimulationSendTransactions.totalGasFeeInETH(txReq)?.concat(' ETH');
-  let totalTransactionFee = SimulationSendTransactions.totalTransactionFeeInETH(txReq)?.concat(' ETH');
+  const gasLimit = 'Gas Limit: '.concat((BigNumber.from(txReq.gasLimit)).toString().concat('; Max Gas Fee'));
+  const totalGasFee = SimulationSendTransactions.totalGasFeeInETH(txReq)?.concat(' ETH');
+  const totalTransactionFee = SimulationSendTransactions.totalTransactionFeeInETH(txReq)?.concat(' ETH');
 
   let simulationStatus = 'Simulation Successful!';
   if (!areAllSimulationsPassed(simulationChecks)) {
     simulationStatus = 'Simulation Failed!';
-  }
-
-  function handleClose(checksAndTx:any) {
-    const { t } = checksAndTx;
-    // TODO: update simulation checks
-
-    // update gas limit, max fee per gas, max priority fee per gas
-    gasLimit = 'Gas Limit: '.concat((BigNumber.from(t.gasLimit)).toString().concat('; Max Gas Fee'));
-    totalGasFee = SimulationSendTransactions.totalGasFeeInETH(t)?.concat(' ETH');
-    totalTransactionFee = SimulationSendTransactions.totalTransactionFeeInETH(t)?.concat(' ETH');
   }
 
   return (
@@ -292,8 +285,7 @@ function SimulationResults() {
                   </p>
                   <App
                     t={txReq}
-                    // eslint-disable-next-line react/jsx-no-bind
-                    onClose={handleClose}
+                    modalToSimulationResults={modalToSimulationResults}
                   />
                 </div>
                 <div id="total-fee">
