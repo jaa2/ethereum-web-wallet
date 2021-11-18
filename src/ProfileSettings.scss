@@ -1,83 +1,22 @@
-#profile-settings {
+.profile-settings {
   width: 33vw;
-  min-width: 400px;
-
+  min-width: 600px;
   margin: auto;
   padding: 10px;
+
   display: flex;
-  
-  #profile-left-section {
-    margin:10px;
-    #settings-nav {
-      #wallet-setup-create-wallet {
-        width: fit-content;
-        height: fit-content;
-    
-        // padding: 10px;
-      }
-  
-      #wallet-setup-import-key {
-        width: 50%;
-        display: flex;
-        // flex-direction: horizontal;
-      }
-      #settings-nav-button {
-        // display: flex;
-        // float: left;
-        // padding-left: 0;
-        // margin: 10px;
-        
-      }
-      
-
-    }
-    
-
-    .profile-name-edit {
-      align-items: center;
-      display: flex;
-      text-align: center;
-      
-
-    }
-    .text {
-      margin: 5px;
-      text-align: center;
-
-    }
-    .fa-icon {
-      margin: 5px;
-    }
-
-  }
-
-  #profile-right-section {
-    margin:10px;
-
-    .h3 {
-      margin:10px;
-    }
-    #delay-selection {
-      margin:5px;
-      // display: inline-block;
-
-      #delay-selection-content {
-        display: inline-block;
-        padding: 5px;
-      }
-    }
-
-    
-  }
-
-  #dark-mode{
-    margin:5px;
-    
-
-    #dark-mode-content {
-      display: inline-block;
-      padding: 5px;
-    }
+  flex-direction: column;
+  // justify-content: space-evenly;
+  // align-items: center;
+  // display: inline-block;
+  // text-align: center;
+  .back-icon {
+    align-self: flex-start;
   }
   
+  .content-container {
+    display: flex;
+    justify-content: space-evenly;
+    
+  } 
 }
