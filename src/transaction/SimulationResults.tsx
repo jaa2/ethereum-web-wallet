@@ -3,14 +3,14 @@
 import {
   Link, NavigateFunction, useLocation, useNavigate,
 } from 'react-router-dom';
-import React from 'react';
+import React, { useEffect } from 'react';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 // import {
 //   faFire, faCheckCircle, faEdit, faTimesCircle,
 // } from '@fortawesome/free-solid-svg-icons';
 import {
-  faFire, faEdit, faCheckCircle,
+  faFire, faEdit, faCheckCircle, faTimesCircle,
 } from '@fortawesome/free-solid-svg-icons';
 import { faEthereum } from '@fortawesome/free-brands-svg-icons';
 import Modal from 'react-bootstrap/Modal';
@@ -181,52 +181,20 @@ void; }) => {
  * Creates HTML elements for all simulation checks
  * @param simulationChecks simulation checks with simulation check as key and boolean as value
  */
-// function createSimulationElements(simulationChecks:Map<string, Boolean>) {
-//   // eslint-disable-next-line @typescript-eslint/no-use-before-define
-//   let counter = 0;
-//   const table = document.getElementById('simulation-table');
-//   console.log(table);
-//   let tr = document.createElement('tr');
-//   tr.className = 'table-secondary';
-//   simulationChecks.forEach((value: Boolean, key: string) => {
-//     if (counter % 3 === 0 && counter !== 0) {
-//       table?.appendChild(tr);
-//       tr = document.createElement('tr');
-//       tr.className = 'table-secondary';
-//     }
+function createSimulationElements(simulationChecks:Map<string, Boolean>) {
+  const arr: [string, Boolean][] = [];
+  simulationChecks.forEach((value: Boolean, key: string) => {
+    arr.push([key, value]);
+  });
 
-//     let td = null;
-//     if (!value) {
-//       td = document.createElement('td');
-//       // td.align = 'left';
-//       const span = document.createElement('span');
-//       span.textContent = '&#10003;';
-//       td.appendChild(span);
-//       td.textContent = key;
-//     } else {
-//       td = document.createElement('td');
-//       // td.align = 'left';
-//       const span = document.createElement('span');
-//       span.textContent = '&#33;';
-//       td.appendChild(span);
-//       td.textContent = key;
-//     }
-
-//     counter += 1;
-//     tr.appendChild(td);
-//   });
-
-//   table?.appendChild(tr);
-// }
+  return arr;
+}
 
 function SimulationResults() {
   const navigate: NavigateFunction = useNavigate();
   const onSendTransaction = async (txReq: TransactionRequest) => {
     const wallet = await grabWallet();
     try {
-      // Doesn't the await force the user to stay on the simulations page?
-      // Also, may just want to stash this as part of the global state
-      // along with the transaction request object
       const tResp: TransactionResponse = await wallet.sendTransaction(txReq);
       // Should not be navigating to home like this and passing the state of the
       // response like this because if the same method of grabbing the state
@@ -243,6 +211,15 @@ function SimulationResults() {
   const { simulationChecks } = useLocation().state;
   const { txReq } = useLocation().state;
   const { contractOrEOA } = useLocation().state;
+
+  // eslint-disable-next-line max-len
+  const [simulationElements, setSimulationElements]: [[string, Boolean][], (simulationElements: [string, Boolean][]) => void ] = React.useState<[string, Boolean][]>([]);
+
+  useEffect(() => {
+    setSimulationElements(createSimulationElements(simulationChecks));
+  }, []);
+
+  // createSimulationElements(simulationChecks);
 
   // Labels/Variables to populate info on page
 
@@ -337,9 +314,22 @@ function SimulationResults() {
 
       <div id="simulation-text"><h1>{simulationStatus}</h1></div>
 
-      <table className="table table-hover">
-        <tbody id="simulation-table">
-          <tr className="table-secondary">
+      <div>
+        {simulationElements.map(([simulationCheck, passed]) => (passed ? (
+          <div>
+            <FontAwesomeIcon icon={faCheckCircle} />
+            {simulationCheck}
+          </div>
+        ) : (
+          <div>
+            <FontAwesomeIcon icon={faTimesCircle} />
+            {simulationCheck}
+          </div>
+        )))}
+      </div>
+      {/* <table className="table table-hover">
+        <tbody id="simulation-table"> */}
+      {/* <tr className="table-secondary">
             <td align="left">
               <FontAwesomeIcon icon={faCheckCircle} />
               {' '}
@@ -372,9 +362,9 @@ function SimulationResults() {
               {' '}
               Reasonable gas price
             </td>
-          </tr>
-        </tbody>
-      </table>
+          </tr> */}
+      {/* </tbody>
+      </table> */}
 
       {/* <h1> </h1>
       <h3>Token Transfers</h3>
