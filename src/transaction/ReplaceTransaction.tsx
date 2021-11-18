@@ -7,7 +7,7 @@ import './CreateTransaction.scss';
 
 function ReplaceTransaction() {
   return (
-    <div className="container">
+    <div id="replace-transaction" className="transaction-container">
       <div className="user">
         <img src="../../avatar.png" alt="avatar" className="avatar" />
         <div className="address">0x510928a823b...</div>
