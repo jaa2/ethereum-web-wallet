@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom';
+import { Link, NavigateFunction, useNavigate } from 'react-router-dom';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
@@ -64,6 +64,14 @@ function Home() {
     });
   }, []);
 
+  const navigate: NavigateFunction = useNavigate();
+  const lockWallet = () => {
+    UserState.getWalletState().then((state) => {
+      state.lockWallet();
+      navigate('/SignIn');
+    });
+  };
+
   const transactionList: Array<JSX.Element> = [];
   for (let i = 0; i < currentTransactions.length; i += 1) {
     // Find the date the transaction was included, if available
@@ -115,10 +123,10 @@ function Home() {
               <FontAwesomeIcon className="fa-icon" icon={faCog} size="2x" />
               <p className="icon-label">Settings</p>
             </Link>
-            <Link className="option" to="/Unlock">
+            <button type="button" className="option btn btn-link" onClick={lockWallet}>
               <FontAwesomeIcon className="fa-icon" icon={faLock} size="2x" />
               <p className="icon-label">Lock</p>
-            </Link>
+            </button>
           </div>
         </div>
         <div className="field no-unit-field">

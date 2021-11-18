@@ -21,6 +21,9 @@ function NavigationDebug() {
         <Link className="link" to="/WalletSetup">
           <button type="button">Wallet Setup</button>
         </Link>
+        <Link className="link" to="/ExistingWallet">
+          <button type="button">Existing Wallet</button>
+        </Link>
       </div>
 
       <div className="main-nav-debug">
