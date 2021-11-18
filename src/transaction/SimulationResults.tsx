@@ -290,7 +290,7 @@ function SimulationResults() {
                 </div>
                 <div id="total-fee">
                   <p>
-                    Total Fee to Send Transaction
+                    Total Cost
                     <h3>
                       {' '}
                       {totalTransactionFee}
