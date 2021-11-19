@@ -141,7 +141,7 @@ class SimulationSuite {
         const maxFPG = maxFeePerGas.toNumber();
         const estMaxFPG = estMaxFeePerGas.toNumber();
         if ((maxPFPG >= estMaxPFPG) && (maxPFPG <= estMaxPFPG * 2)
-                  && (maxFPG >= estMaxFPG * 1.1) && (maxFPG <= estMaxFPG * 3)) {
+                  && (maxFPG >= estMaxFPG) && (maxFPG <= estMaxFPG * 3)) {
           return true;
         }
         return false;

@@ -95,24 +95,92 @@ const App = (
 
   const hideModal = async (hasEditedGas: Boolean) => {
     if (hasEditedGas) {
-      // reassign parameters related to gas for transaction
-      const tRequest = props.t;
-      tRequest.gasLimit = BigNumber.from((document.getElementById('gasLimit') as HTMLInputElement).value);
-      tRequest.maxFeePerGas = ethers.utils.parseUnits((document.getElementById('mfpg') as HTMLInputElement).value, 'gwei');
-      tRequest.maxPriorityFeePerGas = ethers.utils.parseUnits((document.getElementById('mpfpg') as HTMLInputElement).value, 'gwei');
+      const gasLimitElem = document.getElementById('gasLimit') as HTMLInputElement;
+      const mfpgElem = document.getElementById('mfpg') as HTMLInputElement;
+      const mpfpgElem = document.getElementById('mpfpg') as HTMLInputElement;
 
-      const transactionController = await getTransactionController();
-      const wallet = await grabWallet();
-      const checksAndTx = await transactionController.simulateTransaction(tRequest, wallet);
-      // TODO: fix gas-related simulation tests and then replace true with passedAllSimulations
-      const passedAllSimulations = areAllSimulationsPassed(checksAndTx.simulationChecks);
-      console.log(passedAllSimulations);
-      if (true) {
-        props.modalToSimulationResults(checksAndTx.t, checksAndTx.simulationChecks);
-        setIsOpen(false);
+      gasLimitElem.style.borderColor = 'transparent';
+      mfpgElem.style.borderColor = 'transparent';
+      mpfpgElem.style.borderColor = 'transparent';
+
+      // reassign parameters related to gas for transaction
+      const gasLimitValue = gasLimitElem.value;
+      const mfpgValue = mfpgElem.value;
+      const mpfpgValue = mpfpgElem.value;
+
+      // Note: The rest of the checks to check if the gas limit and gas fees are enough
+      // are done upon simulation
+      const gasLimitRegex = /^[1-9]\d*$/;
+      const gasFeesRegex = /^([1-9]\d*|0)((\.\d+)?)$/;
+
+      // This is to just check how the values are written
+      const isValidGasLimit = gasLimitRegex.test(gasLimitValue);
+      const isValidMfpg = gasFeesRegex.test(mfpgValue);
+      const isValidMpfpg = gasFeesRegex.test(mpfpgValue);
+
+      if (isValidGasLimit && isValidMfpg && isValidMpfpg) {
+        const tRequest = props.t;
+        tRequest.gasLimit = BigNumber.from(gasLimitValue);
+        tRequest.maxFeePerGas = ethers.utils.parseUnits(mfpgValue, 'gwei');
+        tRequest.maxPriorityFeePerGas = ethers.utils.parseUnits(mpfpgValue, 'gwei');
+
+        const transactionController = await getTransactionController();
+        const wallet = await grabWallet();
+        const checksAndTx = await transactionController.simulateTransaction(tRequest, wallet);
+        // TODO: fix gas-related simulation tests and then replace true with passedAllSimulations
+        const passedAllSimulations = areAllSimulationsPassed(checksAndTx.simulationChecks);
+        // console.log(passedAllSimulations);
+        if (passedAllSimulations) {
+          props.modalToSimulationResults(checksAndTx.t, checksAndTx.simulationChecks);
+          setIsOpen(false);
+        } else {
+          // TODO: Need banner, notification, or snackbar indicating failed simulation checks
+          // If any of the gas simulations fail, outline input with red border to indicate
+          // that the parameter is not reasonable
+          let hasWrongGasParam = false;
+
+          checksAndTx.simulationChecks.forEach((value: Boolean, key: string) => {
+            const check = key.toLowerCase();
+            if (check.includes('gas') && check.includes('limit')) {
+              if (value === false) {
+                gasLimitElem.style.border = '5px solid #ff0000';
+                hasWrongGasParam = true;
+              }
+            }
+
+            if (check.includes('gas') && check.includes('price')) {
+              if (value === false) {
+                mfpgElem.style.border = '5px solid #ff0000';
+                mpfpgElem.style.border = '5px solid #ff0000';
+                hasWrongGasParam = true;
+              }
+            }
+          });
+
+          if (hasWrongGasParam) {
+            // Resimulation would have happened, but if there was a bad gas parameter,
+            // then the modal stays up
+            setIsOpen(true);
+          } else {
+            // This will drop the modal and reupdate the page with all of the new fees
+            // and simulation checks
+            props.modalToSimulationResults(checksAndTx.t, checksAndTx.simulationChecks);
+            setIsOpen(false);
+          }
+        }
       } else {
-        // TODO: Need banner, notification, or snackbar indicating failed simulation checks
-        // if any of the gas simulations fail, outline input with red border
+        if (!isValidGasLimit) {
+          gasLimitElem.style.border = '5px solid #ff0000';
+        }
+
+        if (!isValidMfpg) {
+          mfpgElem.style.border = '5px solid #ff0000';
+        }
+
+        if (!isValidMpfpg) {
+          mpfpgElem.style.border = '5px solid #ff0000';
+        }
+
         setIsOpen(true);
       }
     } else {
@@ -138,7 +206,7 @@ const App = (
             <div className="form-group">
               <label className="form-label mt-4" htmlFor="gas-limit"> Gas Limit</label>
               <div className="input-group mb-3">
-                <input id="gasLimit" type="text" className="form-control" placeholder={BigNumber.from(props.t.gasLimit).toString()} />
+                <input id="gasLimit" type="text" className="form-control" defaultValue={BigNumber.from(props.t.gasLimit).toString()} />
               </div>
               <label className="form-label mt-4" htmlFor="gas-limit"> Max fee per gas</label>
               <div className="input-group mb-3">
@@ -147,7 +215,8 @@ const App = (
                   type="text"
                   className="form-control"
                   aria-label="Amount (to the nearest dollar)"
-                  placeholder={ethers.utils.formatUnits(props.t.maxFeePerGas, 'gwei')}
+                  defaultValue={ethers.utils.formatUnits(props.t.maxFeePerGas, 'gwei')}
+
                 />
                 <span className="input-group-text">Gwei</span>
               </div>
@@ -158,7 +227,7 @@ const App = (
                   type="text"
                   className="form-control"
                   aria-label="Amount (to the nearest dollar)"
-                  placeholder={ethers.utils.formatUnits(props.t.maxPriorityFeePerGas, 'gwei')}
+                  defaultValue={ethers.utils.formatUnits(props.t.maxPriorityFeePerGas, 'gwei')}
                 />
                 <span className="input-group-text">Gwei</span>
               </div>
@@ -244,7 +313,8 @@ function SimulationResults() {
   }
 
   const tAmount = ethers.utils.formatEther(data[0].value as BigNumberish).concat(' ETH');
-  const gasLimit = 'Gas Limit: '.concat((BigNumber.from(data[0].gasLimit as BigNumberish)).toString().concat('; Max Gas Fee'));
+  const gasLimit = 'Gas Limit: '.concat((BigNumber.from(data[0].gasLimit as BigNumberish)).toString());
+  const maxGasFeeTitle = 'Max Gas Fee';
   const totalGasFee = SimulationSendTransactions.totalGasFeeInETH(data[0])?.concat(' ETH');
   const totalTransactionFee = SimulationSendTransactions.totalTransactionFeeInETH(data[0])?.concat(' ETH');
 
@@ -281,6 +351,8 @@ function SimulationResults() {
                   <FontAwesomeIcon className="fa-icon" icon={faFire} size="2x" />
                   <p>
                     {gasLimit}
+                    <br />
+                    {maxGasFeeTitle}
                     <h3>
                       {' '}
                       {totalGasFee}

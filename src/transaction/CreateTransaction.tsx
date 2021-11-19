@@ -23,8 +23,8 @@ import SimulationSuite from '../SimulationSuite';
  * @param amountInput The amount being sent
  */
 async function TestTransaction(addressElem: HTMLInputElement, amountElem: HTMLInputElement) {
-  addressElem.style.borderColor = 'inherit';
-  amountElem.style.borderColor = 'inherit';
+  addressElem.style.borderColor = 'transparent';
+  amountElem.style.borderColor = 'transparent';
   const addressInput = addressElem.value;
   const amountInput = amountElem.value;
 
@@ -64,6 +64,8 @@ async function TestTransaction(addressElem: HTMLInputElement, amountElem: HTMLIn
     }
   }
 
+  // TODO: Have some sort of immediate feeback given to the user that informs
+  // them that something wrong was given. onChange, onFocus, onSubmit?
   if (!isAddressValid) {
     addressElem.style.border = '5px solid #ff0000';
   }
@@ -123,13 +125,13 @@ function CreateTransaction() {
         </div>
         <div className="form-group">
           <label className="col-form-label mt-4" htmlFor="toAddress">To:</label>
-          <input type="text" className="form-control" placeholder={dest} id="toAddress" />
+          <input type="text" className="form-control" defaultValue={dest} id="toAddress" />
         </div>
         <div className="form-group">
           <label htmlFor="amount" className="form-label mt-4">Amount</label>
           <div className="form-group">
             <div className="input-group mb-3">
-              <input type="text" className="form-control" id="amount" placeholder={tAmount} aria-label="Amount" />
+              <input type="text" className="form-control" id="amount" defaultValue={tAmount} aria-label="Amount" />
               <span className="input-group-text">ETH</span>
             </div>
           </div>
