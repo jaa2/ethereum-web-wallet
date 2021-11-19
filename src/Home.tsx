@@ -10,6 +10,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import { Modal } from 'react-bootstrap';
 
+import PendingTransactionStore from 'background/PendingTransactionStore';
 import { BackgroundWindowInterface } from '../background/background';
 import UserState from './common/UserState';
 import AddressBox from './common/AddressBox';
@@ -96,6 +97,10 @@ function Home() {
   [Array<TransactionResponse>, (responses: Array<TransactionResponse>) => void] = React.useState<
   Array<TransactionResponse>
   >(Array<TransactionResponse>());
+  const [pendingTransactions, setPendingTransactions]:
+  [Array<TransactionResponse>, (responses: Array<TransactionResponse>) => void] = React.useState<
+  Array<TransactionResponse>
+  >(Array<TransactionResponse>());
   const [address, setAddress]:
   [string, (matchState: string) => void] = React.useState<string>('0x510928a823b892093ac83904ef');
 
@@ -107,6 +112,9 @@ function Home() {
     });
     getRecentTransactions().then((response) => {
       setCurrentTransactions(response);
+    });
+    UserState.getPendingTxStore().then((response : PendingTransactionStore) => {
+      setPendingTransactions(response.pendingTransactions);
     });
   }, []);
 
@@ -137,6 +145,28 @@ function Home() {
       date,
       destination: currentTransactions[i].to,
       amount: ethers.utils.formatEther(currentTransactions[i].value),
+    });
+  }
+
+  const pendingTransactionList: Array<TransactionEntry> = [];
+  for (let i = 0; i < pendingTransactions.length; i += 1) {
+    // Find the date the transaction was included, if available
+    let date:string = '';
+    const { timestamp } = pendingTransactions[i];
+    if (timestamp !== undefined) {
+      date = (new Date(timestamp * 1000)).toLocaleString();
+    }
+    // Find the transaction type (IN or OUT) - Etherscan only
+    let type = 'OUT';
+    if (pendingTransactions[i].to === address && pendingTransactions[i].from !== address) {
+      type = 'IN';
+    }
+    pendingTransactionList.push({
+      type,
+      nonce: pendingTransactions[i].nonce,
+      date,
+      destination: pendingTransactions[i].to,
+      amount: ethers.utils.formatEther(pendingTransactions[i].value),
     });
   }
 
@@ -219,10 +249,10 @@ function Home() {
           </thead>
           <tbody>
             {
-              transactionList.map((transaction: TransactionEntry) => (
+              pendingTransactionList.map((transaction: TransactionEntry) => (
                 <tr>
                   <th scope="row">{transaction.type}</th>
-                  <th>{transaction.date}</th>
+                  <th>&mdash;</th>
                   <th>{transaction.destination}</th>
                   <th>{transaction.amount}</th>
                   <th>
@@ -238,6 +268,17 @@ function Home() {
                       </button>
                     </div>
                   </th>
+                </tr>
+              ))
+            }
+            {
+              transactionList.map((transaction: TransactionEntry) => (
+                <tr>
+                  <th scope="row">{transaction.type}</th>
+                  <th>{transaction.date}</th>
+                  <th>{transaction.destination}</th>
+                  <th>{transaction.amount}</th>
+                  <th>{' '}</th>
                 </tr>
               ))
             }
