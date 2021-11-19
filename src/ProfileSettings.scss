@@ -15,53 +15,29 @@
     align-self: flex-start;
   }
 
-  .title-containter {
-    display: flex;
-    text-align: center;
-    justify-content: space-evenly;
-
-    .fa-icon {
-      color: $icon-color;
-    }
-
-    .h1 {
-      display: flex;
-      text-align: center;
-      justify-content: space-evenly;
-    }
-
+  .fa-icon {
+    color: $icon-color;
   }
-
-  
-
-  
-  
-  
   
   #content-container {
     display: flex;
     justify-content: space-evenly;
     
   } 
-  .profile-name-edit {
+  #profile-name-edit {
     display: flex;
     justify-content: space-evenly;
 
   }
 
-  .profile-picture-edit {
+  #profile-picture-edit {
     display: flex;
     justify-content: space-evenly;
     flex-direction: row;
 
-    .pic-section {
-      align-items: center;
-    }
-
-    .edit-pic-section {
-      vertical-align: bottom;
-
-    }
+    // .pic-section {
+    //   align-items: center;
+    // }
   }
 
   .user {

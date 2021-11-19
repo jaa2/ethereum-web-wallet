@@ -55,18 +55,14 @@ function ProfileSettings() {
       </Link>
       <div id="content" className="container">
         <FontAwesomeIcon className="fa-icon" icon={faCogs} size="4x" />
-        <h1 className="text-center">Settings</h1>
+        <h1>Settings</h1>
         <div id="content-container" className="container">
-          <div className="profile-left-section">
-            <div className="profile-picture-edit">
-              <div className="pic-section">
-                <FontAwesomeIcon className="fa-icon" icon={faUserCircle} size="9x" />
-              </div>
-              <div className="edit-pic-section">
-                <FontAwesomeIcon className="fa-icon" icon={faEdit} size="1x" />
-              </div>
+          <div>
+            <div id="profile-picture-edit" className="container">
+              <FontAwesomeIcon className="fa-icon" icon={faUserCircle} size="9x" />
+              <FontAwesomeIcon className="fa-icon" icon={faEdit} size="1x" />
             </div>
-            <div className="profile-name-edit">
+            <div id="profile-name-edit" className="container">
               <div>
                 <p>Name</p>
               </div>
@@ -77,7 +73,7 @@ function ProfileSettings() {
             {/* TODO: get address from state */}
             <AddressBox address="0x510928a823b" />
           </div>
-          <div id="profile-right-section">
+          <div>
             <fieldset>
               <legend className="mt-1">Delay Time</legend>
               <div className="form-group">
