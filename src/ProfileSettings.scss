@@ -21,6 +21,22 @@
   #content-container {
     display: flex;
     justify-content: space-evenly;
+
+    #appearance-switch {
+      display: flex;
+      justify-content: space-evenly;
+      text-align: center;
+      align-items: center;
+    }
+
+    #address-box{
+      display: flex;
+      justify-content: space-evenly;
+      text-align: center;
+      align-items: center;
+      place-content: center;
+
+    }
     
   } 
   #profile-name-edit {

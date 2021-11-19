@@ -57,7 +57,7 @@ function ProfileSettings() {
         <FontAwesomeIcon className="fa-icon" icon={faCogs} size="4x" />
         <h1>Settings</h1>
         <div id="content-container" className="container">
-          <div>
+          <div className="container">
             <div id="profile-picture-edit" className="container">
               <FontAwesomeIcon className="fa-icon" icon={faUserCircle} size="9x" />
               <FontAwesomeIcon className="fa-icon" icon={faEdit} size="1x" />
@@ -71,9 +71,11 @@ function ProfileSettings() {
               </div>
             </div>
             {/* TODO: get address from state */}
-            <AddressBox address="0x510928a823b" />
+            <div id="address-box" className="container">
+              <AddressBox address="0x510928a823b" />
+            </div>
           </div>
-          <div>
+          <div className="container">
             <fieldset>
               <legend className="mt-1">Delay Time</legend>
               <div className="form-group">
@@ -86,10 +88,10 @@ function ProfileSettings() {
               </div>
             </fieldset>
             {/* </div> */}
-            <div id="dark-mode">
+            <div>
               <fieldset>
                 <legend className="mt-1">Dark Mode</legend>
-                <div className="form-check form-switch">
+                <div id="appearance-switch" className="form-check form-switch">
                   <input className="form-check-input" type="checkbox" id="flexSwitchCheckDefault" />
                 </div>
               </fieldset>
