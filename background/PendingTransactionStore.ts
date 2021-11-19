@@ -1,3 +1,4 @@
+import { Logger } from '@ethersproject/logger';
 import { Provider, TransactionReceipt, TransactionResponse } from '@ethersproject/providers';
 import browser from 'webextension-polyfill';
 import { storageVersion, WalletStorage } from './WalletStorage';
@@ -71,7 +72,30 @@ export default class PendingTransactionStore {
         iconUrl: 'ww-1024.png',
       });
       return receipt;
-    });
+    })
+      .catch((e: any) => {
+      // Remove hash from list
+        let targetHash = '';
+        switch (e.code) {
+          case Logger.errors.CALL_EXCEPTION:
+          // Transaction failed
+            targetHash = e.transactionHash;
+            break;
+          case Logger.errors.TRANSACTION_REPLACED:
+          // Transaction was replaced
+            targetHash = e.hash;
+            break;
+          default:
+            break;
+        }
+        for (let i = 0; i < this.pendingTransactions.length; i += 1) {
+          if (this.pendingTransactions[i].hash === targetHash) {
+            this.pendingTransactions.splice(i, 1);
+          }
+        }
+        this.save();
+        return e.receipt;
+      });
   }
 
   /**
