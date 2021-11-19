@@ -98,7 +98,8 @@ describe('SimulationResults tests', () => {
 
     // await delay(1000);
     // Transaction's gas limit is too high
-    // t = await provider.getTransaction('0xc7ed0d3e0190ba51c3d3f0169f5db1117cac355029a9eee8c1387669ed9dc636');
+    // t = await provider.getTransaction('
+    // 0xc7ed0d3e0190ba51c3d3f0169f5db1117cac355029a9eee8c1387669ed9dc636');
     // tReq = TransactionToRequest(t);
     // expect(await sr.isGasLimitEnough(tReq)).to.be.false;
   });
