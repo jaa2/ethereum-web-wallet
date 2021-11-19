@@ -1,4 +1,6 @@
-import { ethers, Signer } from 'ethers';
+import {
+  BigNumber, ethers, Signer,
+} from 'ethers';
 import React, { useEffect } from 'react';
 import { Link, NavigateFunction, useNavigate } from 'react-router-dom';
 import browser from 'webextension-polyfill';
@@ -8,13 +10,52 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faCog, faLock, faPaperPlane, /* faExchangeAlt, */
 } from '@fortawesome/free-solid-svg-icons';
+import { Modal } from 'react-bootstrap';
 
+import PendingTransactionStore from 'background/PendingTransactionStore';
 import { BackgroundWindowInterface } from '../background/background';
 import AddressBox from './common/AddressBox';
 import HelpModal, { IHelpModalProps } from './common/HelpModal';
 import UserState from './common/UserState';
 
 import './Home.scss';
+import WalletState from '../background/WalletState';
+import currentETHtoUSD from './common/UnitConversion';
+
+const CancelModal = () => {
+  const [isOpen, setIsOpen] = React.useState(false);
+
+  const showModal = () => {
+    setIsOpen(true);
+  };
+
+  const hideModal = () => {
+    setIsOpen(false);
+  };
+
+  return (
+    <>
+      <button type="button" className="mx-1 btn btn-primary" onClick={showModal}>Cancel</button>
+      <Modal show={isOpen} onHide={hideModal}>
+        <Modal.Header>
+          Cancel Transaction
+        </Modal.Header>
+        <Modal.Body>
+          <p>
+            Are you sure you want to cancel this transaction?
+          </p>
+          <p>
+            Estimated gas fee for canceling: 0.00351 gwei
+          </p>
+        </Modal.Body>
+        <Modal.Footer>
+          <button type="button" className="btn btn-secondary" onClick={hideModal}>Close</button>
+          <button type="button" className="btn btn-primary" onClick={hideModal}>Confirm</button>
+        </Modal.Footer>
+      </Modal>
+    </>
+  );
+};
 
 /**
  * Get a list of recent transactions
@@ -61,19 +102,78 @@ function Home() {
   [Array<TransactionResponse>, (responses: Array<TransactionResponse>) => void] = React.useState<
   Array<TransactionResponse>
   >(Array<TransactionResponse>());
+  const [pendingTransactions, setPendingTransactions]:
+  [Array<TransactionResponse>, (responses: Array<TransactionResponse>) => void] = React.useState<
+  Array<TransactionResponse>
+  >(Array<TransactionResponse>());
   const [address, setAddress]:
   [string, (matchState: string) => void] = React.useState<string>('0x510928a823b892093ac83904ef');
+  const [currentETH, setCurrentETH]:
+  [BigNumber, (state: BigNumber) => void] = React.useState<BigNumber>(BigNumber.from(0));
+  const [currentETHValue, setCurrentETHValue] = React.useState<number>(0);
+  const [currentETHAsUSD, setCurrentETHAsUSD]:
+  [number, (state: number) => void] = React.useState<number>(0);
 
   useEffect(() => {
     UserState.getAddress().then((newAddress) => {
-      if (newAddress !== null) {
-        setAddress(newAddress);
+      if (newAddress === null) {
+        return Promise.reject();
       }
-    });
+      return newAddress;
+    })
+      .then((newAddress) => setAddress(newAddress))
+      .then(UserState.getWalletState)
+      .then((state: WalletState) => {
+        if (state === null) {
+          return Promise.reject();
+        }
+        return state;
+      })
+      .then((state) => state.getWalletSafe())
+      .then((wallet: Signer | null) => {
+        if (wallet === null) {
+          return Promise.reject();
+        }
+        return UserState.getProvider()
+          .then((provider) => {
+            if (provider === null) {
+              return Promise.reject();
+            }
+            return wallet.connect(provider);
+          });
+      })
+      .then((wallet: Signer) => wallet.getBalance())
+      .then((balance: BigNumber) => {
+        setCurrentETH(balance);
+      });
     getRecentTransactions().then((response) => {
       setCurrentTransactions(response);
     });
+
+    // Get ETH value in USD
+    UserState.getProvider().then((provider) => {
+      if (provider === null) {
+        return Promise.reject();
+      }
+      return provider;
+    })
+      .then((provider) => currentETHtoUSD(1, provider))
+      .then((valInUSD) => {
+        setCurrentETHValue(valInUSD);
+      });
+
+    UserState.getPendingTxStore().then((response : PendingTransactionStore) => {
+      setPendingTransactions(response.pendingTransactions);
+    });
+
+    UserState.getPendingTxStore().then((response : PendingTransactionStore) => {
+      setPendingTransactions(response.pendingTransactions);
+    });
   }, []);
+
+  useEffect(() => {
+    setCurrentETHAsUSD(Number(ethers.utils.formatEther(currentETH)) * currentETHValue);
+  }, [currentETH, currentETHValue]);
 
   const navigate: NavigateFunction = useNavigate();
   const lockWallet = () => {
@@ -105,6 +205,37 @@ function Home() {
     });
   }
 
+  const pendingTransactionList: Array<TransactionEntry> = [];
+  for (let i = 0; i < pendingTransactions.length; i += 1) {
+    // Find the date the transaction was included, if available
+    let date:string = '';
+    const { timestamp } = pendingTransactions[i];
+    if (timestamp !== undefined) {
+      date = (new Date(timestamp * 1000)).toLocaleString();
+    }
+    // Find the transaction type (IN or OUT) - Etherscan only
+    let type = 'OUT';
+    if (pendingTransactions[i].to === address && pendingTransactions[i].from !== address) {
+      type = 'IN';
+    }
+    pendingTransactionList.push({
+      type,
+      nonce: pendingTransactions[i].nonce,
+      date,
+      destination: pendingTransactions[i].to,
+      amount: ethers.utils.formatEther(pendingTransactions[i].value),
+    });
+  }
+
+  const onReplaceTransaction = (nonce: number, dest: string, amount: string) => {
+    navigate('/CreateTransaction', {
+      state: {
+        nonce,
+        dest,
+        amount,
+      },
+    });
+  };
   const networkModalProps: IHelpModalProps = {
     title: 'Network',
     description: 'Multiple networks that support the Ethereum protocol exist, meaning that they each independently maintain their own blockchain. In addition to the main Ethereum network, there are both test networks and private networks. Network switching is currently not supported.',
@@ -138,8 +269,16 @@ function Home() {
       </div>
 
       <div id="total" className="m-2">
-        <h1>2.4529 ETH</h1>
-        <h2>7,632.05 USD</h2>
+        <h1>
+          {ethers.utils.formatEther(currentETH)}
+          {' '}
+          ETH
+        </h1>
+        <h2>
+          {currentETHAsUSD.toFixed(2)}
+          {' '}
+          USD
+        </h2>
       </div>
 
       {/* <div id="assets" className="m-2">
@@ -168,21 +307,44 @@ function Home() {
           <thead>
             <tr>
               <th scope="col">Type</th>
-              <th scope="col">Nonce</th>
               <th scope="col">Date</th>
               <th scope="col">Destination</th>
               <th scope="col">Amount</th>
+              <th scope="col">{' '}</th>
             </tr>
           </thead>
           <tbody>
             {
-              transactionList.slice(0, 10).map((transaction: TransactionEntry) => (
+              pendingTransactionList.map((transaction: TransactionEntry) => (
                 <tr>
                   <th scope="row">{transaction.type}</th>
-                  <td>{transaction.nonce}</td>
-                  <td>{transaction.date}</td>
-                  <td>{transaction.destination}</td>
-                  <td>{transaction.amount}</td>
+                  <th>&mdash;</th>
+                  <th>{transaction.destination}</th>
+                  <th>{transaction.amount}</th>
+                  <th>
+                    <div className="transcation-options">
+                      <CancelModal />
+                      <button
+                        type="button"
+                        className="mx-1 btn btn-primary"
+                        onClick={() => onReplaceTransaction(transaction.nonce,
+                          String(transaction.destination), transaction.amount)}
+                      >
+                        Replace
+                      </button>
+                    </div>
+                  </th>
+                </tr>
+              ))
+            }
+            {
+              transactionList.map((transaction: TransactionEntry) => (
+                <tr>
+                  <th scope="row">{transaction.type}</th>
+                  <th>{transaction.date}</th>
+                  <th>{transaction.destination}</th>
+                  <th>{transaction.amount}</th>
+                  <th>{' '}</th>
                 </tr>
               ))
             }

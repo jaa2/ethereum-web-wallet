@@ -2,7 +2,7 @@
 import { BigNumber, ethers, Wallet } from 'ethers';
 import React, { useEffect } from 'react';
 import {
-  Link, NavigateFunction, useLocation, useNavigate,
+  Link, Location, NavigateFunction, useLocation, useNavigate,
 } from 'react-router-dom';
 import browser from 'webextension-polyfill';
 
@@ -18,7 +18,7 @@ import UserState from '../common/UserState';
 import HelpModal, { IHelpModalProps } from '../common/HelpModal';
 import SimulationSendTransactions from '../SimulationSendTransactions';
 import SimulationSuite from '../SimulationSuite';
-
+import currentETHtoUSD from '../common/UnitConversion';
 import './CreateTransaction.scss';
 
 /**
@@ -27,7 +27,8 @@ import './CreateTransaction.scss';
  * @param addressInput The destination address of the transaction
  * @param amountInput The amount being sent
  */
-async function TestTransaction(addressElem: HTMLInputElement, amountElem: HTMLInputElement) {
+async function TestTransaction(addressElem: HTMLInputElement, amountElem: HTMLInputElement,
+  location: Location) {
   addressElem.style.borderColor = 'transparent';
   amountElem.style.borderColor = 'transparent';
   const addressInput = addressElem.value;
@@ -37,7 +38,7 @@ async function TestTransaction(addressElem: HTMLInputElement, amountElem: HTMLIn
     to: addressInput,
   };
 
-  const amountRegex = /^([1-9]\d*|0)((\.\d{1,8})?)$/;
+  const amountRegex = /^([1-9]\d*|0)((\.\d+)?)$/;
 
   const isAddressValid = await SimulationSuite.isAddressValid(txReq);
   const isAmountValid = amountRegex.test(amountInput);
@@ -49,16 +50,22 @@ async function TestTransaction(addressElem: HTMLInputElement, amountElem: HTMLIn
     const transactionController: SimulationSendTransactions = new
     SimulationSendTransactions(provider);
 
-    document.getElementById('amount-in-usd')!.innerHTML = (await transactionController.currentETHtoUSD(+amountInput)).toString().concat(' USD');
+    document.getElementById('amount-in-usd')!.innerHTML = (await currentETHtoUSD(+amountInput, provider)).toString().concat(' USD');
     if (wallet !== null) {
       // finish creating create transaction request object
+      if (location.state !== null
+        && (location.state.nonce !== undefined && location.state.nonce !== null)) {
+        txReq.nonce = location.state.nonce;
+      }
+
       txReq.value = ethers.utils.parseEther(amountInput);
       txReq.from = await wallet.getAddress();
       txReq.data = '0x';
       txReq.gasLimit = await transactionController.getGasLimit(txReq);
 
       // Execute simulations and go to simulations page
-      const checksAndTx = await transactionController.simulateTransaction(txReq, wallet);
+      const checksAndTx = await transactionController.simulateTransaction(txReq,
+        wallet.connect(provider));
       const contractOrEOA = await provider.getCode(addressInput);
 
       return {
@@ -87,11 +94,12 @@ interface TransactionAction {
 }
 
 function CreateTransaction(props: TransactionAction) {
+  const location = useLocation();
   const navigate: NavigateFunction = useNavigate();
   const onTestTransaction = async () => {
     const addressElem = (document.getElementById('toAddress') as HTMLInputElement);
     const amountElem = (document.getElementById('amount') as HTMLInputElement);
-    const validatedTransaction = await TestTransaction(addressElem, amountElem);
+    const validatedTransaction = await TestTransaction(addressElem, amountElem, location);
 
     if (validatedTransaction) {
       navigate('/SimulationResults', {
@@ -105,15 +113,22 @@ function CreateTransaction(props: TransactionAction) {
     }
   };
 
-  const location = useLocation();
+  let { action } = props;
+
   let dest = '';
   let tAmount = '';
   if (location.state !== null) {
-    dest = location.state.txReq.to;
-    tAmount = ethers.utils.formatEther(BigNumber.from(location.state.txReq.value).toString());
+    if (location.state.txReq !== undefined && location.state.txReq !== null) {
+      dest = location.state.txReq.to;
+      tAmount = ethers.utils.formatEther(BigNumber.from(location.state.txReq.value).toString());
+    } else if ((location.state.nonce !== undefined && location.state.nonce !== null)
+    && (location.state.dest !== undefined && location.state.dest !== null)
+    && (location.state.amount !== undefined && location.state.amount !== null)) {
+      dest = location.state.dest;
+      tAmount = location.state.amount;
+      action = 'Replace';
+    }
   }
-
-  const { action } = props;
 
   const [address, setAddress]:
   [string, (matchState: string) => void] = React.useState<string>('0x510928a823b892093ac83904ef');
@@ -157,7 +172,7 @@ function CreateTransaction(props: TransactionAction) {
 
       <div className="field-entry">
         <div className="form-group">
-          <label className="col-form-label mt-4" htmlFor="toAddress">To:</label>
+          <label className="col-form-label mt-4" htmlFor="toAddress">To</label>
           <input type="text" className="form-control" defaultValue={dest} id="toAddress" />
         </div>
         <div className="form-group">

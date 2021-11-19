@@ -1,11 +1,6 @@
 import { Wallet } from '@ethersproject/wallet';
 import { ethers, Signer, VoidSigner } from 'ethers';
-import { WalletStorage } from './WalletStorage';
-
-/**
- * The current storage version.
- */
-const storageVersion: Number = 1;
+import { storageVersion, WalletStorage } from './WalletStorage';
 
 /**
  * A class that abstracts loading and handling the user's wallet
@@ -203,5 +198,14 @@ export default class WalletState {
       return true;
     }
     return false;
+  }
+
+  /**
+   * Deletes the current wallet permanently from memory and local storage.
+   * @returns a Promise that resolves when the operation is complete
+   */
+  async deleteWallet(): Promise<void> {
+    await this.storageArea.remove('currentWallet');
+    this.currentWallet = null;
   }
 }

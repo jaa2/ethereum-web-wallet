@@ -163,12 +163,12 @@ class SimulationSendTransactions {
       let promises;
       if (isEOA) {
         promises = Promise.all([this.simulationSuite.isGasLimitEnough(t),
-          SimulationSuite.isGasPriceReasonable(t, await this.provider.getFeeData()),
+          // SimulationSuite.isGasPriceReasonable(t, await this.provider.getFeeData()),
           SimulationSuite.isTotalMoreThanWallet(t, await wallet.getBalance()),
           this.simulationSuite.isDataSentToEOA(t)]);
       } else {
         promises = Promise.all([this.simulationSuite.isGasLimitEnough(t),
-          SimulationSuite.isGasPriceReasonable(t, await this.provider.getFeeData()),
+          // SimulationSuite.isGasPriceReasonable(t, await this.provider.getFeeData()),
           SimulationSuite.isTotalMoreThanWallet(t, await wallet.getBalance()),
           this.simulationSuite.isTokenTransferToContract(t)]);
       }
@@ -177,10 +177,10 @@ class SimulationSendTransactions {
       // Simulation Check = Key; Boolean = Value
       const simulationChecks = new Map([
         ['Gas Limit is Reasonable', simResults[0]],
-        ['Gas Price is Reasonable', simResults[1]],
+        // ['Gas Price is Reasonable', simResults[1]],
         ['Address is Valid', true],
-        ['Total Fee is not More than Wallet', simResults[2] === false],
-        ['Data is Sent Correctly', simResults[3] === false]]);
+        ['Total Fee is not More than Wallet', simResults[1] === false],
+        ['Data is Sent Correctly', simResults[2] === false]]);
 
       return { simulationChecks, t };
     } catch (e) {

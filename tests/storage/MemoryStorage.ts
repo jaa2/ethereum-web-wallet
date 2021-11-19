@@ -38,4 +38,15 @@ export default class MemoryStorage implements WalletStorage {
     }
     return Promise.resolve();
   }
+
+  remove(keys: string | string[]): Promise<void> {
+    if (typeof (keys) === 'string') {
+      delete this.storage[keys];
+    } else {
+      for (let i = 0; i < keys.length; i += 1) {
+        delete this.storage[keys[i]];
+      }
+    }
+    return Promise.resolve();
+  }
 }
