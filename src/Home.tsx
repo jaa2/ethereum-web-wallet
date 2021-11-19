@@ -6,7 +6,7 @@ import browser from 'webextension-polyfill';
 import { EtherscanProvider, TransactionResponse } from '@ethersproject/providers';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
-  faCog, faLock, faPaperPlane, faExchangeAlt,
+  faCog, faLock, faPaperPlane, /* faExchangeAlt, */
 } from '@fortawesome/free-solid-svg-icons';
 
 import { BackgroundWindowInterface } from '../background/background';
@@ -142,7 +142,7 @@ function Home() {
         <h2>7,632.05 USD</h2>
       </div>
 
-      <div id="assets" className="m-2">
+      {/* <div id="assets" className="m-2">
         <label className="form-label" htmlFor="assets-table">Assets</label>
         <table id="assets-table" className="table table-hover">
           <thead>
@@ -160,7 +160,7 @@ function Home() {
         </table>
         <FontAwesomeIcon className="fa-icon" icon={faExchangeAlt} size="3x" />
         <p>Swap</p>
-      </div>
+      </div> */}
 
       <div id="activity" className="m-2">
         <label className="form-label" htmlFor="activity-table">Recent Activity</label>
