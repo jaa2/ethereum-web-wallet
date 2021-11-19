@@ -7,12 +7,38 @@
 
   display: flex;
   flex-direction: column;
-  // justify-content: space-evenly;
+  justify-content: space-evenly;
+  text-align: center;
   // align-items: center;
   // display: inline-block;
-  // text-align: center;
+  .back-icon {
+    align-self: flex-start;
+  }
+
+  .title-containter {
+    display: flex;
+    text-align: center;
+    justify-content: space-evenly;
+
+    .fa-icon {
+      color: $icon-color;
+    }
+
+    .h1 {
+      display: flex;
+      text-align: center;
+      justify-content: space-evenly;
+    }
+
+  }
+
   
-  .content-container {
+
+  
+  
+  
+  
+  #content-container {
     display: flex;
     justify-content: space-evenly;
     
