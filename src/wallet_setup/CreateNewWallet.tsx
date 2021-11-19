@@ -22,6 +22,7 @@ async function loadNewWallet(): Promise<string | null> {
   // Show secret recovery phrase
   const wallet: Wallet | null = !walletCreated ? null : await walletState.getWallet();
   if (walletCreated && wallet !== null) {
+    await backgroundWindow.connectWallet();
     return wallet.mnemonic.phrase;
   }
 
