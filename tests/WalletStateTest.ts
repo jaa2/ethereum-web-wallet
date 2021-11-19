@@ -16,7 +16,7 @@ describe('WalletState tests', () => {
     expect(state.loadEncrypted()).to.eventually.be.rejectedWith('Not all storage values found');
   });
 
-  it('Creates, saves, and loads a wallet', async () => {
+  it('Creates, saves, loads, and deletes a wallet', async () => {
     const storage: WalletStorage = new MemoryStorage();
     // Create
     const state1: WalletState = new WalletState(storage);
@@ -30,6 +30,14 @@ describe('WalletState tests', () => {
     await state2.loadEncrypted();
     await state2.decryptWallet(password);
     expect(((await state2.getWallet()) as Wallet).privateKey === key);
+
+    // Delete
+    await state2.deleteWallet();
+    expect((await state2.getWallet()) === null);
+
+    // Ensure that it no longer resides in local storage
+    const state3: WalletState = new WalletState(storage);
+    expect(state3.loadEncrypted()).to.eventually.be.rejectedWith('Not all storage values found');
   });
 
   it('Clears the wallet when lockWallet is called', async () => {

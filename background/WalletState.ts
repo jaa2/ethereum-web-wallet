@@ -199,4 +199,13 @@ export default class WalletState {
     }
     return false;
   }
+
+  /**
+   * Deletes the current wallet permanently from memory and local storage.
+   * @returns a Promise that resolves when the operation is complete
+   */
+  async deleteWallet(): Promise<void> {
+    await this.storageArea.remove('currentWallet');
+    this.currentWallet = null;
+  }
 }
