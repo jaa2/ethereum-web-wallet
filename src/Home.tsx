@@ -1,4 +1,6 @@
-import { ethers, Signer } from 'ethers';
+import {
+  BigNumber, ethers, Signer,
+} from 'ethers';
 import React, { useEffect } from 'react';
 import { Link, NavigateFunction, useNavigate } from 'react-router-dom';
 import browser from 'webextension-polyfill';
@@ -14,6 +16,8 @@ import UserState from './common/UserState';
 import AddressBox from './common/AddressBox';
 
 import './Home.scss';
+import WalletState from '../background/WalletState';
+import currentETHtoUSD from './common/UnitConversion';
 
 /**
  * Get a list of recent transactions
@@ -62,17 +66,64 @@ function Home() {
   >(Array<TransactionResponse>());
   const [address, setAddress]:
   [string, (matchState: string) => void] = React.useState<string>('0x510928a823b892093ac83904ef');
+  const [currentETH, setCurrentETH]:
+  [BigNumber, (state: BigNumber) => void] = React.useState<BigNumber>(BigNumber.from(0));
+  const [currentETHValue, setCurrentETHValue] = React.useState<number>(0);
+  const [currentETHAsUSD, setCurrentETHAsUSD]:
+  [number, (state: number) => void] = React.useState<number>(0);
 
   useEffect(() => {
     UserState.getAddress().then((newAddress) => {
-      if (newAddress !== null) {
-        setAddress(newAddress);
+      if (newAddress === null) {
+        return Promise.reject();
       }
-    });
+      return newAddress;
+    })
+      .then((newAddress) => setAddress(newAddress))
+      .then(UserState.getWalletState)
+      .then((state: WalletState) => {
+        if (state === null) {
+          return Promise.reject();
+        }
+        return state;
+      })
+      .then((state) => state.getWalletSafe())
+      .then((wallet: Signer | null) => {
+        if (wallet === null) {
+          return Promise.reject();
+        }
+        return UserState.getProvider()
+          .then((provider) => {
+            if (provider === null) {
+              return Promise.reject();
+            }
+            return wallet.connect(provider);
+          });
+      })
+      .then((wallet: Signer) => wallet.getBalance())
+      .then((balance: BigNumber) => {
+        setCurrentETH(balance);
+      });
     getRecentTransactions().then((response) => {
       setCurrentTransactions(response);
     });
+
+    // Get ETH value in USD
+    UserState.getProvider().then((provider) => {
+      if (provider === null) {
+        return Promise.reject();
+      }
+      return provider;
+    })
+      .then((provider) => currentETHtoUSD(1, provider))
+      .then((valInUSD) => {
+        setCurrentETHValue(valInUSD);
+      });
   }, []);
+
+  useEffect(() => {
+    setCurrentETHAsUSD(Number(ethers.utils.formatEther(currentETH)) * currentETHValue);
+  }, [currentETH, currentETHValue]);
 
   const navigate: NavigateFunction = useNavigate();
   const lockWallet = () => {
@@ -145,8 +196,16 @@ function Home() {
       </div>
 
       <div id="total" className="m-2">
-        <h1>2.4529 ETH</h1>
-        <h2>7,632.05 USD</h2>
+        <h1>
+          {ethers.utils.formatEther(currentETH)}
+          {' '}
+          ETH
+        </h1>
+        <h2>
+          {currentETHAsUSD.toFixed(2)}
+          {' '}
+          USD
+        </h2>
       </div>
 
       <div id="assets" className="m-2">

@@ -18,6 +18,7 @@ import SimulationSendTransactions from '../SimulationSendTransactions';
 import SimulationSuite from '../SimulationSuite';
 import UserState from '../common/UserState';
 import AddressBox from '../common/AddressBox';
+import currentETHtoUSD from '../common/UnitConversion';
 
 /**
  * Ensures that the inputs of address and amount are valid before sending
@@ -48,7 +49,7 @@ async function TestTransaction(addressElem: HTMLInputElement, amountElem: HTMLIn
     const transactionController: SimulationSendTransactions = new
     SimulationSendTransactions(provider);
 
-    document.getElementById('amount-in-usd')!.innerHTML = (await transactionController.currentETHtoUSD(+amountInput)).toString().concat(' USD');
+    document.getElementById('amount-in-usd')!.innerHTML = (await currentETHtoUSD(+amountInput, provider)).toString().concat(' USD');
     if (wallet !== null) {
       // finish creating create transaction request object
       if (location.state !== null

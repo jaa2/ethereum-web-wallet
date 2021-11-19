@@ -1,6 +1,6 @@
 import { Provider, TransactionRequest } from '@ethersproject/providers';
 import {
-  Contract, ethers, Transaction, Wallet,
+  ethers, Transaction, Wallet,
 } from 'ethers';
 import { BigNumber } from '@ethersproject/bignumber';
 import SimulationSuite from './SimulationSuite';
@@ -13,25 +13,6 @@ class SimulationSendTransactions {
   constructor(provider: Provider) {
     this.provider = provider;
     this.simulationSuite = new SimulationSuite(this.provider);
-  }
-
-  /**
-   * Returns the USD amount of 1 ETH
-   */
-  async currentETHtoUSD(amount: number):Promise<number> {
-    const abi = ['function latestAnswer() public view returns (int256)'];
-    // Mainnet: 0x5f4eC3Df9cbd43714FE2740f5E3616155c5b8419
-    // Old Ropsten: 0x8468b2bDCE073A157E560AA4D9CcF6dB1DB98507
-    // TODO: Find different address to calculate up to date conversion from ETH to USD
-    const chainlinkETHUSDFeed = new Contract('0x8468b2bDCE073A157E560AA4D9CcF6dB1DB98507',
-      abi, this.provider);
-    try {
-      const priceInUSD = (BigNumber.from(await chainlinkETHUSDFeed.latestAnswer()).toNumber()
-        / 10 ** 8) * amount;
-      return priceInUSD;
-    } catch (e) {
-      return 0;
-    }
   }
 
   // TODO: Cache the result because the numbers don't change until the blockchain has changed
