@@ -8,6 +8,7 @@ import { TransactionRequest } from '@ethersproject/abstract-provider';
 
 import './SimulationResults.scss';
 import { TokenTransferBox } from './TokenTransferBox';
+import HelpModal, { IHelpModalProps } from '../common/HelpModal';
 
 const GasOptions = () => {
   const [isOpen, setIsOpen] = React.useState(false);
@@ -70,6 +71,11 @@ function SimulationResults() {
     value: '0x38d7ea4c68000',
   };
 
+  const gasModalProps: IHelpModalProps = {
+    title: 'Gas Terms',
+    description: 'Gas price - maximum amount of Ether you are willing to pay for each unit of Gas. Gas limit - maximum amount of gas you are willing to spend to execute the transaction. Gwei - fractional unit of Ether used to specify gas price.',
+  };
+
   return (
     <div id="simulation-results">
       <div className="card border-info mb-3">
@@ -95,6 +101,10 @@ function SimulationResults() {
                     <h3> .00035 ETH </h3>
                   </p>
                   <GasOptions />
+                  <HelpModal
+                    title={gasModalProps.title}
+                    description={gasModalProps.description}
+                  />
                 </div>
               </div>
             </div>

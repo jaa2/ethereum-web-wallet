@@ -3,13 +3,14 @@ import { Link, NavigateFunction, useNavigate } from 'react-router-dom';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
-  faPaperPlane, faQuestionCircle, faArrowCircleLeft, faCog,
+  faPaperPlane, faArrowCircleLeft, faCog,
 } from '@fortawesome/free-solid-svg-icons';
 
 import UserState from '../common/UserState';
 import AddressBox from '../common/AddressBox';
 
 import './CreateTransaction.scss';
+import HelpModal, { IHelpModalProps } from '../common/HelpModal';
 
 interface TransactionAction {
   action: String
@@ -30,6 +31,11 @@ function CreateTransaction(props: TransactionAction) {
       }
     });
   }, []);
+
+  const simulationModalProps: IHelpModalProps = {
+    title: 'Simulation',
+    description: 'A simulation is a speculative process of taking the inputted parameters of a transaction and showing how it would fare under an ideal scenario. There is no risk nor cost to simulating a transaction.',
+  };
 
   return (
     <div className="transaction-container">
@@ -80,7 +86,11 @@ function CreateTransaction(props: TransactionAction) {
             <Link className="back-icon" to="/SimulationResults">
               <button type="button" className="btn btn-info">Test Transaction</button>
             </Link>
-            <FontAwesomeIcon id="help-test" className="fa-icon" icon={faQuestionCircle} />
+            {/* <FontAwesomeIcon id="help-test" className="fa-icon" icon={faQuestionCircle} /> */}
+            <HelpModal
+              title={simulationModalProps.title}
+              description={simulationModalProps.description}
+            />
           </span>
         </div>
         )}
@@ -94,7 +104,11 @@ function CreateTransaction(props: TransactionAction) {
             <Link className="back-icon" to="/SimulationResults">
               <button type="button" className="btn btn-info">Test Transaction</button>
             </Link>
-            <FontAwesomeIcon id="help-test" className="fa-icon" icon={faQuestionCircle} />
+            {/* <FontAwesomeIcon id="help-test" className="fa-icon" icon={faQuestionCircle} /> */}
+            <HelpModal
+              title={simulationModalProps.title}
+              description={simulationModalProps.description}
+            />
           </span>
         </div>
         )}
