@@ -85,7 +85,7 @@ function CreateNewWallet() {
 
   return (
     <div id="create-new-wallet">
-      <Link id="back-link" className="back-icon link hoverable" to="/WalletSetup">
+      <Link id="back-link" className="back-icon" to="/WalletSetup">
         <FontAwesomeIcon className="fa-icon" icon={faArrowCircleLeft} size="2x" />
       </Link>
       <div className="align-center">

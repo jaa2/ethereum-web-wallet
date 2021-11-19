@@ -103,13 +103,8 @@
         justify-content: space-around;
         align-items: center;
 
-        .button{
-            padding: 7px 14px;
-            text-align: center;
-            display: inline-block;
-            font-size: 16px;
-            margin: 4px 2px;
-            cursor: pointer;
+        button {
+            margin: 10px;
         }
 
         .reject-transaction{

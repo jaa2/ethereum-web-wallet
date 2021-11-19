@@ -1,9 +1,6 @@
 @import '../common/colors';
 
 #create-new-wallet {
-  width: 50vw;
-  min-width: 400px;
-
   margin: auto;
   padding: 10px;
 
@@ -24,21 +21,16 @@
     color: $icon-color;
   }
 
-  .link {
-    color: $text-color;
-    text-decoration: none;
-  }
-
-  .hoverable:hover {
-    background-color: $hover-button-color;
-    cursor: pointer;
-  }
-
   .border-red {
     border-style:solid;
     border-color:#FF0000;
   }
+
+  .back-icon {
+    align-self: flex-start;
+  }
 }
+
 .button{
   margin: 10px;
   background-color: $icon-color;
