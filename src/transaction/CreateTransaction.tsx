@@ -56,7 +56,8 @@ async function TestTransaction(addressElem: HTMLInputElement, amountElem: HTMLIn
       txReq.gasLimit = await transactionController.getGasLimit(txReq);
 
       // Execute simulations and go to simulations page
-      const checksAndTx = await transactionController.simulateTransaction(txReq, wallet);
+      const checksAndTx = await transactionController.simulateTransaction(txReq,
+        wallet.connect(provider));
       const contractOrEOA = await provider.getCode(addressInput);
 
       return {

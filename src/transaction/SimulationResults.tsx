@@ -268,7 +268,12 @@ function SimulationResults() {
       return;
     }
 
-    const tResp: TransactionResponse = await wallet.sendTransaction(txReq);
+    const provider = await UserState.getProvider();
+    if (provider === null) {
+      return;
+    }
+
+    const tResp: TransactionResponse = await wallet.connect(provider).sendTransaction(txReq);
     await pendingTxStore.addPendingTransaction(tResp, true);
   };
 
