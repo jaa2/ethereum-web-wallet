@@ -59,20 +59,23 @@ function ImportPrivateKey() {
 
   if (privateKeyStatus === 'valid') {
     privateKeyStatusElements = (
-      <div className="content-container">
-        <button type="button" className="btn btn-success" onClick={onValidPrivateKey}>Continue</button>
+      <div>
+        <p className="phrase-info text-success">Valid private key.</p>
+        <Link id="continue-link" className="link hoverable" to="/CreatePassword" onClick={onValidPrivateKey}>
+          <button type="button" className="btn btn-primary">Continue</button>
+        </Link>
       </div>
     );
   } else if (privateKeyStatus === 'encoding') {
     privateKeyStatusElements = (
       <div className="content-container">
-        <p className="private-key-info">Your private key should be a hexidecimal string.</p>
+        <p className="private-key-info text-warning">Your private key should be a hexidecimal string.</p>
       </div>
     );
   } else if (privateKeyStatus === 'length') {
     privateKeyStatusElements = (
       <div className="content-container">
-        <p className="private-key-info">Your private key should be 64 hex characters long.</p>
+        <p className="private-key-info text-warning">Your private key should be 64 hex characters long.</p>
       </div>
     );
   }
@@ -84,15 +87,15 @@ function ImportPrivateKey() {
       </Link>
       <div>
         <FontAwesomeIcon className="fa-icon" icon={faKey} size="4x" />
-
         <h1>Import Private Key</h1>
-
-        <p>Enter your private key below</p>
-        <div id="enter-private-key-entry" className="field-entry">
-          <input id="private-key-input" type="text" name="privateKey" onChange={handlePrivateKey} />
-        </div>
       </div>
 
+      <div className="form-group">
+        <label htmlFor="private-key-input" className="form-label mt-4">Enter your private key below</label>
+        <div className="input-group mb-3">
+          <input className="form-control" id="private-key-input" type="text" name="privateKey" onChange={handlePrivateKey} />
+        </div>
+      </div>
       {privateKeyStatusElements}
     </div>
   );

@@ -66,7 +66,7 @@ function CreatePassword() {
     passwordMatchElements = (
       <div id="create-password-match-elements">
         <p id="create-password-info-match" className="password-info text-success">Success. Your passwords match!</p>
-        <button type="button" id="create-password-continue-link" className="btn btn-outline-primary" onClick={handlePasswordCompleted}>
+        <button type="button" id="create-password-continue-link" className="btn btn-primary" onClick={handlePasswordCompleted}>
           Continue
         </button>
       </div>
