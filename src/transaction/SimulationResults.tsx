@@ -1,30 +1,28 @@
 /* eslint-disable react/destructuring-assignment */
 /* eslint-disable react/prop-types */
 import {
+  BigNumber, BigNumberish, ethers, Wallet,
+} from 'ethers';
+import React, { useEffect } from 'react';
+import Modal from 'react-bootstrap/Modal';
+import {
   Link, NavigateFunction, useLocation, useNavigate,
 } from 'react-router-dom';
-import React, { useEffect } from 'react';
+import browser from 'webextension-polyfill';
 
+import { Provider, TransactionRequest } from '@ethersproject/abstract-provider';
+import { TransactionResponse } from '@ethersproject/providers';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-// import {
-//   faFire, faCheckCircle, faEdit, faTimesCircle,
-// } from '@fortawesome/free-solid-svg-icons';
 import {
   faFire, faEdit, faCheckCircle, faTimesCircle,
 } from '@fortawesome/free-solid-svg-icons';
 import { faEthereum } from '@fortawesome/free-brands-svg-icons';
-import Modal from 'react-bootstrap/Modal';
+
+import { BackgroundWindowInterface } from '../../background/background';
+import HelpModal, { IHelpModalProps } from '../common/HelpModal';
+import SimulationSendTransactions from '../SimulationSendTransactions';
 
 import './SimulationResults.scss';
-import {
-  BigNumber, BigNumberish, ethers, Wallet,
-} from 'ethers';
-import { BackgroundWindowInterface } from 'background/background';
-import { Provider, TransactionRequest } from '@ethersproject/abstract-provider';
-import browser from 'webextension-polyfill';
-import { TransactionResponse } from '@ethersproject/providers';
-// import { TokenTransferBox } from './TokenTransferBox';
-import SimulationSendTransactions from '../SimulationSendTransactions';
 
 /**
  * Get the object that can simulate and send a transaction
@@ -275,6 +273,11 @@ function SimulationResults() {
     }
   };
 
+  const gasModalProps: IHelpModalProps = {
+    title: 'Gas Terms',
+    description: 'Gas price - maximum amount of Ether you are willing to pay for each unit of Gas. Gas limit - maximum amount of gas you are willing to spend to execute the transaction. Gwei - fractional unit of Ether used to specify gas price.',
+  };
+
   const onEditTransaction = (txReq: TransactionRequest) => {
     navigate('/CreateTransaction', { state: { txReq } });
   };
@@ -374,6 +377,10 @@ function SimulationResults() {
                       {' '}
                     </h3>
                   </p>
+                  <HelpModal
+                    title={gasModalProps.title}
+                    description={gasModalProps.description}
+                  />
                 </div>
               </div>
             </div>
@@ -411,13 +418,9 @@ function SimulationResults() {
           <button type="button" className="btn btn-primary">Reject Transaction</button>
         </Link>
 
-        {/* <Link to={pathname:"/CreateTransaction", state: {txReq: data[0]}}> */}
         <button type="button" className="btn btn-primary" onClick={() => onEditTransaction(data[0])}>Edit Transaction</button>
-        {/* </Link> */}
 
-        {/* <Link to="/Home"> */}
         <button type="button" className="btn btn-success" onClick={() => onSendTransaction(data[0])}>Send Transaction</button>
-        {/* </Link> */}
       </div>
     </div>
   );
