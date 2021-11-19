@@ -37,7 +37,7 @@ async function TestTransaction(addressElem: HTMLInputElement, amountElem: HTMLIn
     to: addressInput,
   };
 
-  const amountRegex = /^([1-9]\d*|0)((\.\d{1,8})?)$/;
+  const amountRegex = /^([1-9]\d*|0)((\.\d+)?)$/;
 
   const isAddressValid = await SimulationSuite.isAddressValid(txReq);
   const isAmountValid = amountRegex.test(amountInput);
