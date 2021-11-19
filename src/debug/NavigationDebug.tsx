@@ -4,7 +4,7 @@ import './NavigationDebug.scss';
 
 function NavigationDebug() {
   return (
-    <div className="navigation-debug">
+    <div id="navigation-debug">
       <div className="wallet-setup-nav-debug">
         <Link className="link" to="/CreateNewWallet">
           <button type="button">Create New Wallet</button>
@@ -21,6 +21,9 @@ function NavigationDebug() {
         <Link className="link" to="/WalletSetup">
           <button type="button">Wallet Setup</button>
         </Link>
+        <Link className="link" to="/ExistingWallet">
+          <button type="button">Existing Wallet</button>
+        </Link>
       </div>
 
       <div className="main-nav-debug">
@@ -30,8 +33,8 @@ function NavigationDebug() {
         <Link className="link" to="/ProfileSettings">
           <button type="button">Profile Settings</button>
         </Link>
-        <Link className="link" to="/SignIn">
-          <button type="button">Sign In</button>
+        <Link className="link" to="/Unlock">
+          <button type="button">Unlock</button>
         </Link>
       </div>
 

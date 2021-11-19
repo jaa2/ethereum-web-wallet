@@ -50,9 +50,9 @@ function ImportSecretPhrase() {
   if (secretPhraseStatus === 'valid') {
     matchElements = (
       <div>
-        <p id="info-match" className="info">Success. This is a valid wallet account!</p>
+        <div id="info-match" className="valid-feedback">Success. This is a valid wallet account!</div>
         <button
-          className="bottom-button"
+          className="btn btn-success"
           type="button"
           disabled={inputDisabled}
           onClick={onSecretPhrase}
@@ -70,21 +70,24 @@ function ImportSecretPhrase() {
   }
 
   return (
-    <div className="container">
+    <div id="import-secret-phrase" className="container">
       <Link className="back-icon" to="/WalletSetup">
         <FontAwesomeIcon className="fa-icon" icon={faArrowCircleLeft} size="2x" />
       </Link>
       <div className="container">
         <FontAwesomeIcon className="fa-icon" icon={faCloudUploadAlt} size="4x" />
         <h1>Import Secret Recovery Phrase</h1>
-        <h3>Enter your 12-word secret recovery phrase below.</h3>
-        <textarea
-          disabled={inputDisabled}
-          cols={40}
-          rows={4}
-          onChange={(event) => handleSecretPhrase(event)}
-        />
-
+        <p>Enter your 12-word secret recovery phrase below.</p>
+        <div className="form-group">
+          <textarea
+            className="form-control is-valid"
+            id="secret-phrase"
+            disabled={inputDisabled}
+            cols={40}
+            rows={4}
+            onChange={(event) => handleSecretPhrase(event)}
+          />
+        </div>
         {matchElements}
       </div>
     </div>

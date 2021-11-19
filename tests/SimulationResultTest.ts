@@ -51,6 +51,7 @@ describe('SimulationResults tests', () => {
     expect(await sr.isTokenTransferToContract(tReq)).to.be.true;
 
     await delay(1000);
+
     // Call to contract address; not a token transfer
     t = await provider.getTransaction('0x26c10475f0e6a73b45ee73f54743c459f428efa899d0a4c6ec72d65dc23380f1');
     tReq = TransactionToRequest(t);
@@ -92,6 +93,7 @@ describe('SimulationResults tests', () => {
     expect(await sr.isGasLimitEnough(tReq)).to.be.true;
 
     await delay(1000);
+
     // Transaction's gas limit is too low
     // var t: Transaction = await provider.getTransaction("");
     // expect(await sr.isGasLimitEnough(t)).to.be.false;

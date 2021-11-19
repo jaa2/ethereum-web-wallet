@@ -111,6 +111,7 @@ class SimulationSuite {
   /**
      * Returns true if the transaction's gas price is not too high or too low
      * @param t Transaction to test
+     * @param feeData Time-relevant fee data
      * @returns true if the transaction matches the function description
      */
   static async isGasPriceReasonable(t: TransactionRequest | null, feeData: FeeData):

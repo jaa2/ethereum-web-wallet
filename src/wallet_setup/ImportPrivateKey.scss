@@ -1,9 +1,6 @@
 @import '../common/colors';
 
 #import-private-key {
-  width: 33vw;
-  min-width: 400px;
-
   margin: auto;
   padding: 10px;
 
@@ -14,6 +11,13 @@
 
   text-align: center;
 
+  .back-icon {
+    align-self: flex-start;
+  }
+
+  .content-container {
+    margin: 5px;
+  }
   .fa-icon {
     color: $icon-color;
   }
@@ -28,11 +32,7 @@
     cursor: pointer;
   }
 
-
   .continue-button {
     margin: 10px;
   }
-
-  
-  
 }

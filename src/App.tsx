@@ -12,19 +12,19 @@ import WalletSetup from './wallet_setup/WalletSetup';
 
 import Home from './Home';
 import ProfileSettings from './ProfileSettings';
-import SignIn from './SignIn';
+import Unlock from './Unlock';
 
 import CreateTransaction from './transaction/CreateTransaction';
-import ReplaceTransaction from './transaction/ReplaceTransaction';
 import SimulationResults from './transaction/SimulationResults';
 
 import './App.scss';
+import ExistingWallet from './ExistingWallet';
 
 // TODO: Gate off routes based on if the user has authenticated or not
 
 function App() {
   return (
-    <div className="App">
+    <div id="App">
       <div id="debug-bar">
         <Link className="debug-control" to="/NavigationDebug">
           <button type="button">Navigation Debug</button>
@@ -38,6 +38,8 @@ function App() {
       <Routes>
         <Route path="/NavigationDebug" element={<NavigationDebug />} />
 
+        <Route path="/ExistingWallet" element={<ExistingWallet />} />
+
         <Route path="/CreateNewWallet" element={<CreateNewWallet />} />
         <Route path="/CreatePassword" element={<CreatePassword />} />
         <Route path="/ImportPrivateKey" element={<ImportPrivateKey />} />
@@ -46,10 +48,10 @@ function App() {
 
         <Route path="/Home" element={<Home />} />
         <Route path="/ProfileSettings" element={<ProfileSettings />} />
-        <Route path="/SignIn" element={<SignIn />} />
+        <Route path="/Unlock" element={<Unlock />} />
 
-        <Route path="/CreateTransaction" element={<CreateTransaction />} />
-        <Route path="/ReplaceTransaction" element={<ReplaceTransaction />} />
+        <Route path="/CreateTransaction" element={<CreateTransaction action="Send" />} />
+        <Route path="/ReplaceTransaction" element={<CreateTransaction action="Replace" />} />
         <Route path="/SimulationResults" element={<SimulationResults />} />
       </Routes>
     </div>

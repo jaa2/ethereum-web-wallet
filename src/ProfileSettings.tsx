@@ -1,64 +1,66 @@
 import { Link } from 'react-router-dom';
-
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
-  faUserCircle, faEdit, faHome, faLock,
+  faUserCircle, faEdit, faHome,
 } from '@fortawesome/free-solid-svg-icons';
-
 import './ProfileSettings.scss';
+import AddressBox from './common/AddressBox';
 
 function ProfileSettings() {
   return (
     <div id="profile-settings">
-
-      <div id="profile-left-section">
-        <div id="settings-nav">
-          <Link id="wallet-setup-import-key" className="link hoverable" to="/Home">
-            <FontAwesomeIcon className="fa-icon" icon={faHome} size="1x" />
-            <h6>Home</h6>
-          </Link>
-          <Link id="wallet-setup-import-key" className="link hoverable" to="/SignIn">
-            <FontAwesomeIcon className="fa-icon" icon={faLock} size="1x" />
-            <h6>SignIn</h6>
-          </Link>
+      <div className="content-container">
+        <div className="profile-left-section">
+          <div id="settings-nav">
+            <Link id="wallet-setup-import-key" className="link hoverable" to="/Home">
+              <FontAwesomeIcon className="fa-icon" icon={faHome} size="2x" />
+            </Link>
+          </div>
+          <div className="profile-picture-edit">
+            <div className="pic-section">
+              <FontAwesomeIcon className="fa-icon" icon={faUserCircle} size="9x" />
+            </div>
+            <div className="edit-pic-section">
+              <FontAwesomeIcon className="fa-icon" icon={faEdit} size="1x" />
+            </div>
+          </div>
+          <div className="profile-name-edit">
+            <div>
+              <p>Name</p>
+            </div>
+            <div>
+              <FontAwesomeIcon className="fa-icon" icon={faEdit} size="1x" />
+            </div>
+          </div>
+          {/* TODO: get address from state */}
+          <AddressBox address="0x510928a823b" />
         </div>
-        <div id="profile-picture-edit">
-          <FontAwesomeIcon className="fa-icon" icon={faUserCircle} size="7x" />
-          <FontAwesomeIcon className="fa-icon" icon={faEdit} size="1x" />
+        <div id="profile-right-section">
+          <div id="delay-selection">
+            <fieldset>
+              <legend className="mt-1">Delay Time</legend>
+              <div className="form-group">
+                <select className="form-select" id="exampleSelect1">
+                  <option>5 sec</option>
+                  <option>10 sec</option>
+                  <option>20 sec</option>
+                  <option>30 sec</option>
+                </select>
+              </div>
+            </fieldset>
+          </div>
+          <div id="dark-mode">
+            <fieldset>
+              <legend className="mt-1">Dark Mode</legend>
+              <div className="form-check form-switch">
+                <input className="form-check-input" type="checkbox" id="flexSwitchCheckDefault" />
+              </div>
+            </fieldset>
+          </div>
         </div>
-
-        <div id="profile-name-edit">
-          <text>Name</text>
-          <FontAwesomeIcon className="fa-icon" icon={faEdit} size="1x" />
-        </div>
-        <button type="button">0x51912454541...</button>
       </div>
-
-      <div id="profile-right-section">
-        <h3>Profile & Settings</h3>
-        <div id="delay-selection">
-          <div id="delay-selection-content">
-            <h5>Delay Time</h5>
-          </div>
-          <div id="delay-selection-content">
-            <select id="to-address-input" name="to-address">
-              <option>5 sec</option>
-              <option>10 sec</option>
-              <option>20 sec</option>
-              <option>30 sec</option>
-            </select>
-          </div>
-        </div>
-        <div id="dark-mode">
-          <div id="dark-mode-content">
-            <h5>Dark Mode</h5>
-          </div>
-          <div id="dark-mode-content">
-            <input type="checkbox" />
-          </div>
-          {/* <span id="slider"></span> */}
-        </div>
-        <button type="button">Delete Account</button>
+      <div className="button-container">
+        <button type="button" className="btn btn-outline-danger">Delete Account</button>
       </div>
     </div>
   );

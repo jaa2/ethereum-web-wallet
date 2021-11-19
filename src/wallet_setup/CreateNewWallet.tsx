@@ -65,7 +65,7 @@ function CreateNewWallet() {
     phraseMatchElements = (
       <div id="create-phrase-match-elements">
         <p id="create-phrase-info-match" className="phrase-info text-success">Success. Your phrases match!</p>
-        <Link id="create-phrase-continue-link" className="link hoverable" to="/Home" onClick={NewWalletCreated}>
+        <Link id="create-phrase-continue-link" className="link hoverable" to="/CreatePassword" onClick={NewWalletCreated}>
           <button type="button" className="btn btn-success">Continue</button>
         </Link>
       </div>
@@ -115,25 +115,13 @@ function CreateNewWallet() {
             and do not enter it into any website.
           </p>
         </div>
-        <div id="create-phrase-entry" className="field-entry">
-          <h5 id="create-phrase-phrase-label">Phrase</h5>
+        <div className="form-group">
+          <h5 id="create-phrase-phrase-label">Secret Recovery Phrase</h5>
           <p id="create-phrase-phrase-input">{phrase}</p>
-          <h5 id="create-phrase-confirm-phrase-label">Repeat your secret recovery phrase below to confirm it is written down correctly:</h5>
-          <input id="create-phrase-confirm-phrase-input" type="phrase" name="confirm phrase" onChange={handleConfirmPhrase} />
-          {/* </div>
-        <div className="form-group">
-          <label htmlFor="create-phrase-phrase-input" className="form-label mt-4">
-            Secret Recovery Phrase
-            <input className="form-control" id="create-phrase-phrase-input" type="phrase"
-            name="phrase" onChange={handlePhrase} />
-          </label>
-        </div>
-        <div className="form-group">
-          <label htmlFor="create-phrase-confirm-phrase-input" className="form-label mt-4">
-            Confirm Secret Recovery Phrase
-            <input className="form-control" id="create-phrase-confirm-phrase-input" type="phrase"
-            name="confirm phrase" onChange={handleConfirmPhrase} />
-          </label> */}
+          <label htmlFor="create-phrase-confirm-phrase-input" className="form-label mt-4">Confirm Secret Recovery Phrase</label>
+          <div className="input-group mb-3">
+            <input className="form-control" id="create-phrase-confirm-phrase-input" type="phrase" name="confirm phrase" onChange={handleConfirmPhrase} />
+          </div>
         </div>
         {phraseMatchElements}
       </div>

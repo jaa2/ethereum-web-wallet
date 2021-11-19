@@ -1,7 +1,7 @@
-import { NavigateFunction, useNavigate } from 'react-router-dom';
+import { Link, NavigateFunction, useNavigate } from 'react-router-dom';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faKey } from '@fortawesome/free-solid-svg-icons';
+import { faKey, faArrowCircleLeft } from '@fortawesome/free-solid-svg-icons';
 import browser from 'webextension-polyfill';
 
 import './ImportPrivateKey.scss';
@@ -59,21 +59,19 @@ function ImportPrivateKey() {
 
   if (privateKeyStatus === 'valid') {
     privateKeyStatusElements = (
-      <div>
-        <button type="button" className="link hoverable" onClick={onValidPrivateKey}>
-          <h4>Continue</h4>
-        </button>
+      <div className="content-container">
+        <button type="button" className="btn btn-success" onClick={onValidPrivateKey}>Continue</button>
       </div>
     );
   } else if (privateKeyStatus === 'encoding') {
     privateKeyStatusElements = (
-      <div>
+      <div className="content-container">
         <p className="private-key-info">Your private key should be a hexidecimal string.</p>
       </div>
     );
   } else if (privateKeyStatus === 'length') {
     privateKeyStatusElements = (
-      <div>
+      <div className="content-container">
         <p className="private-key-info">Your private key should be 64 hex characters long.</p>
       </div>
     );
@@ -81,19 +79,22 @@ function ImportPrivateKey() {
 
   return (
     <div id="import-private-key">
-      <FontAwesomeIcon className="fa-icon" icon={faKey} size="4x" />
+      <Link className="back-icon" to="/WalletSetup">
+        <FontAwesomeIcon className="fa-icon" icon={faArrowCircleLeft} size="2x" />
+      </Link>
+      <div>
+        <FontAwesomeIcon className="fa-icon" icon={faKey} size="4x" />
 
-      <h1>Import Private Key</h1>
+        <h1>Import Private Key</h1>
 
-      <h4>Enter your private key below</h4>
-      <div id="enter-private-key-entry" className="field-entry">
-        <input id="private-key-input" type="text" name="privateKey" onChange={handlePrivateKey} />
+        <p>Enter your private key below</p>
+        <div id="enter-private-key-entry" className="field-entry">
+          <input id="private-key-input" type="text" name="privateKey" onChange={handlePrivateKey} />
+        </div>
       </div>
 
       {privateKeyStatusElements}
-
     </div>
-
   );
 }
 

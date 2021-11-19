@@ -23,6 +23,7 @@ import { BackgroundWindowInterface } from 'background/background';
 import { Provider, TransactionRequest } from '@ethersproject/abstract-provider';
 import browser from 'webextension-polyfill';
 import { TransactionResponse } from '@ethersproject/providers';
+// import { TokenTransferBox } from './TokenTransferBox';
 import SimulationSendTransactions from '../SimulationSendTransactions';
 
 /**
@@ -77,7 +78,7 @@ function areAllSimulationsPassed(simulationChecks:Map<string, Boolean>):Boolean 
   return ret;
 }
 
-const App = (
+const GasOptions = (
   props:
   { t:
   { gasLimit: any;
@@ -359,7 +360,7 @@ function SimulationResults() {
                       {' '}
                     </h3>
                   </p>
-                  <App
+                  <GasOptions
                     t={txReq}
                     modalToSimulationResults={modalToSimulationResults}
                   />

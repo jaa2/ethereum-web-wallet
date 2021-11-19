@@ -65,8 +65,8 @@ function CreatePassword() {
   if (passwordMatchState === 'match') {
     passwordMatchElements = (
       <div id="create-password-match-elements">
-        <p id="create-password-info-match" className="password-info">Success. Your passwords match!</p>
-        <button type="button" id="create-password-continue-link" className="link hoverable" onClick={handlePasswordCompleted}>
+        <p id="create-password-info-match" className="password-info text-success">Success. Your passwords match!</p>
+        <button type="button" id="create-password-continue-link" className="btn btn-outline-primary" onClick={handlePasswordCompleted}>
           Continue
         </button>
       </div>
@@ -98,10 +98,10 @@ function CreatePassword() {
     <div id="create-password">
       <FontAwesomeIcon className="fa-icon" icon={faUnlock} size="4x" />
       <h1>Create a Password</h1>
-      <h3>
+      <p className="password-hint-text">
         To access your wallet, create a strong password that is at least 8 characters
         long.
-      </h3>
+      </p>
       <div id="create-password-password-entry" className="form-group mb-3">
         <label className="form-label" htmlFor="sign-in-password-input">Password</label>
         <input type="password" id="create-password-password-input" className="form-control" onChange={handlePassword} placeholder="Password" />
