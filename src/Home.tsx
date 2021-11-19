@@ -252,7 +252,7 @@ function Home() {
             </div>
             <button type="button" className="option btn btn-link" onClick={() => navigate('/ProfileSettings')}>
               <FontAwesomeIcon className="fa-icon" icon={faCog} size="1x" fixedWidth />
-              <p className="icon-label">Profile Settings</p>
+              <p className="icon-label">Settings</p>
             </button>
             <button type="button" className="option btn btn-link" onClick={lockWallet}>
               <FontAwesomeIcon className="fa-icon" icon={faLock} size="1x" fixedWidth />
