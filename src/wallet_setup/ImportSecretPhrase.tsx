@@ -50,9 +50,9 @@ function ImportSecretPhrase() {
   if (secretPhraseStatus === 'valid') {
     matchElements = (
       <div>
-        <div id="info-match" className="valid-feedback">Success. This is a valid wallet account!</div>
+        <div id="info-match" className="valid-feedback text-success">Success. This is a valid wallet account!</div>
         <button
-          className="btn btn-success"
+          className="btn btn-primary"
           type="button"
           disabled={inputDisabled}
           onClick={onSecretPhrase}
@@ -64,7 +64,7 @@ function ImportSecretPhrase() {
   } else if (secretPhraseStatus === 'invalid') {
     matchElements = (
       <div>
-        <p id="info-match" className="info">Please type in your secret recovery phrase.</p>
+        <p id="info-match" className="info text-warning">Please type in your secret recovery phrase.</p>
       </div>
     );
   }
@@ -88,6 +88,7 @@ function ImportSecretPhrase() {
             onChange={(event) => handleSecretPhrase(event)}
           />
         </div>
+        <h6>{' '}</h6>
         {matchElements}
       </div>
     </div>

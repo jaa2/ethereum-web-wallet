@@ -157,7 +157,7 @@ function CreateTransaction(props: TransactionAction) {
 
       <div className="field-entry">
         <div className="form-group">
-          <label className="col-form-label mt-4" htmlFor="toAddress">To:</label>
+          <label className="col-form-label mt-4" htmlFor="toAddress">To</label>
           <input type="text" className="form-control" defaultValue={dest} id="toAddress" />
         </div>
         <div className="form-group">

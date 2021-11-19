@@ -393,12 +393,12 @@ function SimulationResults() {
       <div>
         {simulationElements.map(([simulationCheck, passed]) => (passed ? (
           <div>
-            <FontAwesomeIcon icon={faCheckCircle} />
+            <FontAwesomeIcon icon={faCheckCircle} color="#6cbc7a" />
             {simulationCheck}
           </div>
         ) : (
           <div>
-            <FontAwesomeIcon icon={faTimesCircle} />
+            <FontAwesomeIcon icon={faTimesCircle} color="#ca5c54" />
             {simulationCheck}
           </div>
         )))}
