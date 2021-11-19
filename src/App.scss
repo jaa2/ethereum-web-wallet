@@ -1,15 +1,15 @@
 @import './common/colors';
 
 #App {
-  width: 33vw;
   min-width: 600px;
+  max-width: 1500px;
+  min-height: 500px;
   margin: auto;
+  padding: 20px;
 
   .fa-icon {
     color: $icon-color
   }
-
-  
 
   #debug-bar {
     width: 100%;

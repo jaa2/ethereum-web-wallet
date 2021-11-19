@@ -12,7 +12,7 @@ import WalletSetup from './wallet_setup/WalletSetup';
 
 import Home from './Home';
 import ProfileSettings from './ProfileSettings';
-import SignIn from './SignIn';
+import Unlock from './Unlock';
 
 import CreateTransaction from './transaction/CreateTransaction';
 import SimulationResults from './transaction/SimulationResults';
@@ -48,7 +48,7 @@ function App() {
 
         <Route path="/Home" element={<Home />} />
         <Route path="/ProfileSettings" element={<ProfileSettings />} />
-        <Route path="/SignIn" element={<SignIn />} />
+        <Route path="/Unlock" element={<Unlock />} />
 
         <Route path="/CreateTransaction" element={<CreateTransaction action="Send" />} />
         <Route path="/ReplaceTransaction" element={<CreateTransaction action="Replace" />} />
