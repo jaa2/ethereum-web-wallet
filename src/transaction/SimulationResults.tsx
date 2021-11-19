@@ -50,7 +50,11 @@ async function grabWallet() {
   const window: BackgroundWindowInterface = await browser.runtime.getBackgroundPage();
   const state = window.stateObj;
   const wallet = await state.walletState.getWallet() as Wallet;
-  return wallet;
+  const provider = await UserState.getProvider();
+  if (provider === null) {
+    throw Error('Provider not found');
+  }
+  return wallet.connect(provider);
 }
 
 /**
@@ -268,13 +272,9 @@ function SimulationResults() {
       return;
     }
 
-    const provider = await UserState.getProvider();
-    if (provider === null) {
-      return;
-    }
-
-    const tResp: TransactionResponse = await wallet.connect(provider).sendTransaction(txReq);
+    const tResp: TransactionResponse = await wallet.sendTransaction(txReq);
     await pendingTxStore.addPendingTransaction(tResp, true);
+    navigate('/Home');
   };
 
   const onEditTransaction = (txReq: TransactionRequest) => {
