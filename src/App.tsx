@@ -1,5 +1,5 @@
 import {
-  Routes, Route, Link, useLocation,
+  Routes, Route, /* Navigate, Link, useLocation, */
 } from 'react-router-dom';
 
 import NavigationDebug from './debug/NavigationDebug';
@@ -25,17 +25,9 @@ import ExistingWallet from './ExistingWallet';
 function App() {
   return (
     <div id="App">
-      <div id="debug-bar">
-        <Link className="debug-control" to="/NavigationDebug">
-          <button type="button">Navigation Debug</button>
-        </Link>
-
-        <Link className="debug-control" to={useLocation().pathname} target="_blank">
-          <button type="button">Open in New Window</button>
-        </Link>
-      </div>
-
       <Routes>
+        <Route path="/" element={<ExistingWallet />} />
+
         <Route path="/NavigationDebug" element={<NavigationDebug />} />
 
         <Route path="/ExistingWallet" element={<ExistingWallet />} />
