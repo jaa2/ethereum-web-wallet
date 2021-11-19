@@ -1,6 +1,6 @@
 /* eslint-disable no-param-reassign */
 import {
-  Link, NavigateFunction, useLocation, useNavigate,
+  Link, Location, NavigateFunction, useLocation, useNavigate,
 } from 'react-router-dom';
 import React, { useEffect } from 'react';
 
@@ -25,7 +25,8 @@ import AddressBox from '../common/AddressBox';
  * @param addressInput The destination address of the transaction
  * @param amountInput The amount being sent
  */
-async function TestTransaction(addressElem: HTMLInputElement, amountElem: HTMLInputElement) {
+async function TestTransaction(addressElem: HTMLInputElement, amountElem: HTMLInputElement,
+  location: Location) {
   addressElem.style.borderColor = 'transparent';
   amountElem.style.borderColor = 'transparent';
   const addressInput = addressElem.value;
@@ -50,6 +51,11 @@ async function TestTransaction(addressElem: HTMLInputElement, amountElem: HTMLIn
     document.getElementById('amount-in-usd')!.innerHTML = (await transactionController.currentETHtoUSD(+amountInput)).toString().concat(' USD');
     if (wallet !== null) {
       // finish creating create transaction request object
+      if (location.state !== null
+        && (location.state.nonce !== undefined || location.state.nonce !== null)) {
+        txReq.nonce = location.state.nonce;
+      }
+
       txReq.value = ethers.utils.parseEther(amountInput);
       txReq.from = await wallet.getAddress();
       txReq.data = '0x';
@@ -86,11 +92,12 @@ interface TransactionAction {
 }
 
 function CreateTransaction(props: TransactionAction) {
+  const location = useLocation();
   const navigate: NavigateFunction = useNavigate();
   const onTestTransaction = async () => {
     const addressElem = (document.getElementById('toAddress') as HTMLInputElement);
     const amountElem = (document.getElementById('amount') as HTMLInputElement);
-    const validatedTransaction = await TestTransaction(addressElem, amountElem);
+    const validatedTransaction = await TestTransaction(addressElem, amountElem, location);
 
     if (validatedTransaction) {
       navigate('/SimulationResults', {
@@ -104,15 +111,22 @@ function CreateTransaction(props: TransactionAction) {
     }
   };
 
-  const location = useLocation();
+  let { action } = props;
+
   let dest = '';
   let tAmount = '';
   if (location.state !== null) {
-    dest = location.state.txReq.to;
-    tAmount = ethers.utils.formatEther(BigNumber.from(location.state.txReq.value).toString());
+    if (location.state.txReq !== undefined || location.state.txReq !== null) {
+      dest = location.state.txReq.to;
+      tAmount = ethers.utils.formatEther(BigNumber.from(location.state.txReq.value).toString());
+    } else if ((location.state.nonce !== undefined || location.state.nonce !== null)
+    && (location.state.dest !== undefined || location.state.dest !== null)
+    && (location.state.amount !== undefined || location.state.amount !== null)) {
+      dest = location.state.dest;
+      tAmount = location.state.amount;
+      action = 'Replace';
+    }
   }
-
-  const { action } = props;
 
   const [address, setAddress]:
   [string, (matchState: string) => void] = React.useState<string>('0x510928a823b892093ac83904ef');

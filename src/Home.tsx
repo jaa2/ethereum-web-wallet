@@ -104,6 +104,16 @@ function Home() {
     });
   }
 
+  const onReplaceTransaction = (nonce: number, dest: string, amount: string) => {
+    navigate('/CreateTransaction', {
+      state: {
+        nonce,
+        dest,
+        amount,
+      },
+    });
+  };
+
   return (
     <div id="home">
       <div className="top-bar mb-4">
@@ -175,6 +185,14 @@ function Home() {
             {
               transactionList.map((transaction: TransactionEntry) => (
                 <tr>
+                  <button
+                    type="button"
+                    className="btn btn-primary"
+                    onClick={() => onReplaceTransaction(transaction.nonce,
+                      String(transaction.destination), transaction.amount)}
+                  >
+                    Replace
+                  </button>
                   <th scope="row">{transaction.type}</th>
                   <th>{transaction.nonce}</th>
                   <th>{transaction.date}</th>
