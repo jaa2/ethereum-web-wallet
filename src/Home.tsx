@@ -8,12 +8,48 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faCog, faLock, faPaperPlane, faExchangeAlt,
 } from '@fortawesome/free-solid-svg-icons';
+import { Modal } from 'react-bootstrap';
 
 import { BackgroundWindowInterface } from '../background/background';
 import UserState from './common/UserState';
 import AddressBox from './common/AddressBox';
 
 import './Home.scss';
+
+const CancelModal = () => {
+  const [isOpen, setIsOpen] = React.useState(false);
+
+  const showModal = () => {
+    setIsOpen(true);
+  };
+
+  const hideModal = () => {
+    setIsOpen(false);
+  };
+
+  return (
+    <>
+      <button type="button" className="mx-1 btn btn-primary" onClick={showModal}>Cancel</button>
+      <Modal show={isOpen} onHide={hideModal}>
+        <Modal.Header>
+          Cancel Transaction
+        </Modal.Header>
+        <Modal.Body>
+          <p>
+            Are you sure you want to cancel this transaction?
+          </p>
+          <p>
+            Estimated gas fee for canceling: 0.00351 gwei
+          </p>
+        </Modal.Body>
+        <Modal.Footer>
+          <button type="button" className="btn btn-secondary" onClick={hideModal}>Close</button>
+          <button type="button" className="btn btn-primary" onClick={hideModal}>Confirm</button>
+        </Modal.Footer>
+      </Modal>
+    </>
+  );
+};
 
 /**
  * Get a list of recent transactions
@@ -175,29 +211,33 @@ function Home() {
           <thead>
             <tr>
               <th scope="col">Type</th>
-              <th scope="col">Nonce</th>
               <th scope="col">Date</th>
               <th scope="col">Destination</th>
               <th scope="col">Amount</th>
+              <th scope="col">{' '}</th>
             </tr>
           </thead>
           <tbody>
             {
               transactionList.map((transaction: TransactionEntry) => (
                 <tr>
-                  <button
-                    type="button"
-                    className="btn btn-primary"
-                    onClick={() => onReplaceTransaction(transaction.nonce,
-                      String(transaction.destination), transaction.amount)}
-                  >
-                    Replace
-                  </button>
                   <th scope="row">{transaction.type}</th>
-                  <th>{transaction.nonce}</th>
                   <th>{transaction.date}</th>
                   <th>{transaction.destination}</th>
                   <th>{transaction.amount}</th>
+                  <th>
+                    <div className="transcation-options">
+                      <CancelModal />
+                      <button
+                        type="button"
+                        className="mx-1 btn btn-primary"
+                        onClick={() => onReplaceTransaction(transaction.nonce,
+                          String(transaction.destination), transaction.amount)}
+                      >
+                        Replace
+                      </button>
+                    </div>
+                  </th>
                 </tr>
               ))
             }

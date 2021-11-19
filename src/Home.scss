@@ -76,5 +76,10 @@
     a {
       text-decoration: none;
     }
+
+    .transcation-options {
+      display: flex;
+      flex-direction: row;
+    }
   }
 }
