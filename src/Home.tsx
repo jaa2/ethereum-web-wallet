@@ -176,13 +176,13 @@ function Home() {
           </thead>
           <tbody>
             {
-              transactionList.map((transaction: TransactionEntry) => (
+              transactionList.slice(0, 10).map((transaction: TransactionEntry) => (
                 <tr>
                   <th scope="row">{transaction.type}</th>
-                  <th>{transaction.nonce}</th>
-                  <th>{transaction.date}</th>
-                  <th>{transaction.destination}</th>
-                  <th>{transaction.amount}</th>
+                  <td>{transaction.nonce}</td>
+                  <td>{transaction.date}</td>
+                  <td>{transaction.destination}</td>
+                  <td>{transaction.amount}</td>
                 </tr>
               ))
             }
