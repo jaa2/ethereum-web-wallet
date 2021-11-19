@@ -1,6 +1,6 @@
 import { Provider, TransactionRequest } from '@ethersproject/providers';
 import {
-  ethers, Transaction, Wallet,
+  Contract, ethers, Transaction, Wallet,
 } from 'ethers';
 import { BigNumber } from '@ethersproject/bignumber';
 import SimulationSuite from './SimulationSuite';
@@ -13,6 +13,25 @@ class SimulationSendTransactions {
   constructor(provider: Provider) {
     this.provider = provider;
     this.simulationSuite = new SimulationSuite(this.provider);
+  }
+
+  /**
+   * Returns the USD amount of 1 ETH
+   */
+  async currentETHtoUSD(amount: number):Promise<number> {
+    const abi = ['function latestAnswer() public view returns (int256)'];
+    // Mainnet: 0x5f4eC3Df9cbd43714FE2740f5E3616155c5b8419
+    // Old Ropsten: 0x8468b2bDCE073A157E560AA4D9CcF6dB1DB98507
+    // TODO: Find different address to calculate up to date conversion from ETH to USD
+    const chainlinkETHUSDFeed = new Contract('0x8468b2bDCE073A157E560AA4D9CcF6dB1DB98507',
+      abi, this.provider);
+    try {
+      const priceInUSD = (BigNumber.from(await chainlinkETHUSDFeed.latestAnswer()).toNumber()
+        / 10 ** 8) * amount;
+      return priceInUSD;
+    } catch (e) {
+      return 0;
+    }
   }
 
   // TODO: Cache the result because the numbers don't change until the blockchain has changed
@@ -144,12 +163,12 @@ class SimulationSendTransactions {
       let promises;
       if (isEOA) {
         promises = Promise.all([this.simulationSuite.isGasLimitEnough(t),
-          SimulationSuite.isGasPriceReasonable(t, await this.provider.getFeeData()),
+          // SimulationSuite.isGasPriceReasonable(t, await this.provider.getFeeData()),
           SimulationSuite.isTotalMoreThanWallet(t, await wallet.getBalance()),
           this.simulationSuite.isDataSentToEOA(t)]);
       } else {
         promises = Promise.all([this.simulationSuite.isGasLimitEnough(t),
-          SimulationSuite.isGasPriceReasonable(t, await this.provider.getFeeData()),
+          // SimulationSuite.isGasPriceReasonable(t, await this.provider.getFeeData()),
           SimulationSuite.isTotalMoreThanWallet(t, await wallet.getBalance()),
           this.simulationSuite.isTokenTransferToContract(t)]);
       }
@@ -158,10 +177,10 @@ class SimulationSendTransactions {
       // Simulation Check = Key; Boolean = Value
       const simulationChecks = new Map([
         ['Gas Limit is Reasonable', simResults[0]],
-        ['Gas Price is Reasonable', simResults[1]],
+        // ['Gas Price is Reasonable', simResults[1]],
         ['Address is Valid', true],
-        ['Total Fee is not More than Wallet', simResults[2] === false],
-        ['Data is Sent Correctly', simResults[3] === false]]);
+        ['Total Fee is not More than Wallet', simResults[1] === false],
+        ['Data is Sent Correctly', simResults[2] === false]]);
 
       return { simulationChecks, t };
     } catch (e) {
