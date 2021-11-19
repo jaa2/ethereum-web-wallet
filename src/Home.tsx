@@ -10,7 +10,9 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faCog, faLock, faPaperPlane, faExchangeAlt,
 } from '@fortawesome/free-solid-svg-icons';
+import { Modal } from 'react-bootstrap';
 
+import PendingTransactionStore from 'background/PendingTransactionStore';
 import { BackgroundWindowInterface } from '../background/background';
 import UserState from './common/UserState';
 import AddressBox from './common/AddressBox';
@@ -18,6 +20,41 @@ import AddressBox from './common/AddressBox';
 import './Home.scss';
 import WalletState from '../background/WalletState';
 import currentETHtoUSD from './common/UnitConversion';
+
+const CancelModal = () => {
+  const [isOpen, setIsOpen] = React.useState(false);
+
+  const showModal = () => {
+    setIsOpen(true);
+  };
+
+  const hideModal = () => {
+    setIsOpen(false);
+  };
+
+  return (
+    <>
+      <button type="button" className="mx-1 btn btn-primary" onClick={showModal}>Cancel</button>
+      <Modal show={isOpen} onHide={hideModal}>
+        <Modal.Header>
+          Cancel Transaction
+        </Modal.Header>
+        <Modal.Body>
+          <p>
+            Are you sure you want to cancel this transaction?
+          </p>
+          <p>
+            Estimated gas fee for canceling: 0.00351 gwei
+          </p>
+        </Modal.Body>
+        <Modal.Footer>
+          <button type="button" className="btn btn-secondary" onClick={hideModal}>Close</button>
+          <button type="button" className="btn btn-primary" onClick={hideModal}>Confirm</button>
+        </Modal.Footer>
+      </Modal>
+    </>
+  );
+};
 
 /**
  * Get a list of recent transactions
@@ -61,6 +98,10 @@ interface TransactionEntry {
 
 function Home() {
   const [currentTransactions, setCurrentTransactions]:
+  [Array<TransactionResponse>, (responses: Array<TransactionResponse>) => void] = React.useState<
+  Array<TransactionResponse>
+  >(Array<TransactionResponse>());
+  const [pendingTransactions, setPendingTransactions]:
   [Array<TransactionResponse>, (responses: Array<TransactionResponse>) => void] = React.useState<
   Array<TransactionResponse>
   >(Array<TransactionResponse>());
@@ -119,6 +160,14 @@ function Home() {
       .then((valInUSD) => {
         setCurrentETHValue(valInUSD);
       });
+
+    UserState.getPendingTxStore().then((response : PendingTransactionStore) => {
+      setPendingTransactions(response.pendingTransactions);
+    });
+
+    UserState.getPendingTxStore().then((response : PendingTransactionStore) => {
+      setPendingTransactions(response.pendingTransactions);
+    });
   }, []);
 
   useEffect(() => {
@@ -152,6 +201,28 @@ function Home() {
       date,
       destination: currentTransactions[i].to,
       amount: ethers.utils.formatEther(currentTransactions[i].value),
+    });
+  }
+
+  const pendingTransactionList: Array<TransactionEntry> = [];
+  for (let i = 0; i < pendingTransactions.length; i += 1) {
+    // Find the date the transaction was included, if available
+    let date:string = '';
+    const { timestamp } = pendingTransactions[i];
+    if (timestamp !== undefined) {
+      date = (new Date(timestamp * 1000)).toLocaleString();
+    }
+    // Find the transaction type (IN or OUT) - Etherscan only
+    let type = 'OUT';
+    if (pendingTransactions[i].to === address && pendingTransactions[i].from !== address) {
+      type = 'IN';
+    }
+    pendingTransactionList.push({
+      type,
+      nonce: pendingTransactions[i].nonce,
+      date,
+      destination: pendingTransactions[i].to,
+      amount: ethers.utils.formatEther(pendingTransactions[i].value),
     });
   }
 
@@ -234,29 +305,44 @@ function Home() {
           <thead>
             <tr>
               <th scope="col">Type</th>
-              <th scope="col">Nonce</th>
               <th scope="col">Date</th>
               <th scope="col">Destination</th>
               <th scope="col">Amount</th>
+              <th scope="col">{' '}</th>
             </tr>
           </thead>
           <tbody>
             {
+              pendingTransactionList.map((transaction: TransactionEntry) => (
+                <tr>
+                  <th scope="row">{transaction.type}</th>
+                  <th>&mdash;</th>
+                  <th>{transaction.destination}</th>
+                  <th>{transaction.amount}</th>
+                  <th>
+                    <div className="transcation-options">
+                      <CancelModal />
+                      <button
+                        type="button"
+                        className="mx-1 btn btn-primary"
+                        onClick={() => onReplaceTransaction(transaction.nonce,
+                          String(transaction.destination), transaction.amount)}
+                      >
+                        Replace
+                      </button>
+                    </div>
+                  </th>
+                </tr>
+              ))
+            }
+            {
               transactionList.map((transaction: TransactionEntry) => (
                 <tr>
-                  <button
-                    type="button"
-                    className="btn btn-primary"
-                    onClick={() => onReplaceTransaction(transaction.nonce,
-                      String(transaction.destination), transaction.amount)}
-                  >
-                    Replace
-                  </button>
                   <th scope="row">{transaction.type}</th>
-                  <th>{transaction.nonce}</th>
                   <th>{transaction.date}</th>
                   <th>{transaction.destination}</th>
                   <th>{transaction.amount}</th>
+                  <th>{' '}</th>
                 </tr>
               ))
             }

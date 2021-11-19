@@ -53,7 +53,7 @@ async function TestTransaction(addressElem: HTMLInputElement, amountElem: HTMLIn
     if (wallet !== null) {
       // finish creating create transaction request object
       if (location.state !== null
-        && (location.state.nonce !== undefined || location.state.nonce !== null)) {
+        && (location.state.nonce !== undefined && location.state.nonce !== null)) {
         txReq.nonce = location.state.nonce;
       }
 
@@ -117,12 +117,12 @@ function CreateTransaction(props: TransactionAction) {
   let dest = '';
   let tAmount = '';
   if (location.state !== null) {
-    if (location.state.txReq !== undefined || location.state.txReq !== null) {
+    if (location.state.txReq !== undefined && location.state.txReq !== null) {
       dest = location.state.txReq.to;
       tAmount = ethers.utils.formatEther(BigNumber.from(location.state.txReq.value).toString());
-    } else if ((location.state.nonce !== undefined || location.state.nonce !== null)
-    && (location.state.dest !== undefined || location.state.dest !== null)
-    && (location.state.amount !== undefined || location.state.amount !== null)) {
+    } else if ((location.state.nonce !== undefined && location.state.nonce !== null)
+    && (location.state.dest !== undefined && location.state.dest !== null)
+    && (location.state.amount !== undefined && location.state.amount !== null)) {
       dest = location.state.dest;
       tAmount = location.state.amount;
       action = 'Replace';
