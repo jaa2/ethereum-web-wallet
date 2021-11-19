@@ -1,24 +1,25 @@
 /* eslint-disable no-param-reassign */
+import { BigNumber, ethers, Wallet } from 'ethers';
+import React, { useEffect } from 'react';
 import {
   Link, Location, NavigateFunction, useLocation, useNavigate,
 } from 'react-router-dom';
-import React, { useEffect } from 'react';
+import browser from 'webextension-polyfill';
 
+import { Provider, TransactionRequest } from '@ethersproject/abstract-provider';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
-  faPaperPlane, faQuestionCircle, faArrowCircleLeft, faCog,
+  faPaperPlane, faArrowCircleLeft, faCog,
 } from '@fortawesome/free-solid-svg-icons';
 
-import './CreateTransaction.scss';
-import { Provider, TransactionRequest } from '@ethersproject/abstract-provider';
-import { BigNumber, ethers, Wallet } from 'ethers';
-import { BackgroundWindowInterface } from 'background/background';
-import browser from 'webextension-polyfill';
+import { BackgroundWindowInterface } from '../../background/background';
+import AddressBox from '../common/AddressBox';
+import UserState from '../common/UserState';
+import HelpModal, { IHelpModalProps } from '../common/HelpModal';
 import SimulationSendTransactions from '../SimulationSendTransactions';
 import SimulationSuite from '../SimulationSuite';
-import UserState from '../common/UserState';
-import AddressBox from '../common/AddressBox';
 import currentETHtoUSD from '../common/UnitConversion';
+import './CreateTransaction.scss';
 
 /**
  * Ensures that the inputs of address and amount are valid before sending
@@ -140,6 +141,11 @@ function CreateTransaction(props: TransactionAction) {
     });
   }, []);
 
+  const simulationModalProps: IHelpModalProps = {
+    title: 'Simulation',
+    description: 'A simulation is a speculative process of taking the inputted parameters of a transaction and showing how it would fare under an ideal scenario. There is no risk nor cost to simulating a transaction.',
+  };
+
   return (
     <div className="transaction-container">
       <div className="top-bar mb-4">
@@ -166,7 +172,7 @@ function CreateTransaction(props: TransactionAction) {
 
       <div className="field-entry">
         <div className="form-group">
-          <label className="col-form-label mt-4" htmlFor="toAddress">To:</label>
+          <label className="col-form-label mt-4" htmlFor="toAddress">To</label>
           <input type="text" className="form-control" defaultValue={dest} id="toAddress" />
         </div>
         <div className="form-group">
@@ -191,10 +197,11 @@ function CreateTransaction(props: TransactionAction) {
             <FontAwesomeIcon className="fa-icon" icon={faArrowCircleLeft} size="2x" />
           </Link>
           <span>
-            {/* <Link className="back-icon" to="/SimulationResults"> */}
             <button id="test" className="btn btn-info" type="button" onClick={() => onTestTransaction()}>Test Transaction</button>
-            {/* </Link> */}
-            <FontAwesomeIcon id="help-test" className="fa-icon" icon={faQuestionCircle} />
+            <HelpModal
+              title={simulationModalProps.title}
+              description={simulationModalProps.description}
+            />
           </span>
         </div>
         )}
@@ -205,10 +212,11 @@ function CreateTransaction(props: TransactionAction) {
             <button type="button" className="btn btn-primary">Discard Changes</button>
           </Link>
           <span>
-            {/* <Link className="back-icon" to="/SimulationResults"> */}
             <button id="test" className="btn btn-info" type="button" onClick={() => onTestTransaction()}>Test Transaction</button>
-            {/* </Link> */}
-            <FontAwesomeIcon id="help-test" className="fa-icon" icon={faQuestionCircle} />
+            <HelpModal
+              title={simulationModalProps.title}
+              description={simulationModalProps.description}
+            />
           </span>
         </div>
         )}

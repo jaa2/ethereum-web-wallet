@@ -66,7 +66,7 @@ function CreateNewWallet() {
       <div id="create-phrase-match-elements">
         <p id="create-phrase-info-match" className="phrase-info text-success">Success. Your phrases match!</p>
         <Link id="create-phrase-continue-link" className="link hoverable" to="/CreatePassword" onClick={NewWalletCreated}>
-          <button type="button" className="btn btn-success">Continue</button>
+          <button type="button" className="btn btn-primary">Continue</button>
         </Link>
       </div>
     );
@@ -86,7 +86,7 @@ function CreateNewWallet() {
 
   return (
     <div id="create-new-wallet">
-      <Link id="back-link" className="back-icon link hoverable" to="/WalletSetup">
+      <Link id="back-link" className="back-icon" to="/WalletSetup">
         <FontAwesomeIcon className="fa-icon" icon={faArrowCircleLeft} size="2x" />
       </Link>
       <div className="align-center">

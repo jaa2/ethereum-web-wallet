@@ -14,8 +14,9 @@ import { Modal } from 'react-bootstrap';
 
 import PendingTransactionStore from 'background/PendingTransactionStore';
 import { BackgroundWindowInterface } from '../background/background';
-import UserState from './common/UserState';
 import AddressBox from './common/AddressBox';
+import HelpModal, { IHelpModalProps } from './common/HelpModal';
+import UserState from './common/UserState';
 
 import './Home.scss';
 import WalletState from '../background/WalletState';
@@ -235,6 +236,10 @@ function Home() {
       },
     });
   };
+  const networkModalProps: IHelpModalProps = {
+    title: 'Network',
+    description: 'Multiple networks that support the Ethereum protocol exist, meaning that they each independently maintain their own blockchain. In addition to the main Ethereum network, there are both test networks and private networks. Network switching is currently not supported.',
+  };
 
   return (
     <div id="home">
@@ -245,10 +250,6 @@ function Home() {
             <div className="option">
               <AddressBox address={address} />
             </div>
-            {/* <Link className="option" to="/ProfileSettings">
-              <FontAwesomeIcon className="fa-icon" icon={faCog} size="1x" fixedWidth />
-              <p className="icon-label">Profile Settings</p>
-            </Link> */}
             <button type="button" className="option btn btn-link" onClick={() => navigate('/ProfileSettings')}>
               <FontAwesomeIcon className="fa-icon" icon={faCog} size="1x" fixedWidth />
               <p className="icon-label">Profile Settings</p>
@@ -263,6 +264,7 @@ function Home() {
           <select id="network-input" name="network">
             <option>Main Ethereum Network</option>
           </select>
+          <HelpModal title={networkModalProps.title} description={networkModalProps.description} />
         </div>
       </div>
 
