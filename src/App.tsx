@@ -15,7 +15,6 @@ import ProfileSettings from './ProfileSettings';
 import Unlock from './Unlock';
 
 import CreateTransaction from './transaction/CreateTransaction';
-import ReplaceTransaction from './transaction/ReplaceTransaction';
 import SimulationResults from './transaction/SimulationResults';
 
 import './App.scss';
@@ -51,8 +50,8 @@ function App() {
         <Route path="/ProfileSettings" element={<ProfileSettings />} />
         <Route path="/Unlock" element={<Unlock />} />
 
-        <Route path="/CreateTransaction" element={<CreateTransaction />} />
-        <Route path="/ReplaceTransaction" element={<ReplaceTransaction />} />
+        <Route path="/CreateTransaction" element={<CreateTransaction action="Send" />} />
+        <Route path="/ReplaceTransaction" element={<CreateTransaction action="Replace" />} />
         <Route path="/SimulationResults" element={<SimulationResults />} />
       </Routes>
     </div>
