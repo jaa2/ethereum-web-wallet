@@ -25,6 +25,8 @@ import browser from 'webextension-polyfill';
 import { TransactionResponse } from '@ethersproject/providers';
 // import { TokenTransferBox } from './TokenTransferBox';
 import SimulationSendTransactions from '../SimulationSendTransactions';
+import UserState from '../common/UserState';
+// import WalletState from '../../background/WalletState';
 
 /**
  * Get the object that can simulate and send a transaction
@@ -260,19 +262,14 @@ function createSimulationElements(simulationChecks:Map<string, Boolean>) {
 function SimulationResults() {
   const navigate: NavigateFunction = useNavigate();
   const onSendTransaction = async (txReq: TransactionRequest) => {
+    const pendingTxStore = await UserState.getPendingTxStore();
     const wallet = await grabWallet();
-    try {
-      const tResp: TransactionResponse = await wallet.sendTransaction(txReq);
-      // Should not be navigating to home like this and passing the state of the
-      // response like this because if the same method of grabbing the state
-      // is done, then I would need some sort of global state boolean
-      // that recognizes when a transaction has been sent in order to
-      // properly update the home page
-      navigate('/Home', { state: { tResp } });
-    } catch (e) {
-      // TODO: Probably want this as a little banner, notification, or snackbar
-      throw new Error(String(e));
+    if (wallet === null) {
+      return;
     }
+
+    const tResp: TransactionResponse = await wallet.sendTransaction(txReq);
+    await pendingTxStore.addPendingTransaction(tResp, true);
   };
 
   const onEditTransaction = (txReq: TransactionRequest) => {

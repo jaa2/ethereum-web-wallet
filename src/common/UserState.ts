@@ -1,7 +1,9 @@
+import { Provider } from '@ethersproject/providers';
 import { ethers, Signer } from 'ethers';
 import browser from 'webextension-polyfill';
 
 import { BackgroundWindowInterface } from '../../background/background';
+import PendingTransactionStore from '../../background/PendingTransactionStore';
 import WalletState from '../../background/WalletState';
 
 /**
@@ -58,5 +60,25 @@ export default class UserState {
     const backgroundWindow: BackgroundWindowInterface = await browser.runtime.getBackgroundPage();
     const { walletState } = backgroundWindow.stateObj;
     return walletState;
+  }
+
+  /**
+   * Find the PendingTransactionStore of the wallet
+   * @returns a PendingTransactionStore object
+   */
+  static async getPendingTxStore(): Promise<PendingTransactionStore> {
+    const backgroundWindow: BackgroundWindowInterface = await browser.runtime.getBackgroundPage();
+    const { pendingTransactionStore } = backgroundWindow.stateObj;
+    return pendingTransactionStore;
+  }
+
+  /**
+   * Find the current provider
+   * @returns a Provider object
+   */
+  static async getProvider(): Promise<Provider | null> {
+    const backgroundWindow: BackgroundWindowInterface = await browser.runtime.getBackgroundPage();
+    const { provider } = backgroundWindow.stateObj;
+    return provider;
   }
 }

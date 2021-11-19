@@ -1,11 +1,6 @@
 import { Wallet } from '@ethersproject/wallet';
 import { ethers, Signer, VoidSigner } from 'ethers';
-import { WalletStorage } from './WalletStorage';
-
-/**
- * The current storage version.
- */
-const storageVersion: Number = 1;
+import { storageVersion, WalletStorage } from './WalletStorage';
 
 /**
  * A class that abstracts loading and handling the user's wallet
