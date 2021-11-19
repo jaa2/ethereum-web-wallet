@@ -21,6 +21,8 @@ import { faEthereum } from '@fortawesome/free-brands-svg-icons';
 import { BackgroundWindowInterface } from '../../background/background';
 import HelpModal, { IHelpModalProps } from '../common/HelpModal';
 import SimulationSendTransactions from '../SimulationSendTransactions';
+import UserState from '../common/UserState';
+// import WalletState from '../../background/WalletState';
 
 import './SimulationResults.scss';
 
@@ -46,7 +48,11 @@ async function grabWallet() {
   const window: BackgroundWindowInterface = await browser.runtime.getBackgroundPage();
   const state = window.stateObj;
   const wallet = await state.walletState.getWallet() as Wallet;
-  return wallet;
+  const provider = await UserState.getProvider();
+  if (provider === null) {
+    throw Error('Provider not found');
+  }
+  return wallet.connect(provider);
 }
 
 /**
@@ -258,19 +264,15 @@ function createSimulationElements(simulationChecks:Map<string, Boolean>) {
 function SimulationResults() {
   const navigate: NavigateFunction = useNavigate();
   const onSendTransaction = async (txReq: TransactionRequest) => {
+    const pendingTxStore = await UserState.getPendingTxStore();
     const wallet = await grabWallet();
-    try {
-      const tResp: TransactionResponse = await wallet.sendTransaction(txReq);
-      // Should not be navigating to home like this and passing the state of the
-      // response like this because if the same method of grabbing the state
-      // is done, then I would need some sort of global state boolean
-      // that recognizes when a transaction has been sent in order to
-      // properly update the home page
-      navigate('/Home', { state: { tResp } });
-    } catch (e) {
-      // TODO: Probably want this as a little banner, notification, or snackbar
-      throw new Error(String(e));
+    if (wallet === null) {
+      return;
     }
+
+    const tResp: TransactionResponse = await wallet.sendTransaction(txReq);
+    await pendingTxStore.addPendingTransaction(tResp, true);
+    navigate('/Home');
   };
 
   const gasModalProps: IHelpModalProps = {
