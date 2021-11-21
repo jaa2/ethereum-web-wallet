@@ -8,7 +8,7 @@ import './ProfileSettings.scss';
 import Modal from 'react-bootstrap/Modal';
 import AddressBox from './common/AddressBox';
 
-const DangerConfim = () => {
+const DangerConfim = function DangerConfirm() {
   const [isOpen, setIsOpen] = React.useState(false);
 
   const showModal = () => {
@@ -20,34 +20,32 @@ const DangerConfim = () => {
   };
 
   return (
-    <>
-      <div className="button-container">
-        <button type="button" className="btn btn-outline-danger" onClick={showModal}>Delete Account</button>
-        <Modal show={isOpen} onHide={hideModal}>
-          <Modal.Header>
-            <div id="max-tx-fee">
-              <h3>
-                <FontAwesomeIcon className="fa-icon" icon={faExclamationTriangle} size="2x" color="#489aca" />
-                {' '}
-                Confirm Delete Account
-              </h3>
-            </div>
-          </Modal.Header>
-          <Modal.Body>
-            If you delete account, you can not restore this account.
-            Are you sure to delete your account?
-          </Modal.Body>
-          <Modal.Footer>
-            <button type="button" className="btn btn-secondary" onClick={hideModal}>Cancel</button>
-            <button type="button" className="btn btn-danger" onClick={hideModal}>Delete</button>
-          </Modal.Footer>
-        </Modal>
-      </div>
-    </>
+    <div className="button-container">
+      <button type="button" className="btn btn-outline-danger" onClick={showModal}>Delete Account</button>
+      <Modal show={isOpen} onHide={hideModal}>
+        <Modal.Header>
+          <div id="max-tx-fee">
+            <h3>
+              <FontAwesomeIcon className="fa-icon" icon={faExclamationTriangle} size="2x" color="#489aca" />
+              {' '}
+              Confirm Delete Account
+            </h3>
+          </div>
+        </Modal.Header>
+        <Modal.Body>
+          If you delete account, you can not restore this account.
+          Are you sure to delete your account?
+        </Modal.Body>
+        <Modal.Footer>
+          <button type="button" className="btn btn-secondary" onClick={hideModal}>Cancel</button>
+          <button type="button" className="btn btn-danger" onClick={hideModal}>Delete</button>
+        </Modal.Footer>
+      </Modal>
+    </div>
   );
 };
 
-function ProfileSettings() {
+const ProfileSettings = function ProfileSettings() {
   return (
     <div id="profile-settings" className="container">
       <Link className="back-icon" to="/Home">
@@ -102,6 +100,6 @@ function ProfileSettings() {
       <DangerConfim />
     </div>
   );
-}
+};
 
 export default ProfileSettings;

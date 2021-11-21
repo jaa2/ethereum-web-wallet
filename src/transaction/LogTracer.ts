@@ -90,9 +90,15 @@ Promise<Array<TokenTransfer>> {
           result[i].topics[j] = ethers.utils.hexZeroPad(result[i].topics[j], 20);
         }
 
-        console.log('Transfer from', ethers.utils.getAddress(result[i].topics[1]), // eslint-disable-line
-          'to', ethers.utils.getAddress(result[i].topics[2]),
-          'for', 'token', bufferToHexString(result[i].address));
+        // eslint-disable-next-line no-console
+        console.log(
+          'Transfer from',
+          ethers.utils.getAddress(result[i].topics[1]),
+          'to',
+          ethers.utils.getAddress(result[i].topics[2]),
+          'for token',
+          bufferToHexString(result[i].address),
+        );
         transfers.push({
           from: ethers.utils.getAddress(result[i].topics[1]),
           to: ethers.utils.getAddress(result[i].topics[2]),

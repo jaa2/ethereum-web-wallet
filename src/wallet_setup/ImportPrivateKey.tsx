@@ -20,7 +20,7 @@ async function ValidPrivateKey(privateKey: string) {
   return (walletCreated && wallet !== null);
 }
 
-function ImportPrivateKey() {
+const ImportPrivateKey = function ImportPrivateKey() {
   // comments removed use of hooks
   const [privateKeyStatus, setPrivateKeyStatus]:
   [string, (matchState: string) => void] = React.useState<string>('length');
@@ -99,6 +99,6 @@ function ImportPrivateKey() {
       {privateKeyStatusElements}
     </div>
   );
-}
+};
 
 export default ImportPrivateKey;

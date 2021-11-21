@@ -4,7 +4,7 @@ import { BigNumber, Contract } from 'ethers';
 /**
    * Returns the USD amount of 1 ETH as a number
    */
-export default async function currentETHtoUSD(amount: number = 1, provider: Provider):
+export default async function currentETHtoUSD(provider: Provider, amount: number = 1):
 Promise<number> {
   let contractAddr: string | null = null;
   switch ((await provider.getNetwork()).chainId) {

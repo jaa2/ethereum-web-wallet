@@ -7,7 +7,7 @@ import './Unlock.scss';
 import { ProgressBar } from 'react-bootstrap';
 import UserState from './common/UserState';
 
-function Unlock() {
+const Unlock = function Unlock() {
   const [password, setPassword]: [string, (password: string) => void] = React.useState<string>('');
   const [failReason, setFailReason]: [string | undefined,
     (reason: string | undefined) => void] = React.useState<string | undefined>();
@@ -60,6 +60,6 @@ function Unlock() {
       <button type="button" id="unlock-button" className="btn btn-primary" onClick={checkPassword} disabled={!canUnlock}>Unlock</button>
     </div>
   );
-}
+};
 
 export default Unlock;

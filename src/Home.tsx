@@ -22,7 +22,7 @@ import './Home.scss';
 import WalletState from '../background/WalletState';
 import currentETHtoUSD from './common/UnitConversion';
 
-const CancelModal = () => {
+const CancelModal = function CancelModal() {
   const [isOpen, setIsOpen] = React.useState(false);
 
   const showModal = () => {
@@ -97,7 +97,7 @@ interface TransactionEntry {
   amount: string
 }
 
-function Home() {
+const Home = function Home() {
   const [currentTransactions, setCurrentTransactions]:
   [Array<TransactionResponse>, (responses: Array<TransactionResponse>) => void] = React.useState<
   Array<TransactionResponse>
@@ -157,7 +157,7 @@ function Home() {
       }
       return provider;
     })
-      .then((provider) => currentETHtoUSD(1, provider))
+      .then((provider) => currentETHtoUSD(provider))
       .then((valInUSD) => {
         setCurrentETHValue(valInUSD);
       });
@@ -327,8 +327,11 @@ function Home() {
                       <button
                         type="button"
                         className="mx-1 btn btn-primary"
-                        onClick={() => onReplaceTransaction(transaction.nonce,
-                          String(transaction.destination), transaction.amount)}
+                        onClick={() => onReplaceTransaction(
+                          transaction.nonce,
+                          String(transaction.destination),
+                          transaction.amount,
+                        )}
                       >
                         Replace
                       </button>
@@ -357,6 +360,6 @@ function Home() {
       </div>
     </div>
   );
-}
+};
 
 export default Home;

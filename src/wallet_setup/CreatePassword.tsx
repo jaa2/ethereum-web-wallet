@@ -22,7 +22,7 @@ async function PasswordCreated(password: string): Promise<void> {
   }
 }
 
-function CreatePassword() {
+const CreatePassword = function CreatePassword() {
   const [passwordMatchState, setPasswordMatchState]: [string, (matchState: string) => void] = React.useState<string>('empty');
   // eslint-disable-next-line max-len
   const [isEncrypting, setIsEncrypting]: [boolean, (encrypting: boolean) => void] = React.useState<boolean>(false);
@@ -114,6 +114,6 @@ function CreatePassword() {
       {passwordMatchElements}
     </div>
   );
-}
+};
 
 export default CreatePassword;

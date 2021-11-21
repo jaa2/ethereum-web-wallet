@@ -18,7 +18,7 @@ async function ValidSecretPhrase(secretPhrase: string): Promise<boolean> {
   return (walletCreated && wallet !== null);
 }
 
-function ImportSecretPhrase() {
+const ImportSecretPhrase = function ImportSecretPhrase() {
   const [secretPhraseStatus, setSecretPhraseStatus]:
   [string, (state: string) => void] = React.useState<string>('length');
   const [inputDisabled, setInputDisabled]:
@@ -93,6 +93,6 @@ function ImportSecretPhrase() {
       </div>
     </div>
   );
-}
+};
 
 export default ImportSecretPhrase;

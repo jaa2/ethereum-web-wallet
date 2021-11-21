@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { NavigateFunction, useNavigate } from 'react-router-dom';
 import UserState, { WalletStatus } from './common/UserState';
 
-function ExistingWallet() {
+const ExistingWallet = function ExistingWallet() {
   const [walletStatus, setWalletStatus]:
   [WalletStatus, (walletStatus: WalletStatus) => void] = React.useState<
   WalletStatus>(WalletStatus.UNKNOWN);
@@ -39,6 +39,6 @@ function ExistingWallet() {
   return (
     <div />
   );
-}
+};
 
 export default ExistingWallet;

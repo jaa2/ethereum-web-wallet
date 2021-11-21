@@ -7,7 +7,7 @@ export interface IAddressBoxProps {
   address: string;
 }
 
-const AddressBox: React.FC<IAddressBoxProps> = (props: IAddressBoxProps) => {
+const AddressBox: React.FC<IAddressBoxProps> = function AddressBox(props: IAddressBoxProps) {
   const { address } = props;
 
   return (

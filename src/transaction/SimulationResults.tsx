@@ -82,16 +82,14 @@ function areAllSimulationsPassed(simulationChecks:Map<string, Boolean>):Boolean 
   return ret;
 }
 
-const GasOptions = (
-  props:
-  { t:
-  { gasLimit: any;
-    maxFeePerGas: ethers.BigNumberish;
-    maxPriorityFeePerGas: ethers.BigNumberish;
-  };
-  modalToSimulationResults: (arg0: ethers.providers.TransactionRequest,
-    arg1: Map<string, Boolean>) => void; },
-) => {
+const GasOptions = function GasOptions(props:
+{ t:
+{ gasLimit: any;
+  maxFeePerGas: ethers.BigNumberish;
+  maxPriorityFeePerGas: ethers.BigNumberish;
+};
+modalToSimulationResults: (arg0: ethers.providers.TransactionRequest,
+  arg1: Map<string, Boolean>) => void; }) {
   const [isOpen, setIsOpen] = React.useState(false);
 
   const showModal = () => {
@@ -261,7 +259,7 @@ function createSimulationElements(simulationChecks:Map<string, Boolean>) {
   return arr;
 }
 
-function SimulationResults() {
+const SimulationResults = function SimulationResults() {
   const navigate: NavigateFunction = useNavigate();
   const onSendTransaction = async (txReq: TransactionRequest) => {
     const pendingTxStore = await UserState.getPendingTxStore();
@@ -298,8 +296,10 @@ function SimulationResults() {
     // eslint-disable-next-line max-len
     (data: [TransactionRequest, Map<string, Boolean>]) => void ] = React.useState([txReq, simulationChecks]);
 
-  const modalToSimulationResults = (t: ethers.providers.TransactionRequest,
-    simChecks: Map<string, Boolean>) => {
+  const modalToSimulationResults = (
+    t: ethers.providers.TransactionRequest,
+    simChecks: Map<string, Boolean>,
+  ) => {
     setData([t, simChecks]);
   };
 
@@ -426,6 +426,6 @@ function SimulationResults() {
       </div>
     </div>
   );
-}
+};
 
 export default SimulationResults;

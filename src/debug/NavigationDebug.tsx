@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom';
 
 import './NavigationDebug.scss';
 
-function NavigationDebug() {
+const NavigationDebug = function NavigationDebug() {
   return (
     <div id="navigation-debug">
       <div className="wallet-setup-nav-debug">
@@ -51,6 +51,6 @@ function NavigationDebug() {
       </div>
     </div>
   );
-}
+};
 
 export default NavigationDebug;
