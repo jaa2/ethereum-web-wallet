@@ -256,7 +256,7 @@ const Home = function Home() {
             </button>
             <button type="button" className="option btn btn-link" onClick={lockWallet}>
               <FontAwesomeIcon className="fa-icon" icon={faLock} size="1x" fixedWidth />
-              <p className="icon-label">Lock Account</p>
+              <p className="icon-label">Lock Wallet</p>
             </button>
           </div>
         </div>

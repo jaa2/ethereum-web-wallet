@@ -50,7 +50,7 @@ const ImportSecretPhrase = function ImportSecretPhrase() {
   if (secretPhraseStatus === 'valid') {
     matchElements = (
       <div>
-        <div id="info-match" className="valid-feedback text-success">Success. This is a valid wallet account!</div>
+        <div id="info-match" className="valid-feedback text-success">Success. This is a valid wallet!</div>
         <button
           className="btn btn-primary"
           type="button"

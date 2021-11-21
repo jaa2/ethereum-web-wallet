@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faUserCircle, faEdit, faExclamationTriangle, faCogs, faArrowCircleLeft,
@@ -7,6 +7,7 @@ import {
 import './ProfileSettings.scss';
 import Modal from 'react-bootstrap/Modal';
 import AddressBox from './common/AddressBox';
+import UserState from './common/UserState';
 
 const DangerConfim = function DangerConfirm() {
   const [isOpen, setIsOpen] = React.useState(false);
@@ -19,26 +20,40 @@ const DangerConfim = function DangerConfirm() {
     setIsOpen(false);
   };
 
+  const navigate = useNavigate();
+  const deleteWallet = () => {
+    UserState.getWalletState()
+      .then((walletState) => (walletState === null ? Promise.reject(
+        new Error('Failed to load wallet state'),
+      ) : walletState))
+      .then((walletState) => walletState.deleteWallet())
+      .then(() => {
+        // Navigate to Create New Wallet screen, now that the wallet has been deleted
+        navigate('/');
+      });
+  };
+
   return (
     <div className="button-container">
-      <button type="button" className="btn btn-outline-danger" onClick={showModal}>Delete Account</button>
+      <button type="button" className="btn btn-outline-danger" onClick={showModal}>Delete Wallet</button>
       <Modal show={isOpen} onHide={hideModal}>
         <Modal.Header>
           <div id="max-tx-fee">
             <h3>
               <FontAwesomeIcon className="fa-icon" icon={faExclamationTriangle} size="2x" color="#489aca" />
               {' '}
-              Confirm Delete Account
+              Confirm Wallet Deletion
             </h3>
           </div>
         </Modal.Header>
         <Modal.Body>
-          If you delete account, you can not restore this account.
-          Are you sure to delete your account?
+          If you delete your wallet, you will only be able to recover it from your secret recovery
+          phrase (or private key) that you have already written down. Are you sure you want to
+          delete your wallet?
         </Modal.Body>
         <Modal.Footer>
           <button type="button" className="btn btn-secondary" onClick={hideModal}>Cancel</button>
-          <button type="button" className="btn btn-danger" onClick={hideModal}>Delete</button>
+          <button type="button" className="btn btn-danger" onClick={deleteWallet}>Delete</button>
         </Modal.Footer>
       </Modal>
     </div>
