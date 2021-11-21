@@ -57,7 +57,7 @@ function Unlock() {
         {invalidFeedback}
         {progressBar}
       </div>
-      <button type="button" id="unlock-button" className="btn btn-outline-primary" onClick={checkPassword} disabled={!canUnlock}>Unlock</button>
+      <button type="button" id="unlock-button" className="btn btn-primary" onClick={checkPassword} disabled={!canUnlock}>Unlock</button>
     </div>
   );
 }

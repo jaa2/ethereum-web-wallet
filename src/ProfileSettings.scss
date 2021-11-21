@@ -6,31 +6,53 @@
 
   display: flex;
   flex-direction: column;
+  justify-content: space-evenly;
+  text-align: center;
+  // align-items: center;
+  // display: inline-block;
+  .back-icon {
+    align-self: flex-start;
+  }
+
+  .fa-icon {
+    color: $icon-color;
+  }
   
-  .content-container {
+  #content-container {
     display: flex;
     justify-content: space-evenly;
+
+    #appearance-switch {
+      display: flex;
+      justify-content: space-evenly;
+      text-align: center;
+      align-items: center;
+    }
+
+    #address-box{
+      display: flex;
+      justify-content: space-evenly;
+      text-align: center;
+      align-items: center;
+      place-content: center;
+
+    }
     
   } 
-  .profile-name-edit {
+  #profile-name-edit {
     display: flex;
     justify-content: space-evenly;
 
   }
 
-  .profile-picture-edit {
+  #profile-picture-edit {
     display: flex;
     justify-content: space-evenly;
     flex-direction: row;
 
-    .pic-section {
-      align-items: center;
-    }
-
-    .edit-pic-section {
-      vertical-align: bottom;
-
-    }
+    // .pic-section {
+    //   align-items: center;
+    // }
   }
 
   .button-container {

@@ -22,16 +22,6 @@
     color: $icon-color;
   }
 
-  .link {
-    color: $text-color;
-    text-decoration: none;
-  }
-
-  .hoverable:hover {
-    background-color: $hover-button-color;
-    cursor: pointer;
-  }
-
   .continue-button {
     margin: 10px;
   }

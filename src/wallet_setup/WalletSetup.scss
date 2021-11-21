@@ -9,6 +9,15 @@
   justify-content: space-evenly;
   align-items: center;
 
+  button {
+    width: 15vw;
+    min-width: 200px;
+    height: 12.5vh;
+    min-height: 120px;
+    
+    margin: 5px;
+  }
+
   #wallet-setup-header {
     width: 100%;
 
@@ -23,26 +32,11 @@
   }
 
   #wallet-setup-other-options {
-    width: 100%;
     height: auto;
     
     display: flex;
     flex-direction: row;
-    justify-content: space-around;
+    justify-content: center;
     align-items: center;
-
-    #wallet-setup-import-phrase {
-      width: 50%;
-
-      margin: 5px;
-      padding: 10px;
-    }
-
-    #wallet-setup-import-key {
-      width: 50%;
-
-      margin: 5px;
-      padding: 10px;
-    }
   }
 }
