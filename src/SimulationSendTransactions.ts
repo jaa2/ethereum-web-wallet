@@ -23,8 +23,11 @@ class SimulationSendTransactions {
     // Mainnet: 0x5f4eC3Df9cbd43714FE2740f5E3616155c5b8419
     // Old Ropsten: 0x8468b2bDCE073A157E560AA4D9CcF6dB1DB98507
     // TODO: Find different address to calculate up to date conversion from ETH to USD
-    const chainlinkETHUSDFeed = new Contract('0x8468b2bDCE073A157E560AA4D9CcF6dB1DB98507',
-      abi, this.provider);
+    const chainlinkETHUSDFeed = new Contract(
+      '0x8468b2bDCE073A157E560AA4D9CcF6dB1DB98507',
+      abi,
+      this.provider,
+    );
     try {
       const priceInUSD = (BigNumber.from(await chainlinkETHUSDFeed.latestAnswer()).toNumber()
         / 10 ** 8) * amount;

@@ -30,7 +30,7 @@ async function loadNewWallet(): Promise<string | null> {
   throw new Error('Could not create new random wallet');
 }
 
-function CreateNewWallet() {
+const CreateNewWallet = function CreateNewWallet() {
   const [phraseMatchState, setPhraseMatchState]: [string, (matchState: string) => void] = React.useState<string>('empty');
 
   const [phrase, setPhrase]: [string, (phrase: string) => void] = React.useState<string>('');
@@ -127,6 +127,6 @@ function CreateNewWallet() {
       </div>
     </div>
   );
-}
+};
 
 export default CreateNewWallet;

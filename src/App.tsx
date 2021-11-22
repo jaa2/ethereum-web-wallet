@@ -22,7 +22,7 @@ import ExistingWallet from './ExistingWallet';
 
 // TODO: Gate off routes based on if the user has authenticated or not
 
-function App() {
+const App = function App() {
   return (
     <div id="App">
       <Routes>
@@ -48,6 +48,6 @@ function App() {
       </Routes>
     </div>
   );
-}
+};
 
 export default App;

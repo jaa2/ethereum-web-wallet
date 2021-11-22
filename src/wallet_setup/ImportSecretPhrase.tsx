@@ -18,7 +18,7 @@ async function ValidSecretPhrase(secretPhrase: string): Promise<boolean> {
   return (walletCreated && wallet !== null);
 }
 
-function ImportSecretPhrase() {
+const ImportSecretPhrase = function ImportSecretPhrase() {
   const [secretPhraseStatus, setSecretPhraseStatus]:
   [string, (state: string) => void] = React.useState<string>('length');
   const [inputDisabled, setInputDisabled]:
@@ -50,7 +50,7 @@ function ImportSecretPhrase() {
   if (secretPhraseStatus === 'valid') {
     matchElements = (
       <div>
-        <div id="info-match" className="valid-feedback text-success">Success. This is a valid wallet account!</div>
+        <div id="info-match" className="valid-feedback text-success">Success. This is a valid wallet!</div>
         <button
           className="btn btn-primary"
           type="button"
@@ -93,6 +93,6 @@ function ImportSecretPhrase() {
       </div>
     </div>
   );
-}
+};
 
 export default ImportSecretPhrase;

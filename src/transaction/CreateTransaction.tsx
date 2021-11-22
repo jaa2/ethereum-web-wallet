@@ -27,8 +27,11 @@ import './CreateTransaction.scss';
  * @param addressInput The destination address of the transaction
  * @param amountInput The amount being sent
  */
-async function TestTransaction(addressElem: HTMLInputElement, amountElem: HTMLInputElement,
-  location: Location) {
+async function TestTransaction(
+  addressElem: HTMLInputElement,
+  amountElem: HTMLInputElement,
+  location: Location,
+) {
   addressElem.style.borderColor = 'transparent';
   amountElem.style.borderColor = 'transparent';
   const addressInput = addressElem.value;
@@ -50,7 +53,7 @@ async function TestTransaction(addressElem: HTMLInputElement, amountElem: HTMLIn
     const transactionController: SimulationSendTransactions = new
     SimulationSendTransactions(provider);
 
-    document.getElementById('amount-in-usd')!.innerHTML = (await currentETHtoUSD(+amountInput, provider)).toString().concat(' USD');
+    document.getElementById('amount-in-usd')!.innerHTML = (await currentETHtoUSD(provider, +amountInput)).toString().concat(' USD');
     if (wallet !== null) {
       // finish creating create transaction request object
       if (location.state !== null
@@ -64,8 +67,10 @@ async function TestTransaction(addressElem: HTMLInputElement, amountElem: HTMLIn
       txReq.gasLimit = await transactionController.getGasLimit(txReq);
 
       // Execute simulations and go to simulations page
-      const checksAndTx = await transactionController.simulateTransaction(txReq,
-        wallet.connect(provider));
+      const checksAndTx = await transactionController.simulateTransaction(
+        txReq,
+        wallet.connect(provider),
+      );
       const contractOrEOA = await provider.getCode(addressInput);
 
       return {
@@ -93,7 +98,7 @@ interface TransactionAction {
   action: String
 }
 
-function CreateTransaction(props: TransactionAction) {
+const CreateTransaction = function CreateTransaction(props: TransactionAction) {
   const location = useLocation();
   const navigate: NavigateFunction = useNavigate();
   const onTestTransaction = async () => {
@@ -222,6 +227,6 @@ function CreateTransaction(props: TransactionAction) {
         )}
     </div>
   );
-}
+};
 
 export default CreateTransaction;

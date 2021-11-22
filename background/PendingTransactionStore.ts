@@ -23,8 +23,11 @@ export default class PendingTransactionStore {
    *  hash
    * @returns a promise that resolves if the transaction was successfully added
    */
-  async addPendingTransaction(txResponseOrHash: TransactionResponse | string, isNew?: boolean,
-    provider?: Provider):
+  async addPendingTransaction(
+    txResponseOrHash: TransactionResponse | string,
+    isNew?: boolean,
+    provider?: Provider,
+  ):
     Promise<void> {
     let txResponse: TransactionResponse;
     // Get transaction from hash
