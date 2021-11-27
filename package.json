@@ -49,7 +49,7 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "build": "react-scripts build && parcel build --dist-dir build/ background/background.html",
+    "build": "react-scripts build && parcel build --dist-dir build/ background/background.html && parcel build --dist-dir build/ src/injected/ContentInjectionHelper.ts src/injected/ContentInjection.ts",
     "test": "react-scripts test",
     "test-backend": "env TS_NODE_COMPILER_OPTIONS='{\"module\": \"commonjs\" }' mocha -r ts-node/register 'tests/**/*.ts' --timeout 20000",
     "lint": "node ./node_modules/eslint/bin/eslint.js ./",

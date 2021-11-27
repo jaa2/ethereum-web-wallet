@@ -1,6 +1,7 @@
 import { EtherscanProvider, Provider } from '@ethersproject/providers';
 import { Wallet } from 'ethers';
 import browser from 'webextension-polyfill';
+import InjectedProviderReceiver from './InjectedProviderReceiver';
 import PendingTransactionStore from './PendingTransactionStore';
 import WalletState from './WalletState';
 import { WalletStorage } from './WalletStorage';
@@ -28,8 +29,7 @@ window.stateObj = {
 
 window.stateObj.walletState.loadEncrypted()
   .catch((reason: string) => {
-    const myConsole: Console = console;
-    myConsole.warn(`[Background] Could not load encrypted: ${reason}`);
+    console.warn(`[Background] Could not load encrypted: ${reason}`); // eslint-disable-line
   });
 window.stateObj.provider = new EtherscanProvider('ropsten', 'AZ8GS7UXX1A8MZX9ZH2Q1K3H9DPZXB2F68');
 
@@ -37,3 +37,6 @@ window.connectWallet = async () => {
   window.stateObj.walletState.currentWallet = (await
   window.stateObj.walletState.getWallet() as Wallet).connect(window.stateObj.provider as Provider);
 };
+
+// Listen for requests from the injected provider
+browser.runtime.onMessage.addListener(InjectedProviderReceiver);

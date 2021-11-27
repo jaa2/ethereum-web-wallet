@@ -13,6 +13,15 @@
         "page": "background.html"
     },
 
+    "web_accessible_resources": ["ContentInjection.js"],
+
+    "content_scripts": [
+        {
+            "matches": ["https://*/"],
+            "js": ["ContentInjectionHelper.js"]
+        }
+    ],
+
     "permissions": ["storage", "notifications", "http://localhost:8545/"],
 
     "browser_action": {
