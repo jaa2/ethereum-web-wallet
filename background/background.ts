@@ -4,6 +4,7 @@ import {
 import { Wallet } from 'ethers';
 import browser from 'webextension-polyfill';
 import ProviderNetwork, { ConnectionType, getProviderNetworks } from '../src/common/ProviderNetwork';
+import InjectedProviderReceiver from './InjectedProviderReceiver';
 import PendingTransactionStore from './PendingTransactionStore';
 import WalletState from './WalletState';
 import { WalletStorage } from './WalletStorage';
@@ -65,8 +66,7 @@ window.changeNetwork = changeNetwork;
 
 window.stateObj.walletState.loadEncrypted()
   .catch((reason: string) => {
-    const myConsole: Console = console;
-    myConsole.warn(`[Background] Could not load encrypted: ${reason}`);
+    console.warn(`[Background] Could not load encrypted: ${reason}`); // eslint-disable-line
   });
 
 window.connectWallet = async () => {
@@ -97,3 +97,5 @@ async function getSavedNetwork(loadPendingTransactions: boolean = false) {
 }
 
 getSavedNetwork();
+// Listen for requests from the injected provider
+browser.runtime.onMessage.addListener(InjectedProviderReceiver);
