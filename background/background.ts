@@ -110,5 +110,6 @@ async function getSavedNetwork(loadPendingTransactions: boolean = false) {
 
 window.getSavedNetwork = getSavedNetwork;
 getSavedNetwork();
+
 // Listen for requests from the injected provider
 browser.runtime.onMessage.addListener(InjectedProviderReceiver);
