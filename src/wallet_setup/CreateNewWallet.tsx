@@ -41,9 +41,9 @@ const CreateNewWallet = function CreateNewWallet() {
 
     const elem = document.getElementById('create-phrase-phrase-input');
     if (elem && event.target.value !== '') {
-      elem.style.color = 'white';
+      elem.style.color = 'var(--bs-body-bg)';
     } else if (elem) {
-      elem.style.color = '#55595c'; // bs-body-color
+      elem.style.color = 'var(--bs-body-color)';
     }
   };
 
@@ -124,7 +124,7 @@ const CreateNewWallet = function CreateNewWallet() {
         </div>
         <div className="form-group">
           <h5 id="create-phrase-phrase-label">Secret Recovery Phrase</h5>
-          <p id="create-phrase-phrase-input" className="user-select-none">{phrase}</p>
+          <p id="create-phrase-phrase-input">{phrase}</p>
           <label htmlFor="create-phrase-confirm-phrase-input" className="form-label mt-4">Confirm Secret Recovery Phrase</label>
           <div className="input-group mb-3">
             <input className="form-control" id="create-phrase-confirm-phrase-input" type="phrase" name="confirm phrase" onChange={handleConfirmPhrase} />
