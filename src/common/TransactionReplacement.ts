@@ -4,7 +4,7 @@ import { BigNumber } from 'ethers';
 /**
  * Minimum price bump, as a percentage, for an updated transaction to be relayed
  */
-const priceBump = 10;
+const priceBump = 13;
 
 /* eslint-disable no-param-reassign */
 /**
@@ -53,13 +53,12 @@ TransactionRequest {
       oldMaxPriorityFee = BigNumber.from(oldTx.maxPriorityFeePerGas);
       break;
     default:
-      throw new Error('Unknown old transaction type. New fee could not be determined.');
+      throw new Error(`Unknown old transaction type ${oldTx.type}. New fee could not be determined.`);
   }
 
   // Add 10% to each fee type
-  const newMaxFee = oldMaxFee.mul(100 + priceBump).div(100).mul(oldTx.gasLimit).div(newTx.gasLimit);
-  const newMaxPriorityFee = oldMaxPriorityFee.mul(100 + priceBump).div(100)
-    .mul(oldTx.gasLimit).div(newTx.gasLimit);
+  const newMaxFee = oldMaxFee.mul(100 + priceBump).div(100);
+  const newMaxPriorityFee = oldMaxPriorityFee.mul(100 + priceBump).div(100);
 
   // Assign fee based on new transaction's type
   switch (newTx.type) {
@@ -81,6 +80,8 @@ TransactionRequest {
 /**
  * Generates a zero-value self-transfer transaction with a sufficient max fee to replace a
  * different transaction with the same nonce in the mempool
+ * TODO: This function should return a transaction with a gas price that is at least as high
+ * as the current network gas price.
  * @param oldTx Transaction to be replaced
  * @returns A zero-value self-transfer TransactionRequest with a higher max fee/gas price
  */
@@ -89,7 +90,7 @@ export function getCancelTransaction(oldTx: TransactionResponse): TransactionReq
     from: oldTx.from,
     to: oldTx.from,
     value: BigNumber.from(0),
-    gasLimit: 21000,
+    gasLimit: oldTx.gasLimit,
     nonce: oldTx.nonce,
   };
   return setFeeForReplacement(oldTx, newTx);

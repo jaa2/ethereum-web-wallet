@@ -69,11 +69,11 @@ export default class UserState {
   static async getConnectedWallet(): Promise<Wallet> {
     let wallet = await (await UserState.getWalletState()).getWallet();
     if (wallet === null) {
-      throw new Error('Wallet is null');
+      return Promise.reject(new Error('Wallet is null'));
     }
     const provider = await UserState.getProvider();
     if (provider === null) {
-      throw new Error('Provider is null');
+      return Promise.reject(new Error('Provider is null'));
     }
     wallet = wallet.connect(provider);
     return wallet;
