@@ -28,7 +28,6 @@
     "@types/react-router": "^5.1.17",
     "@types/webextension-polyfill": "^0.8.1",
     "background": "file:./background",
-    "boostrap": "^2.0.0",
     "bootstrap": "^5.1.3",
     "bootswatch": "^5.1.3",
     "chai-as-promised": "^7.1.1",
