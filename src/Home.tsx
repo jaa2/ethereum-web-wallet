@@ -302,6 +302,10 @@ const Home = function Home() {
       </div> */}
 
       <div id="activity" className="m-2">
+        <Link to="/CreateTransaction">
+          <FontAwesomeIcon className="fa-icon" icon={faPaperPlane} size="3x" />
+          <p>Send</p>
+        </Link>
         <label className="form-label" htmlFor="activity-table">Recent Activity</label>
         <table id="activity-table" className="table table-hover">
           <thead>
@@ -353,10 +357,6 @@ const Home = function Home() {
             }
           </tbody>
         </table>
-        <Link to="/CreateTransaction">
-          <FontAwesomeIcon className="fa-icon" icon={faPaperPlane} size="3x" />
-          <p>Send</p>
-        </Link>
       </div>
     </div>
   );
