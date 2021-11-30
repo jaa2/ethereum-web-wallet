@@ -33,6 +33,9 @@ window.stateObj.walletState.loadEncrypted()
   });
 window.stateObj.provider = new EtherscanProvider('ropsten', 'AZ8GS7UXX1A8MZX9ZH2Q1K3H9DPZXB2F68');
 
+// Load pending transactions
+window.stateObj.pendingTransactionStore.load(window.stateObj.provider);
+
 window.connectWallet = async () => {
   window.stateObj.walletState.currentWallet = (await
   window.stateObj.walletState.getWallet() as Wallet).connect(window.stateObj.provider as Provider);
