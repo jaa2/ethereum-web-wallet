@@ -274,9 +274,9 @@ const SimulationResults = function SimulationResults() {
         toastMsg!.innerHTML = "Couldn't connect to wallet. Try resending the transaction.";
 
         const toast = document.getElementById('errToast');
-        toast!.className = 'toast show';
+        toast!.className = 'toast fadeIn show';
         setTimeout(() => {
-          toast!.className = 'toast hide';
+          toast!.className = 'toast fadeOut';
         }, 3000);
       } else {
         try {
@@ -300,9 +300,9 @@ const SimulationResults = function SimulationResults() {
           }
 
           const toast = document.getElementById('errToast');
-          toast!.className = 'toast show';
+          toast!.className = 'toast fadeIn show';
           setTimeout(() => {
-            toast!.className = 'toast hide';
+            toast!.className = 'toast fadeOut';
           }, 3000);
         }
       }
@@ -323,9 +323,9 @@ const SimulationResults = function SimulationResults() {
       }
 
       const toast = document.getElementById('errToast');
-      toast!.className = 'toast show';
+      toast!.className = 'toast fadeIn show';
       setTimeout(() => {
-        toast!.className = 'toast hide';
+        toast!.className = 'toast fadeOut';
       }, 3000);
     }
   };
@@ -337,6 +337,11 @@ const SimulationResults = function SimulationResults() {
 
   const onEditTransaction = (txReq: TransactionRequest) => {
     navigate('/CreateTransaction', { state: { txReq } });
+  };
+
+  const onCloseToast = () => {
+    const toast = document.getElementById('errToast');
+    toast!.className = 'toast fadeOut';
   };
 
   const { simulationChecks } = useLocation().state;
@@ -481,12 +486,15 @@ const SimulationResults = function SimulationResults() {
 
         <button type="button" className="btn btn-success" onClick={() => onSendTransaction(data[0])}>Send Transaction</button>
       </div>
-      <div className="toast" id="errToast" data-bs-autohide="true">
+      <div className="toast fadeIn" id="errToast" data-bs-autohide="true" role="alert" aria-live="assertive" aria-atomic="true">
         <div className="toast-header">
           <strong className="me-auto">
             Something went wrong
           </strong>
-          <button type="button" className="btn-close" data-bs-dismiss="toast" />
+          {/* <button type="button" className="btn-close" data-bs-dismiss="toast" /> */}
+          <button type="button" onClick={() => onCloseToast()} className="btn-close ms-2 mb-1" data-bs-dismiss="toast" aria-label="Close">
+            <span aria-hidden="true" />
+          </button>
         </div>
         <div id="toast-message" className="toast-body" />
       </div>

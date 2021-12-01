@@ -106,9 +106,9 @@ async function TestTransaction(
     toastMsg!.innerHTML = 'You don\'t have an existing wallet to test a transaction.';
 
     const toast = document.getElementById('errToast');
-    toast!.className = 'toast show';
+    toast!.className = 'toast fadeIn show';
     setTimeout(() => {
-      toast!.className = 'toast hide';
+      toast!.className = 'toast fadeOut';
     }, 3000);
 
     return null;
@@ -129,9 +129,9 @@ async function TestTransaction(
     }
 
     const toast = document.getElementById('errToast');
-    toast!.className = 'toast show';
+    toast!.className = 'toast fadeIn show';
     setTimeout(() => {
-      toast!.className = 'toast hide';
+      toast!.className = 'toast fadeOut';
     }, 3000);
 
     return null;
@@ -177,6 +177,20 @@ const CreateTransaction = function CreateTransaction(props: TransactionAction) {
   const onTestTransaction = async () => {
     const addressElem = (document.getElementById('toAddress') as HTMLInputElement);
     const amountElem = (document.getElementById('amount') as HTMLInputElement);
+    if (addressElem.value === '') {
+      const feedbackElem = document.getElementById('to-feedback');
+      addressElem.className = 'form-control is-invalid';
+      feedbackElem!.innerHTML = 'Invalid address';
+      feedbackElem!.className = 'invalid-feedback';
+    }
+
+    if (amountElem.value === '') {
+      const feedbackElem = document.getElementById('amt-feedback');
+      amountElem.className = 'form-control is-invalid';
+      feedbackElem!.innerHTML = 'Invalid amount inputted';
+      feedbackElem!.className = 'invalid-feedback';
+    }
+
     const validatedTransaction = await TestTransaction(addressElem, amountElem, location);
 
     if (validatedTransaction) {
@@ -250,7 +264,7 @@ const CreateTransaction = function CreateTransaction(props: TransactionAction) {
 
   const onCloseToast = () => {
     const toast = document.getElementById('errToast');
-    toast!.className = 'toast hide';
+    toast!.className = 'toast fadeOut';
   };
 
   let { action } = props;
@@ -351,7 +365,7 @@ const CreateTransaction = function CreateTransaction(props: TransactionAction) {
           </span>
         </div>
         )}
-      <div className="toast" id="errToast" data-bs-autohide="true">
+      <div className="toast fadeIn" id="errToast" data-bs-autohide="true" role="alert" aria-live="assertive" aria-atomic="true">
         <div className="toast-header">
           <strong className="me-auto">
             Something went wrong
