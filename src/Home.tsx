@@ -16,6 +16,7 @@ import PendingTransactionStore from 'background/PendingTransactionStore';
 import { BackgroundWindowInterface } from '../background/background';
 import AddressBox from './common/AddressBox';
 import HelpModal, { IHelpModalProps } from './common/HelpModal';
+import OpenNewWindow from './common/OpenNewWindow';
 import UserState from './common/UserState';
 
 import './Home.scss';
@@ -284,6 +285,7 @@ const Home = function Home() {
             </button>
           </div>
         </div>
+        <OpenNewWindow />
         <div className="field no-unit-field">
           <select id="network-input" name="network">
             <option>Main Ethereum Network</option>
