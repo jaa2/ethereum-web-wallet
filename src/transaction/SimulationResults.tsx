@@ -1,7 +1,7 @@
 /* eslint-disable react/destructuring-assignment */
 /* eslint-disable react/prop-types */
 import {
-  BigNumber, BigNumberish, ethers, Wallet,
+  BigNumber, BigNumberish, ethers,
 } from 'ethers';
 import React, { useEffect } from 'react';
 import Modal from 'react-bootstrap/Modal';
@@ -39,21 +39,6 @@ async function getTransactionController() {
   SimulationSendTransactions(provider);
 
   return transactionController;
-}
-
-/**
- * Grabs the user's wallet
- * @returns the wallet object from wallet state
- */
-async function grabWallet() {
-  const window: BackgroundWindowInterface = await browser.runtime.getBackgroundPage();
-  const state = window.stateObj;
-  const wallet = await state.walletState.getWallet() as Wallet;
-  const provider = await UserState.getProvider();
-  if (provider === null) {
-    throw Error('Provider not found');
-  }
-  return wallet.connect(provider);
 }
 
 /**
@@ -129,7 +114,7 @@ modalToSimulationResults: (arg0: ethers.providers.TransactionRequest,
         tRequest.maxPriorityFeePerGas = ethers.utils.parseUnits(mpfpgValue, 'gwei');
 
         const transactionController = await getTransactionController();
-        const wallet = await grabWallet();
+        const wallet = await UserState.getConnectedWallet();
         const checksAndTx = await transactionController.simulateTransaction(tRequest, wallet);
         // TODO: fix gas-related simulation tests and then replace true with passedAllSimulations
         const passedAllSimulations = areAllSimulationsPassed(checksAndTx.simulationChecks);
@@ -269,7 +254,7 @@ const SimulationResults = function SimulationResults() {
   const onSendTransaction = async (txReq: TransactionRequest) => {
     setSendButtonEnabled(false);
     const pendingTxStore = await UserState.getPendingTxStore();
-    const wallet = await grabWallet();
+    const wallet = await UserState.getConnectedWallet();
     if (wallet === null) {
       setSendButtonEnabled(true);
       return;
