@@ -16,6 +16,7 @@ import { BackgroundWindowInterface } from '../../background/background';
 import AddressBox from '../common/AddressBox';
 import UserState from '../common/UserState';
 import HelpModal, { IHelpModalProps } from '../common/HelpModal';
+import LoadingButton, { ILoadingButtonProps } from '../common/LoadingButton';
 import SimulationSendTransactions from '../SimulationSendTransactions';
 import SimulationSuite from '../SimulationSuite';
 import currentETHtoUSD from '../common/UnitConversion';
@@ -101,7 +102,12 @@ interface TransactionAction {
 const CreateTransaction = function CreateTransaction(props: TransactionAction) {
   const location = useLocation();
   const navigate: NavigateFunction = useNavigate();
+
+  const [testButtonEnabled, setTestButtonEnabled]:
+  [boolean, (state: boolean) => void] = React.useState<boolean>(true);
+
   const onTestTransaction = async () => {
+    setTestButtonEnabled(false);
     const addressElem = (document.getElementById('toAddress') as HTMLInputElement);
     const amountElem = (document.getElementById('amount') as HTMLInputElement);
     const validatedTransaction = await TestTransaction(addressElem, amountElem, location);
@@ -115,6 +121,8 @@ const CreateTransaction = function CreateTransaction(props: TransactionAction) {
         // eslint-disable-next-line @typescript-eslint/comma-dangle
         }
       });
+    } else {
+      setTestButtonEnabled(true);
     }
   };
 
@@ -149,6 +157,14 @@ const CreateTransaction = function CreateTransaction(props: TransactionAction) {
   const simulationModalProps: IHelpModalProps = {
     title: 'Simulation',
     description: 'A simulation is a speculative process of taking the inputted parameters of a transaction and showing how it would fare under an ideal scenario. There is no risk nor cost to simulating a transaction.',
+  };
+
+  const loadingTestButtonProps: ILoadingButtonProps = {
+    buttonId: 'test',
+    buttonClasses: ['btn', 'btn-info'],
+    buttonText: 'Test Transaction',
+    buttonOnClick: onTestTransaction,
+    buttonEnabled: testButtonEnabled,
   };
 
   return (
@@ -202,7 +218,7 @@ const CreateTransaction = function CreateTransaction(props: TransactionAction) {
             <FontAwesomeIcon className="fa-icon" icon={faArrowCircleLeft} size="2x" />
           </Link>
           <span>
-            <button id="test" className="btn btn-info" type="button" onClick={() => onTestTransaction()}>Test Transaction</button>
+            <LoadingButton {...loadingTestButtonProps} /> {/* eslint-disable-line */}
             <HelpModal
               title={simulationModalProps.title}
               description={simulationModalProps.description}
@@ -217,7 +233,7 @@ const CreateTransaction = function CreateTransaction(props: TransactionAction) {
             <button type="button" className="btn btn-primary">Discard Changes</button>
           </Link>
           <span>
-            <button id="test" className="btn btn-info" type="button" onClick={() => onTestTransaction()}>Test Transaction</button>
+            <LoadingButton {...loadingTestButtonProps} /> {/* eslint-disable-line */}
             <HelpModal
               title={simulationModalProps.title}
               description={simulationModalProps.description}

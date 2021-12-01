@@ -20,6 +20,7 @@ import { faEthereum } from '@fortawesome/free-brands-svg-icons';
 
 import { BackgroundWindowInterface } from '../../background/background';
 import HelpModal, { IHelpModalProps } from '../common/HelpModal';
+import LoadingButton, { ILoadingButtonProps } from '../common/LoadingButton';
 import SimulationSendTransactions from '../SimulationSendTransactions';
 import UserState from '../common/UserState';
 // import WalletState from '../../background/WalletState';
@@ -261,10 +262,16 @@ function createSimulationElements(simulationChecks:Map<string, Boolean>) {
 
 const SimulationResults = function SimulationResults() {
   const navigate: NavigateFunction = useNavigate();
+
+  const [sendButtonEnabled, setSendButtonEnabled]:
+  [boolean, (state: boolean) => void] = React.useState<boolean>(true);
+
   const onSendTransaction = async (txReq: TransactionRequest) => {
+    setSendButtonEnabled(false);
     const pendingTxStore = await UserState.getPendingTxStore();
     const wallet = await grabWallet();
     if (wallet === null) {
+      setSendButtonEnabled(true);
       return;
     }
 
@@ -328,6 +335,14 @@ const SimulationResults = function SimulationResults() {
   if (!areAllSimulationsPassed(simulationChecks)) {
     simulationStatus = 'Simulation Failed!';
   }
+
+  const loadingSendButtonProps: ILoadingButtonProps = {
+    buttonId: 'test',
+    buttonClasses: ['btn', 'btn-success'],
+    buttonText: 'Send Transaction',
+    buttonOnClick: () => onSendTransaction(data[0]),
+    buttonEnabled: sendButtonEnabled,
+  };
 
   return (
     <div id="simulation-results">
@@ -422,7 +437,7 @@ const SimulationResults = function SimulationResults() {
 
         <button type="button" className="btn btn-primary" onClick={() => onEditTransaction(data[0])}>Edit Transaction</button>
 
-        <button type="button" className="btn btn-success" onClick={() => onSendTransaction(data[0])}>Send Transaction</button>
+        <LoadingButton {...loadingSendButtonProps} /> {/* eslint-disable-line */}
       </div>
     </div>
   );
