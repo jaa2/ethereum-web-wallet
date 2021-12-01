@@ -1,3 +1,4 @@
+/* eslint-disable jsx-a11y/control-has-associated-label */
 /* eslint-disable react/destructuring-assignment */
 /* eslint-disable react/prop-types */
 import {
@@ -261,16 +262,46 @@ function createSimulationElements(simulationChecks:Map<string, Boolean>) {
 
 const SimulationResults = function SimulationResults() {
   const navigate: NavigateFunction = useNavigate();
+
   const onSendTransaction = async (txReq: TransactionRequest) => {
     const pendingTxStore = await UserState.getPendingTxStore();
-    const wallet = await grabWallet();
-    if (wallet === null) {
-      return;
-    }
+    try {
+      const wallet = await grabWallet();
+      if (wallet === null) {
+        const toastMsg = document.getElementById('toast-message');
+        toastMsg!.innerHTML = "Couldn't connect to wallet. Try resending the transaction.";
 
-    const tResp: TransactionResponse = await wallet.sendTransaction(txReq);
-    await pendingTxStore.addPendingTransaction(tResp, true);
-    navigate('/Home');
+        const toast = document.getElementById('myToast');
+        toast!.className = 'toast show';
+        setTimeout(() => {
+          toast!.className = 'toast hide';
+        }, 3000);
+      } else {
+        try {
+          const tResp: TransactionResponse = await wallet.sendTransaction(txReq);
+          await pendingTxStore.addPendingTransaction(tResp, true);
+          navigate('/Home');
+        } catch (err:any) {
+          const toastMsg = document.getElementById('toast-message');
+          toastMsg!.innerHTML = err;
+
+          const toast = document.getElementById('myToast');
+          toast!.className = 'toast show';
+          setTimeout(() => {
+            toast!.className = 'toast hide';
+          }, 3000);
+        }
+      }
+    } catch (e:any) {
+      const toastMsg = document.getElementById('toast-message');
+      toastMsg!.innerHTML = e;
+
+      const toast = document.getElementById('myToast');
+      toast!.className = 'toast show';
+      setTimeout(() => {
+        toast!.className = 'toast hide';
+      }, 3000);
+    }
   };
 
   const gasModalProps: IHelpModalProps = {
@@ -423,6 +454,15 @@ const SimulationResults = function SimulationResults() {
         <button type="button" className="btn btn-primary" onClick={() => onEditTransaction(data[0])}>Edit Transaction</button>
 
         <button type="button" className="btn btn-success" onClick={() => onSendTransaction(data[0])}>Send Transaction</button>
+      </div>
+      <div className="toast" id="myToast" data-bs-autohide="true">
+        <div className="toast-header">
+          <strong className="me-auto">
+            Something went wrong
+          </strong>
+          <button type="button" className="btn-close" data-bs-dismiss="toast" />
+        </div>
+        <div id="toast-message" className="toast-body" />
       </div>
     </div>
   );

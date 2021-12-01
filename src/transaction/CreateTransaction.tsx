@@ -1,3 +1,5 @@
+/* eslint-disable jsx-a11y/control-has-associated-label */
+/* eslint-disable react/style-prop-object */
 /* eslint-disable no-param-reassign */
 import { BigNumber, ethers, Wallet } from 'ethers';
 import React, { useEffect } from 'react';
@@ -22,6 +24,16 @@ import currentETHtoUSD from '../common/UnitConversion';
 import './CreateTransaction.scss';
 
 /**
+ * Gets the background state object
+ * @returns background state object
+ */
+async function getStateObj() {
+  const window: BackgroundWindowInterface = await browser.runtime.getBackgroundPage();
+  const state = window.stateObj;
+  return state;
+}
+
+/**
  * Ensures that the inputs of address and amount are valid before sending
  * the transaction
  * @param addressInput The destination address of the transaction
@@ -32,8 +44,6 @@ async function TestTransaction(
   amountElem: HTMLInputElement,
   location: Location,
 ) {
-  addressElem.style.borderColor = 'transparent';
-  amountElem.style.borderColor = 'transparent';
   const addressInput = addressElem.value;
   const amountInput = amountElem.value;
 
@@ -41,19 +51,15 @@ async function TestTransaction(
     to: addressInput,
   };
 
-  const amountRegex = /^([1-9]\d*|0)((\.\d+)?)$/;
-
-  const isAddressValid = await SimulationSuite.isAddressValid(txReq);
-  const isAmountValid = amountRegex.test(amountInput);
-  if (isAddressValid && isAmountValid) {
-    const window: BackgroundWindowInterface = await browser.runtime.getBackgroundPage();
-    const state = window.stateObj;
+  // const isAddressValid = await SimulationSuite.isAddressValid(txReq);
+  try {
+    const value = ethers.utils.parseEther(amountInput);
+    const state = await getStateObj();
     const provider = state.provider as Provider;
     const wallet = await state.walletState.getWallet() as Wallet;
     const transactionController: SimulationSendTransactions = new
     SimulationSendTransactions(provider);
 
-    document.getElementById('amount-in-usd')!.innerHTML = (await currentETHtoUSD(provider, +amountInput)).toString().concat(' USD');
     if (wallet !== null) {
       // finish creating create transaction request object
       if (location.state !== null
@@ -61,7 +67,7 @@ async function TestTransaction(
         txReq.nonce = location.state.nonce;
       }
 
-      txReq.value = ethers.utils.parseEther(amountInput);
+      txReq.value = value;
       txReq.from = await wallet.getAddress();
       txReq.data = '0x';
       txReq.gasLimit = await transactionController.getGasLimit(txReq);
@@ -79,19 +85,33 @@ async function TestTransaction(
         contractOrEOA,
       };
     }
-  }
 
-  // TODO: Have some sort of immediate feeback given to the user that informs
-  // them that something wrong was given. onChange, onFocus, onSubmit?
-  if (!isAddressValid) {
-    addressElem.style.border = '5px solid #ff0000';
-  }
+    const toastMsg = document.getElementById('toast-message');
+    toastMsg!.innerHTML = 'You don\'t have an existing wallet to test a transaction.';
 
-  if (!isAmountValid) {
-    amountElem.style.border = '5px solid #ff0000';
-  }
+    const toast = document.getElementById('myToast');
+    toast!.className = 'toast show';
+    setTimeout(() => {
+      toast!.className = 'toast hide';
+    }, 3000);
 
-  return null;
+    return null;
+  } catch (e: any) {
+    const toastMsg = document.getElementById('toast-message');
+    toastMsg!.innerHTML = e;
+
+    const toast = document.getElementById('myToast');
+    toast!.className = 'toast show';
+    setTimeout(() => {
+      toast!.className = 'toast hide';
+    }, 3000);
+
+    return null;
+  }
+}
+
+function getCurrentETHInUSD(amount: number, ethUsdRate: number) {
+  return amount * ethUsdRate;
 }
 
 interface TransactionAction {
@@ -101,6 +121,31 @@ interface TransactionAction {
 const CreateTransaction = function CreateTransaction(props: TransactionAction) {
   const location = useLocation();
   const navigate: NavigateFunction = useNavigate();
+
+  const [address, setAddress]:
+  [string, (matchState: string) => void] = React.useState<string>('0x510928a823b892093ac83904ef');
+  const [currentETHValue, setCurrentETHValue] = React.useState<number>(0);
+
+  useEffect(() => {
+    UserState.getAddress().then((newAddress) => {
+      if (newAddress !== null) {
+        setAddress(newAddress);
+      }
+    });
+
+    // Get ETH value in USD
+    UserState.getProvider().then((provider) => {
+      if (provider === null) {
+        return Promise.reject();
+      }
+      return provider;
+    })
+      .then((provider) => currentETHtoUSD(provider))
+      .then((valInUSD) => {
+        setCurrentETHValue(valInUSD);
+      });
+  }, []);
+
   const onTestTransaction = async () => {
     const addressElem = (document.getElementById('toAddress') as HTMLInputElement);
     const amountElem = (document.getElementById('amount') as HTMLInputElement);
@@ -115,6 +160,45 @@ const CreateTransaction = function CreateTransaction(props: TransactionAction) {
         // eslint-disable-next-line @typescript-eslint/comma-dangle
         }
       });
+    }
+  };
+
+  const onAddressInput = async () => {
+    const addressElem = (document.getElementById('toAddress') as HTMLInputElement);
+    const txReq : TransactionRequest = {
+      to: addressElem.value,
+    };
+
+    const isAddressValid = await SimulationSuite.isAddressValid(txReq);
+    const feedbackElem = document.getElementById('to-feedback');
+    if (!isAddressValid) {
+      addressElem.className = 'form-control is-invalid';
+      feedbackElem!.innerHTML = 'Invalid Address';
+      feedbackElem!.className = 'invalid-feedback';
+    } else {
+      addressElem.className = 'form-control is-valid';
+      feedbackElem!.innerHTML = '';
+      feedbackElem!.className = 'valid-feedback';
+    }
+  };
+
+  const onAmountInput = () => {
+    const amountElem = (document.getElementById('amount') as HTMLInputElement);
+    const amountInput = amountElem.value;
+    const feedbackElem = document.getElementById('amt-feedback');
+
+    try {
+      ethers.utils.parseEther(amountInput);
+      // const state = await getStateObj();
+      // const provider = state.provider as Provider;
+      document.getElementById('amount-in-usd')!.innerHTML = (getCurrentETHInUSD(+amountInput, currentETHValue)).toString().concat(' USD');
+      amountElem.className = 'form-control is-valid';
+      feedbackElem!.innerHTML = '';
+      feedbackElem!.className = 'valid-feedback';
+    } catch (e: any) {
+      amountElem.className = 'form-control is-invalid';
+      feedbackElem!.innerHTML = e;
+      feedbackElem!.className = 'invalid-feedback';
     }
   };
 
@@ -134,17 +218,6 @@ const CreateTransaction = function CreateTransaction(props: TransactionAction) {
       action = 'Replace';
     }
   }
-
-  const [address, setAddress]:
-  [string, (matchState: string) => void] = React.useState<string>('0x510928a823b892093ac83904ef');
-
-  useEffect(() => {
-    UserState.getAddress().then((newAddress) => {
-      if (newAddress !== null) {
-        setAddress(newAddress);
-      }
-    });
-  }, []);
 
   const simulationModalProps: IHelpModalProps = {
     title: 'Simulation',
@@ -178,14 +251,16 @@ const CreateTransaction = function CreateTransaction(props: TransactionAction) {
       <div className="field-entry">
         <div className="form-group">
           <label className="col-form-label mt-4" htmlFor="toAddress">To</label>
-          <input type="text" className="form-control" defaultValue={dest} id="toAddress" />
+          <input type="text" className="form-control" defaultValue={dest} id="toAddress" onChange={() => onAddressInput()} />
+          <div id="to-feedback" className="" />
         </div>
         <div className="form-group">
           <label htmlFor="amount" className="form-label mt-4">Amount</label>
           <div className="form-group">
             <div className="input-group mb-3">
-              <input type="text" className="form-control" id="amount" defaultValue={tAmount} aria-label="Amount" />
+              <input type="text" className="form-control" id="amount" defaultValue={tAmount} aria-label="Amount" onChange={() => onAmountInput()} />
               <span className="input-group-text">ETH</span>
+              <div id="amt-feedback" className="" />
             </div>
           </div>
         </div>
@@ -225,6 +300,15 @@ const CreateTransaction = function CreateTransaction(props: TransactionAction) {
           </span>
         </div>
         )}
+      <div className="toast" id="myToast" data-bs-autohide="true">
+        <div className="toast-header">
+          <strong className="me-auto">
+            Something went wrong
+          </strong>
+          <button type="button" className="btn-close" data-bs-dismiss="toast" />
+        </div>
+        <div id="toast-message" className="toast-body" />
+      </div>
     </div>
   );
 };
