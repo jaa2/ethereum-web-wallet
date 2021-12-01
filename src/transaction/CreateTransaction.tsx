@@ -23,6 +23,8 @@ import SimulationSuite from '../SimulationSuite';
 import currentETHtoUSD from '../common/UnitConversion';
 import './CreateTransaction.scss';
 
+const ERROR = 'Error: ';
+
 /**
  * Gets the background state object
  * @returns background state object
@@ -51,8 +53,22 @@ async function TestTransaction(
     to: addressInput,
   };
 
-  // const isAddressValid = await SimulationSuite.isAddressValid(txReq);
   try {
+    // Preventing users from simulating transaction on invalid inputs
+    let err = '';
+    if (addressElem.className === 'form-control is-invalid' && amountElem.className === 'form-control is-invalid') {
+      err = 'Address and amount inputs are invalid. Please fix them before testing the transaction.';
+    } else if (addressElem.className === 'form-control is-invalid') {
+      err = 'Address input is invalid. Please fix it before testing the transaction.';
+    } else if (amountElem.className === 'form-control is-invalid') {
+      err = 'Amount input is invalid. Please fix it before testing the transaction';
+    }
+
+    if (err !== '') {
+      throw new Error(err);
+    }
+
+    // At this point, all inputs should be valid to be sent
     const value = ethers.utils.parseEther(amountInput);
     const state = await getStateObj();
     const provider = state.provider as Provider;
@@ -89,7 +105,7 @@ async function TestTransaction(
     const toastMsg = document.getElementById('toast-message');
     toastMsg!.innerHTML = 'You don\'t have an existing wallet to test a transaction.';
 
-    const toast = document.getElementById('myToast');
+    const toast = document.getElementById('errToast');
     toast!.className = 'toast show';
     setTimeout(() => {
       toast!.className = 'toast hide';
@@ -98,9 +114,21 @@ async function TestTransaction(
     return null;
   } catch (e: any) {
     const toastMsg = document.getElementById('toast-message');
-    toastMsg!.innerHTML = e;
+    const i = String(e).indexOf('(');
+    if (String(e).includes('bad response')) {
+      toastMsg!.innerHTML = 'The simulation ran into a network error. Please try testing the transaction again.';
+    } else if (String(e).includes(ERROR) && i !== -1) {
+      let errMsg = String(e).substring(ERROR.length, i - 1);
+      errMsg = errMsg[0].toUpperCase().concat(errMsg.substring(1));
+      toastMsg!.innerHTML = errMsg;
+    } else if (String(e).includes(ERROR) && i === -1) {
+      const errMsg = String(e).substring(ERROR.length);
+      toastMsg!.innerHTML = errMsg;
+    } else {
+      toastMsg!.innerHTML = e;
+    }
 
-    const toast = document.getElementById('myToast');
+    const toast = document.getElementById('errToast');
     toast!.className = 'toast show';
     setTimeout(() => {
       toast!.className = 'toast hide';
@@ -173,7 +201,7 @@ const CreateTransaction = function CreateTransaction(props: TransactionAction) {
     const feedbackElem = document.getElementById('to-feedback');
     if (!isAddressValid) {
       addressElem.className = 'form-control is-invalid';
-      feedbackElem!.innerHTML = 'Invalid Address';
+      feedbackElem!.innerHTML = 'Invalid address';
       feedbackElem!.className = 'invalid-feedback';
     } else {
       addressElem.className = 'form-control is-valid';
@@ -187,19 +215,42 @@ const CreateTransaction = function CreateTransaction(props: TransactionAction) {
     const amountInput = amountElem.value;
     const feedbackElem = document.getElementById('amt-feedback');
 
-    try {
-      ethers.utils.parseEther(amountInput);
-      // const state = await getStateObj();
-      // const provider = state.provider as Provider;
-      document.getElementById('amount-in-usd')!.innerHTML = (getCurrentETHInUSD(+amountInput, currentETHValue)).toString().concat(' USD');
-      amountElem.className = 'form-control is-valid';
-      feedbackElem!.innerHTML = '';
-      feedbackElem!.className = 'valid-feedback';
-    } catch (e: any) {
+    // Initial check to make sure there are no leading 0s (> 1)
+    // Ex: Preventing 00001234 --> 1234
+    const amountRegex = /^((([1-9]\d*|0)((\.\d+)?))|(\.\d+))$/;
+
+    if (amountRegex.test(amountInput)) {
+      try {
+        ethers.utils.parseEther(amountInput);
+        // const state = await getStateObj();
+        // const provider = state.provider as Provider;
+        document.getElementById('amount-in-usd')!.innerHTML = (getCurrentETHInUSD(+amountInput, currentETHValue)).toString().concat(' USD');
+        amountElem.className = 'form-control is-valid';
+        feedbackElem!.innerHTML = '';
+        feedbackElem!.className = 'valid-feedback';
+      } catch (e: any) {
+        amountElem.className = 'form-control is-invalid';
+        if (String(e).includes('fractional component exceeds')) {
+          feedbackElem!.innerHTML = 'Amount has too many decimal places';
+          feedbackElem!.className = 'invalid-feedback';
+        } else {
+          const i = String(e).indexOf('(');
+          let errMsg = String(e).substring(ERROR.length, i - 1);
+          errMsg = errMsg[0].toUpperCase().concat(errMsg.substring(1));
+          feedbackElem!.innerHTML = errMsg;
+          feedbackElem!.className = 'invalid-feedback';
+        }
+      }
+    } else {
       amountElem.className = 'form-control is-invalid';
-      feedbackElem!.innerHTML = e;
+      feedbackElem!.innerHTML = 'Invalid amount inputted';
       feedbackElem!.className = 'invalid-feedback';
     }
+  };
+
+  const onCloseToast = () => {
+    const toast = document.getElementById('errToast');
+    toast!.className = 'toast hide';
   };
 
   let { action } = props;
@@ -300,12 +351,15 @@ const CreateTransaction = function CreateTransaction(props: TransactionAction) {
           </span>
         </div>
         )}
-      <div className="toast" id="myToast" data-bs-autohide="true">
+      <div className="toast" id="errToast" data-bs-autohide="true">
         <div className="toast-header">
           <strong className="me-auto">
             Something went wrong
           </strong>
-          <button type="button" className="btn-close" data-bs-dismiss="toast" />
+          {/* <button type="button" className="btn-close" data-bs-dismiss="toast" /> */}
+          <button type="button" onClick={() => onCloseToast()} className="btn-close ms-2 mb-1" data-bs-dismiss="toast" aria-label="Close">
+            <span aria-hidden="true" />
+          </button>
         </div>
         <div id="toast-message" className="toast-body" />
       </div>

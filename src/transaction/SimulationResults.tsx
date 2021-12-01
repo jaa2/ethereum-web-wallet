@@ -27,6 +27,8 @@ import UserState from '../common/UserState';
 
 import './SimulationResults.scss';
 
+const ERROR = 'Error: ';
+
 /**
  * Get the object that can simulate and send a transaction
  * @returns the object to simulate and send transactions
@@ -271,7 +273,7 @@ const SimulationResults = function SimulationResults() {
         const toastMsg = document.getElementById('toast-message');
         toastMsg!.innerHTML = "Couldn't connect to wallet. Try resending the transaction.";
 
-        const toast = document.getElementById('myToast');
+        const toast = document.getElementById('errToast');
         toast!.className = 'toast show';
         setTimeout(() => {
           toast!.className = 'toast hide';
@@ -283,9 +285,21 @@ const SimulationResults = function SimulationResults() {
           navigate('/Home');
         } catch (err:any) {
           const toastMsg = document.getElementById('toast-message');
-          toastMsg!.innerHTML = err;
+          const i = String(err).indexOf('(');
+          if (String(err).indexOf('bad response') !== -1) {
+            toastMsg!.innerHTML = 'The simulation ran into a network error. Please try testing the transaction again.';
+          } else if (String(err).indexOf(ERROR) !== -1 && i !== -1) {
+            let errMsg = String(err).substring(ERROR.length, i - 1);
+            errMsg = errMsg[0].toUpperCase().concat(errMsg.substring(1));
+            toastMsg!.innerHTML = errMsg;
+          } else if (String(err).indexOf(ERROR) !== -1 && i === -1) {
+            const errMsg = String(err).substring(ERROR.length);
+            toastMsg!.innerHTML = errMsg;
+          } else {
+            toastMsg!.innerHTML = err;
+          }
 
-          const toast = document.getElementById('myToast');
+          const toast = document.getElementById('errToast');
           toast!.className = 'toast show';
           setTimeout(() => {
             toast!.className = 'toast hide';
@@ -294,9 +308,21 @@ const SimulationResults = function SimulationResults() {
       }
     } catch (e:any) {
       const toastMsg = document.getElementById('toast-message');
-      toastMsg!.innerHTML = e;
+      const i = String(e).indexOf('(');
+      if (String(e).includes('bad response')) {
+        toastMsg!.innerHTML = 'The simulation ran into a network error. Please try testing the transaction again.';
+      } else if (String(e).includes(ERROR) && i !== -1) {
+        let errMsg = String(e).substring(ERROR.length, i - 1);
+        errMsg = errMsg[0].toUpperCase().concat(errMsg.substring(1));
+        toastMsg!.innerHTML = errMsg;
+      } else if (String(e).includes(ERROR) && i === -1) {
+        const errMsg = String(e).substring(ERROR.length);
+        toastMsg!.innerHTML = errMsg;
+      } else {
+        toastMsg!.innerHTML = e;
+      }
 
-      const toast = document.getElementById('myToast');
+      const toast = document.getElementById('errToast');
       toast!.className = 'toast show';
       setTimeout(() => {
         toast!.className = 'toast hide';
@@ -455,7 +481,7 @@ const SimulationResults = function SimulationResults() {
 
         <button type="button" className="btn btn-success" onClick={() => onSendTransaction(data[0])}>Send Transaction</button>
       </div>
-      <div className="toast" id="myToast" data-bs-autohide="true">
+      <div className="toast" id="errToast" data-bs-autohide="true">
         <div className="toast-header">
           <strong className="me-auto">
             Something went wrong
