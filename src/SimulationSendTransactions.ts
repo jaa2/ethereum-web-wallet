@@ -179,11 +179,11 @@ class SimulationSendTransactions {
       const simResults = await promises;
       // Simulation Check = Key; Boolean = Value
       const simulationChecks = new Map([
-        ['Gas Limit is Reasonable', simResults[0]],
+        [' Gas limit is reasonable', simResults[0]],
         // ['Gas Price is Reasonable', simResults[1]],
-        ['Address is Valid', true],
-        ['Total Fee is not More than Wallet', simResults[1] === false],
-        ['Data is Sent Correctly', simResults[2] === false]]);
+        [' Address is valid', true],
+        [' Total fee is not more than wallet', simResults[1] === false],
+        [' Data is sent correctly', simResults[2] === false]]);
 
       return { simulationChecks, t };
     } catch (e) {

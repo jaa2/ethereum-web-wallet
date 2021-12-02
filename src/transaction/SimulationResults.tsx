@@ -304,7 +304,6 @@ const SimulationResults = function SimulationResults() {
   }
 
   const tAmount = ethers.utils.formatEther(data[0].value as BigNumberish).concat(' ETH');
-  const gasLimit = 'Gas Limit: '.concat((BigNumber.from(data[0].gasLimit as BigNumberish)).toString());
   const maxGasFeeTitle = 'Max Gas Fee';
   const totalGasFee = SimulationSendTransactions.totalGasFeeInETH(data[0])?.concat(' ETH');
   const totalTransactionFee = SimulationSendTransactions.totalTransactionFeeInETH(data[0])?.concat(' ETH');
@@ -318,9 +317,9 @@ const SimulationResults = function SimulationResults() {
     <div id="simulation-results">
       <div className="card border-info mb-3">
         <div className="card-body">
-          <h3 className="card-title">Transaction Details</h3>
-          <p className="card-text">
-            <div id="top-box">
+          <div id="top-box">
+            <h3 className="card-title">Transaction Details</h3>
+            <p className="card-text">
               <p>{sourceToDest}</p>
               <p>{transferLabel}</p>
               {/* <p><b>Contract Interaction</b></p> */}
@@ -328,9 +327,7 @@ const SimulationResults = function SimulationResults() {
                 <div id="amount">
                   <FontAwesomeIcon className="fa-icon" icon={faEthereum} size="2x" />
                   <p>
-                    Sent to &quot;
-                    {dest}
-                    &quot;
+                    Amount
                     <h5>
                       {' '}
                       {tAmount}
@@ -341,8 +338,6 @@ const SimulationResults = function SimulationResults() {
                 <div id="max-tx-fee">
                   <FontAwesomeIcon className="fa-icon" icon={faFire} size="2x" />
                   <p>
-                    {gasLimit}
-                    <br />
                     {maxGasFeeTitle}
                     <h5>
                       {' '}
@@ -370,16 +365,16 @@ const SimulationResults = function SimulationResults() {
                   </h4>
                 </p>
               </div>
-            </div>
-          </p>
+            </p>
+          </div>
         </div>
       </div>
 
       <div id="simulation-text"><h1>{simulationStatus}</h1></div>
 
-      <div>
+      <div className="checklist">
         {simulationElements.map(([simulationCheck, passed]) => (passed ? (
-          <div>
+          <div className="item">
             <FontAwesomeIcon icon={faCheckCircle} color="#6cbc7a" />
             {simulationCheck}
           </div>
@@ -400,15 +395,16 @@ const SimulationResults = function SimulationResults() {
         for 1 ETH
         {' '}
       </p> */}
-      <h2>{' '}</h2>
+      <h6>{' '}</h6>
+      <h6>{' '}</h6>
       <div id="bottom-buttons">
         <Link to="/Home">
-          <button type="button" className="btn btn-primary">Reject Transaction</button>
+          <button type="button" className="btn btn-primary">Reject</button>
         </Link>
 
-        <button type="button" className={(areAllSimulationsPassed(simulationChecks) ? 'btn btn-primary' : 'btn btn-info')} onClick={() => onEditTransaction(data[0])}>Edit Transaction</button>
+        <button type="button" className={(areAllSimulationsPassed(simulationChecks) ? 'btn btn-primary' : 'btn btn-info')} onClick={() => onEditTransaction(data[0])}>Edit</button>
 
-        <button type="button" className={(areAllSimulationsPassed(simulationChecks) ? 'btn btn-success' : 'btn btn-primary')} onClick={() => onSendTransaction(data[0])}>Send Transaction</button>
+        <button type="button" className={(areAllSimulationsPassed(simulationChecks) ? 'btn btn-success' : 'btn btn-primary')} onClick={() => onSendTransaction(data[0])}>Send</button>
       </div>
     </div>
   );
