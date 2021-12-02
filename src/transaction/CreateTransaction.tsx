@@ -325,7 +325,7 @@ const CreateTransaction = function CreateTransaction(props: TransactionAction) {
           <label htmlFor="amount" className="form-label mt-4">Amount</label>
           <div className="form-group">
             <div className="input-group mb-3">
-              <input type="text" className="form-control" id="amount" defaultValue={tAmount} aria-label="Amount" onChange={() => onAmountInput()} />
+              <input type="text" className="form-control" id="amount" defaultValue={tAmount} aria-label="Amount" onChange={onAmountInput} />
               <span className="input-group-text">ETH</span>
               <div id="amt-feedback" className="" />
             </div>
