@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
@@ -48,6 +48,60 @@ const DangerConfim = () => {
 };
 
 function ProfileSettings() {
+  // let DARK_STYLE_LINK = '';
+  // let THEME_TOGGLER = null;
+  let DARK_STYLE_LINK = document.getElementById('dark-theme-style');
+  let THEME_TOGGLER = document.getElementById('theme-toggler');
+  useEffect(() => {
+    DARK_STYLE_LINK = document.getElementById('dark-theme-style');
+    THEME_TOGGLER = document.getElementById('theme-toggler');
+  }, []);
+  // you can use app's unique identifier here
+  const LOCAL_STORAGE_KEY = 'toggle-bootstrap-theme';
+  const LOCAL_META_DATA = JSON.parse(localStorage.getItem(LOCAL_STORAGE_KEY) || '{}');
+  // you can change this url as needed
+  const DARK_THEME_PATH = 'https://bootswatch.com/4/cyborg/bootstrap.min.css';
+  let isDark = LOCAL_META_DATA && LOCAL_META_DATA.isDark;
+  function enableDarkTheme() {
+    if (DARK_STYLE_LINK && THEME_TOGGLER) {
+      DARK_STYLE_LINK.setAttribute('href', DARK_THEME_PATH);
+      THEME_TOGGLER.innerHTML = '🌙 Dark';
+      console.log('enableDarkThemeFunctoion');
+    }
+    console.log('enableDarkThemeFuncOut');
+  }
+  function disableDarkTheme() {
+    if (DARK_STYLE_LINK && THEME_TOGGLER) {
+      DARK_STYLE_LINK.setAttribute('href', '');
+      THEME_TOGGLER.innerHTML = '🌞 Light';
+      console.log('disableDarkTheme');
+    }
+    console.log('disableDarkThemeOut');
+  }
+  // check if user has already selected dark theme earlier
+  if (isDark) {
+    enableDarkTheme();
+  } else {
+    disableDarkTheme();
+  }
+  /**
+   * Apart from toggling themes, this will also store user's theme preference in local storage.
+   * So when user visits next time, we can load the same theme.
+   *
+   */
+  function toggleTheme() {
+    console.log('toggleTheme');
+    isDark = !isDark;
+    if (isDark) {
+      console.log('toggleTheme');
+      enableDarkTheme();
+    } else {
+      disableDarkTheme();
+    }
+    const META = { isDark };
+    localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(META));
+  }
+
   return (
     <div id="profile-settings" className="container">
       <Link className="back-icon" to="/Home">
@@ -90,7 +144,18 @@ function ProfileSettings() {
               <fieldset>
                 <legend className="mt-1">Dark Mode</legend>
                 <div className="form-check form-switch">
-                  <input className="form-check-input" type="checkbox" id="flexSwitchCheckDefault" />
+                  <link id="dark-theme-style" rel="stylesheet" />
+                  <nav className="navbar navbar-transparent">
+                    <button
+                      type="button"
+                      className="btn btn-outline-info btn-lg ml-auto font-weight-bold"
+                      id="theme-toggler"
+                      onClick={toggleTheme}
+                      aria-hidden="true"
+                    >
+                      .
+                    </button>
+                  </nav>
                 </div>
               </fieldset>
             </div>

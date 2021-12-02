@@ -12,7 +12,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import { Modal } from 'react-bootstrap';
 
-import PendingTransactionStore from 'background/PendingTransactionStore';
+import PendingTransactionStore from '../background/PendingTransactionStore';
 import { BackgroundWindowInterface } from '../background/background';
 import AddressBox from './common/AddressBox';
 import HelpModal, { IHelpModalProps } from './common/HelpModal';
