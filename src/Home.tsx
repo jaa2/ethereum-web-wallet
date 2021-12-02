@@ -12,7 +12,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import { Modal } from 'react-bootstrap';
 
-import PendingTransactionStore from 'background/PendingTransactionStore';
+import PendingTransactionStore from '../background/PendingTransactionStore';
 import { BackgroundWindowInterface } from '../background/background';
 import AddressBox from './common/AddressBox';
 import HelpModal, { IHelpModalProps } from './common/HelpModal';
@@ -260,12 +260,17 @@ function Home() {
             </button>
           </div>
         </div>
-        <div className="field no-unit-field">
-          <select id="network-input" name="network">
+        {/* <div className="field no-unit-field"> */}
+        <div className="network">
+          <select id="network-input" name="network" className="form-select">
             <option>Main Ethereum Network</option>
           </select>
-          <HelpModal title={networkModalProps.title} description={networkModalProps.description} />
+          <HelpModal
+            title={networkModalProps.title}
+            description={networkModalProps.description}
+          />
         </div>
+        {/* </div> */}
       </div>
 
       <div id="total" className="m-2">
