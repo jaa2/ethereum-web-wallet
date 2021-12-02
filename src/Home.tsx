@@ -165,20 +165,6 @@ const Home = function Home() {
     UserState.getPendingTxStore().then((response : PendingTransactionStore) => {
       setPendingTransactions(response.pendingTransactions);
     });
-
-    // window.addEventListener('load', () => {
-    // let flag = true;
-    // while (flag) {
-    // UserState.getProvider().then((provider) => {
-    //   provider?.on('block', (blockNumber) => {
-    //     console.log(blockNumber);
-    //     UserState.getPendingTxStore().then((response : PendingTransactionStore) => {
-    //       setPendingTransactions(response.pendingTransactions);
-    //     });
-    //   });
-    // });
-    // }
-    // });
   }, []);
 
   useEffect(() => {

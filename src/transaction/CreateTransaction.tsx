@@ -14,6 +14,8 @@ import {
   faPaperPlane, faArrowCircleLeft, faCog,
 } from '@fortawesome/free-solid-svg-icons';
 
+// import $ from 'jquery';
+
 import { BackgroundWindowInterface } from '../../background/background';
 import AddressBox from '../common/AddressBox';
 import UserState from '../common/UserState';
@@ -106,9 +108,9 @@ async function TestTransaction(
     toastMsg!.innerHTML = 'You don\'t have an existing wallet to test a transaction.';
 
     const toast = document.getElementById('errToast');
-    toast!.className = 'toast fadeIn show';
+    toast!.className = 'toast show';
     setTimeout(() => {
-      toast!.className = 'toast fadeOut';
+      toast!.className = 'toast hide';
     }, 3000);
 
     return null;
@@ -129,9 +131,9 @@ async function TestTransaction(
     }
 
     const toast = document.getElementById('errToast');
-    toast!.className = 'toast fadeIn show';
+    toast!.className = 'toast show';
     setTimeout(() => {
-      toast!.className = 'toast fadeOut';
+      toast!.className = 'toast hide';
     }, 3000);
 
     return null;
@@ -264,7 +266,7 @@ const CreateTransaction = function CreateTransaction(props: TransactionAction) {
 
   const onCloseToast = () => {
     const toast = document.getElementById('errToast');
-    toast!.className = 'toast fadeOut';
+    toast!.className = 'toast hide';
   };
 
   let { action } = props;
@@ -365,7 +367,7 @@ const CreateTransaction = function CreateTransaction(props: TransactionAction) {
           </span>
         </div>
         )}
-      <div className="toast fadeIn" id="errToast" data-bs-autohide="true" role="alert" aria-live="assertive" aria-atomic="true">
+      <div className="toast hide" id="errToast" data-autohide="false" role="alert" aria-live="assertive" aria-atomic="true">
         <div className="toast-header">
           <strong className="me-auto">
             Something went wrong

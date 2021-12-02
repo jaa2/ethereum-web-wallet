@@ -274,9 +274,9 @@ const SimulationResults = function SimulationResults() {
         toastMsg!.innerHTML = "Couldn't connect to wallet. Try resending the transaction.";
 
         const toast = document.getElementById('errToast');
-        toast!.className = 'toast fadeIn show';
+        toast!.className = 'toast show';
         setTimeout(() => {
-          toast!.className = 'toast fadeOut';
+          toast!.className = 'toast hide';
         }, 3000);
       } else {
         try {
@@ -300,9 +300,9 @@ const SimulationResults = function SimulationResults() {
           }
 
           const toast = document.getElementById('errToast');
-          toast!.className = 'toast fadeIn show';
+          toast!.className = 'toast show';
           setTimeout(() => {
-            toast!.className = 'toast fadeOut';
+            toast!.className = 'toast hide';
           }, 3000);
         }
       }
@@ -323,9 +323,9 @@ const SimulationResults = function SimulationResults() {
       }
 
       const toast = document.getElementById('errToast');
-      toast!.className = 'toast fadeIn show';
+      toast!.className = 'toast show';
       setTimeout(() => {
-        toast!.className = 'toast fadeOut';
+        toast!.className = 'toast hide';
       }, 3000);
     }
   };
@@ -341,7 +341,7 @@ const SimulationResults = function SimulationResults() {
 
   const onCloseToast = () => {
     const toast = document.getElementById('errToast');
-    toast!.className = 'toast fadeOut';
+    toast!.className = 'toast hide';
   };
 
   const { simulationChecks } = useLocation().state;
@@ -486,7 +486,7 @@ const SimulationResults = function SimulationResults() {
 
         <button type="button" className="btn btn-success" onClick={() => onSendTransaction(data[0])}>Send Transaction</button>
       </div>
-      <div className="toast fadeIn" id="errToast" data-bs-autohide="true" role="alert" aria-live="assertive" aria-atomic="true">
+      <div className="toast" id="errToast" data-bs-autohide="true" role="alert" aria-live="assertive" aria-atomic="true">
         <div className="toast-header">
           <strong className="me-auto">
             Something went wrong
