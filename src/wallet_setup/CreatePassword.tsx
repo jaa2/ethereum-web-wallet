@@ -62,7 +62,13 @@ const CreatePassword = function CreatePassword() {
 
   let passwordMatchElements: JSX.Element = (<div />);
   // handle additional state where the user's password doesn't meet requirements
-  if (passwordMatchState === 'match') {
+  if (password.length < 8) {
+    passwordMatchElements = (
+      <div id="create-password-match-elements">
+        <p id="create-password-info-mismatch" className="password-info text-danger">Your password is not at least 8 characters!</p>
+      </div>
+    );
+  } else if (passwordMatchState === 'match') {
     passwordMatchElements = (
       <div id="create-password-match-elements">
         <p id="create-password-info-match" className="password-info text-success">Success. Your passwords match!</p>
