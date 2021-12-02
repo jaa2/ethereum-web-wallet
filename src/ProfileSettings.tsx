@@ -66,17 +66,13 @@ function ProfileSettings() {
     if (DARK_STYLE_LINK && THEME_TOGGLER) {
       DARK_STYLE_LINK.setAttribute('href', DARK_THEME_PATH);
       THEME_TOGGLER.innerHTML = '🌙 Dark';
-      console.log('enableDarkThemeFunctoion');
     }
-    console.log('enableDarkThemeFuncOut');
   }
   function disableDarkTheme() {
     if (DARK_STYLE_LINK && THEME_TOGGLER) {
       DARK_STYLE_LINK.setAttribute('href', '');
       THEME_TOGGLER.innerHTML = '🌞 Light';
-      console.log('disableDarkTheme');
     }
-    console.log('disableDarkThemeOut');
   }
   // check if user has already selected dark theme earlier
   if (isDark) {
@@ -90,10 +86,8 @@ function ProfileSettings() {
    *
    */
   function toggleTheme() {
-    console.log('toggleTheme');
     isDark = !isDark;
     if (isDark) {
-      console.log('toggleTheme');
       enableDarkTheme();
     } else {
       disableDarkTheme();
