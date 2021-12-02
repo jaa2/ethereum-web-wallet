@@ -28,7 +28,7 @@ import { WindowType, WindowTypeContext } from './common/OpenNewWindow';
 const App = function App() {
   // Global state used for rendering of "Open in New Window" button
   const [windowType, setWindowType]:
-  [WindowType, (state: WindowType) => void] = useState<WindowType>(WindowType.EXTENSION);
+  [WindowType, (state: WindowType) => void] = useState<WindowType>(WindowType.FULLSCREEN);
 
   const contextValue = useMemo(() => ({ windowType, setWindowType }), [windowType]);
 
