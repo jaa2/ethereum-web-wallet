@@ -25,8 +25,6 @@ import SimulationSuite from '../SimulationSuite';
 import currentETHtoUSD from '../common/UnitConversion';
 import './CreateTransaction.scss';
 
-const ERROR = 'Error: ';
-
 /**
  * Gets the background state object
  * @returns background state object
@@ -105,7 +103,7 @@ async function TestTransaction(
     }
 
     const toastMsg = document.getElementById('toast-message');
-    toastMsg!.innerHTML = 'You don\'t have an existing wallet to test a transaction.';
+    toastMsg!.textContent = 'You don\'t have an existing wallet to test a transaction.';
 
     const toast = document.getElementById('errToast');
     toast!.className = 'toast show';
@@ -115,19 +113,19 @@ async function TestTransaction(
 
     return null;
   } catch (e: any) {
+    let errMsg = e.message;
+
     const toastMsg = document.getElementById('toast-message');
-    const i = String(e).indexOf('(');
-    if (String(e).includes('bad response')) {
-      toastMsg!.innerHTML = 'The simulation ran into a network error. Please try testing the transaction again.';
-    } else if (String(e).includes(ERROR) && i !== -1) {
-      let errMsg = String(e).substring(ERROR.length, i - 1);
+    const i = errMsg.indexOf('(');
+    if (errMsg.includes('bad response')) {
+      toastMsg!.textContent = 'The simulation ran into a network error. Please try testing the transaction again.';
+    } else if (i !== -1) {
+      errMsg = errMsg.substring(0, i - 1);
       errMsg = errMsg[0].toUpperCase().concat(errMsg.substring(1));
-      toastMsg!.innerHTML = errMsg;
-    } else if (String(e).includes(ERROR) && i === -1) {
-      const errMsg = String(e).substring(ERROR.length);
-      toastMsg!.innerHTML = errMsg;
+      toastMsg!.textContent = errMsg;
     } else {
-      toastMsg!.innerHTML = e;
+      errMsg = errMsg[0].toUpperCase().concat(errMsg.substring(1));
+      toastMsg!.textContent = errMsg;
     }
 
     const toast = document.getElementById('errToast');
@@ -182,14 +180,14 @@ const CreateTransaction = function CreateTransaction(props: TransactionAction) {
     if (addressElem.value === '') {
       const feedbackElem = document.getElementById('to-feedback');
       addressElem.className = 'form-control is-invalid';
-      feedbackElem!.innerHTML = 'Invalid address';
+      feedbackElem!.textContent = 'Invalid address';
       feedbackElem!.className = 'invalid-feedback';
     }
 
     if (amountElem.value === '') {
       const feedbackElem = document.getElementById('amt-feedback');
       amountElem.className = 'form-control is-invalid';
-      feedbackElem!.innerHTML = 'Invalid amount inputted';
+      feedbackElem!.textContent = 'Invalid amount inputted';
       feedbackElem!.className = 'invalid-feedback';
     }
 
@@ -217,11 +215,11 @@ const CreateTransaction = function CreateTransaction(props: TransactionAction) {
     const feedbackElem = document.getElementById('to-feedback');
     if (!isAddressValid) {
       addressElem.className = 'form-control is-invalid';
-      feedbackElem!.innerHTML = 'Invalid address';
+      feedbackElem!.textContent = 'Invalid address';
       feedbackElem!.className = 'invalid-feedback';
     } else {
       addressElem.className = 'form-control is-valid';
-      feedbackElem!.innerHTML = '';
+      feedbackElem!.textContent = '';
       feedbackElem!.className = 'valid-feedback';
     }
   };
@@ -240,26 +238,28 @@ const CreateTransaction = function CreateTransaction(props: TransactionAction) {
         ethers.utils.parseEther(amountInput);
         // const state = await getStateObj();
         // const provider = state.provider as Provider;
-        document.getElementById('amount-in-usd')!.innerHTML = (getCurrentETHInUSD(+amountInput, currentETHValue)).toString().concat(' USD');
+        document.getElementById('amount-in-usd')!.textContent = (getCurrentETHInUSD(+amountInput, currentETHValue)).toString().concat(' USD');
         amountElem.className = 'form-control is-valid';
-        feedbackElem!.innerHTML = '';
+        feedbackElem!.textContent = '';
         feedbackElem!.className = 'valid-feedback';
       } catch (e: any) {
+        let errMsg = e.message;
+
         amountElem.className = 'form-control is-invalid';
-        if (String(e).includes('fractional component exceeds')) {
-          feedbackElem!.innerHTML = 'Amount has too many decimal places';
+        if (errMsg.includes('fractional component exceeds')) {
+          feedbackElem!.textContent = 'Amount has too many decimal places';
           feedbackElem!.className = 'invalid-feedback';
         } else {
-          const i = String(e).indexOf('(');
-          let errMsg = String(e).substring(ERROR.length, i - 1);
+          const i = errMsg.indexOf('(');
+          errMsg = errMsg.substring(0, i - 1);
           errMsg = errMsg[0].toUpperCase().concat(errMsg.substring(1));
-          feedbackElem!.innerHTML = errMsg;
+          feedbackElem!.textContent = errMsg;
           feedbackElem!.className = 'invalid-feedback';
         }
       }
     } else {
       amountElem.className = 'form-control is-invalid';
-      feedbackElem!.innerHTML = 'Invalid amount inputted';
+      feedbackElem!.textContent = 'Invalid amount inputted';
       feedbackElem!.className = 'invalid-feedback';
     }
   };
@@ -367,17 +367,18 @@ const CreateTransaction = function CreateTransaction(props: TransactionAction) {
           </span>
         </div>
         )}
-      <div className="toast hide" id="errToast" data-autohide="false" role="alert" aria-live="assertive" aria-atomic="true">
-        <div className="toast-header">
-          <strong className="me-auto">
-            Something went wrong
-          </strong>
-          {/* <button type="button" className="btn-close" data-bs-dismiss="toast" /> */}
-          <button type="button" onClick={() => onCloseToast()} className="btn-close ms-2 mb-1" data-bs-dismiss="toast" aria-label="Close">
-            <span aria-hidden="true" />
-          </button>
+      <div className="position-fixed bottom-0 end-0 p-3" data-style="z-index:1">
+        <div className="toast hide" id="errToast" role="alert" aria-live="assertive" aria-atomic="true">
+          <div className="toast-header">
+            <strong className="me-auto">
+              Something went wrong
+            </strong>
+            <button type="button" onClick={onCloseToast} className="btn-close ms-2 mb-1" data-bs-dismiss="toast" aria-label="Close">
+              <span aria-hidden="true" />
+            </button>
+          </div>
+          <div id="toast-message" className="toast-body" />
         </div>
-        <div id="toast-message" className="toast-body" />
       </div>
     </div>
   );
