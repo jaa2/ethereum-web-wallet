@@ -322,7 +322,7 @@ const SimulationResults = function SimulationResults() {
           <p className="card-text">
             <div id="top-box">
               <p>{sourceToDest}</p>
-              <p><b>{transferLabel}</b></p>
+              <p>{transferLabel}</p>
               {/* <p><b>Contract Interaction</b></p> */}
               <div id="transaction-details">
                 <div id="amount">
@@ -331,11 +331,11 @@ const SimulationResults = function SimulationResults() {
                     Sent to &quot;
                     {dest}
                     &quot;
-                    <h3>
+                    <h5>
                       {' '}
                       {tAmount}
                       {' '}
-                    </h3>
+                    </h5>
                   </p>
                 </div>
                 <div id="max-tx-fee">
@@ -344,31 +344,31 @@ const SimulationResults = function SimulationResults() {
                     {gasLimit}
                     <br />
                     {maxGasFeeTitle}
-                    <h3>
+                    <h5>
                       {' '}
                       {totalGasFee}
                       {' '}
-                    </h3>
+                    </h5>
                   </p>
                   <GasOptions
                     t={txReq}
                     modalToSimulationResults={modalToSimulationResults}
                   />
                 </div>
-                <div id="total-fee">
-                  <p>
-                    Total Cost
-                    <h3>
-                      {' '}
-                      {totalTransactionFee}
-                      {' '}
-                    </h3>
-                  </p>
-                  <HelpModal
-                    title={gasModalProps.title}
-                    description={gasModalProps.description}
-                  />
-                </div>
+                <HelpModal
+                  title={gasModalProps.title}
+                  description={gasModalProps.description}
+                />
+              </div>
+              <div id="total-fee">
+                <p>
+                  <h4>
+                    Total Cost:
+                    {' '}
+                    {totalTransactionFee}
+                    {' '}
+                  </h4>
+                </p>
               </div>
             </div>
           </p>
@@ -400,14 +400,15 @@ const SimulationResults = function SimulationResults() {
         for 1 ETH
         {' '}
       </p> */}
+      <h2>{' '}</h2>
       <div id="bottom-buttons">
         <Link to="/Home">
           <button type="button" className="btn btn-primary">Reject Transaction</button>
         </Link>
 
-        <button type="button" className="btn btn-primary" onClick={() => onEditTransaction(data[0])}>Edit Transaction</button>
+        <button type="button" className={(areAllSimulationsPassed(simulationChecks) ? 'btn btn-primary' : 'btn btn-info')} onClick={() => onEditTransaction(data[0])}>Edit Transaction</button>
 
-        <button type="button" className="btn btn-success" onClick={() => onSendTransaction(data[0])}>Send Transaction</button>
+        <button type="button" className={(areAllSimulationsPassed(simulationChecks) ? 'btn btn-success' : 'btn btn-primary')} onClick={() => onSendTransaction(data[0])}>Send Transaction</button>
       </div>
     </div>
   );

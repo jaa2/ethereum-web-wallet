@@ -26,27 +26,15 @@
   #top-box{   
     #transaction-details {
       width: 100%;
-      width: 65vw;
+      width: 70vw;
       
       display: flex;
       flex-direction: row;
       justify-content: space-around;
       align-items: center;
       
-      #gas-fee {
-        width: 33%;
-        
-        margin: 5px;
-        padding: 5px;
-        
-        display: flex;
-        flex-direction: row;
-        justify-content: space-evenly;
-        align-items: center;
-      }
-      
       #amount {
-        width: 33%;
+        width: 40%;
         
         margin: 5px;
         padding: 5px;
@@ -58,7 +46,7 @@
       }
       
       #max-tx-fee {
-        width: 33%;
+        width: 60%;
         
         margin: 5px;
         padding: 5px;
