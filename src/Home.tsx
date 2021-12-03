@@ -9,7 +9,7 @@ import browser from 'webextension-polyfill';
 import { EtherscanProvider, TransactionRequest, TransactionResponse } from '@ethersproject/providers';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
-  faCog, faLock, faPaperPlane, /* faExchangeAlt, */
+  faCog, faLock, faPaperPlane, faUserCircle, /* faExchangeAlt, */
 } from '@fortawesome/free-solid-svg-icons';
 import { Modal } from 'react-bootstrap';
 
@@ -319,7 +319,7 @@ const Home = function Home() {
     <div id="home">
       <div className="top-bar mb-4">
         <div className="user">
-          <img src="/avatar.png" alt="avatar" className="avatar" />
+          <FontAwesomeIcon className="fa-icon" icon={faUserCircle} size="6x" />
           <div id="home-user-options">
             <div className="option">
               <AddressBox address={address} />

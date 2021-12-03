@@ -11,7 +11,7 @@ import browser from 'webextension-polyfill';
 import { Provider, TransactionRequest } from '@ethersproject/abstract-provider';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
-  faPaperPlane, faArrowCircleLeft, faCog,
+  faPaperPlane, faArrowCircleLeft, faCog, faUserCircle,
 } from '@fortawesome/free-solid-svg-icons';
 
 // import $ from 'jquery';
@@ -310,7 +310,7 @@ const CreateTransaction = function CreateTransaction(props: TransactionAction) {
     <div className="transaction-container">
       <div className="top-bar mb-4">
         <div className="user">
-          <img src="/avatar.png" alt="avatar" className="avatar" />
+          <FontAwesomeIcon className="fa-icon" icon={faUserCircle} size="6x" />
           <div id="transaction-user-options">
             <div className="option">
               <AddressBox address={address} />
