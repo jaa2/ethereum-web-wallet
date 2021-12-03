@@ -1,27 +1,13 @@
 @import './common/colors';
 
 #App {
-  min-width: 600px;
+  min-width: 700px;
   max-width: 1500px;
-  min-height: 500px;
+  min-height: 600px;
   margin: auto;
   padding: 20px;
 
   .fa-icon {
     color: $icon-color
-  }
-
-  #debug-bar {
-    width: 100%;
-    min-width: 400px;
-  
-    margin: 10px auto;
-  
-    display: flex;
-    justify-content: space-around;
-  
-    .debug-control {
-      margin: 10px;
-    }
   }
 }
