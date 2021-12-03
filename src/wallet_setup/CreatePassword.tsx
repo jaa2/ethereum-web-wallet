@@ -22,7 +22,7 @@ async function PasswordCreated(password: string): Promise<void> {
   }
 }
 
-function CreatePassword() {
+const CreatePassword = function CreatePassword() {
   const [passwordMatchState, setPasswordMatchState]: [string, (matchState: string) => void] = React.useState<string>('empty');
   // eslint-disable-next-line max-len
   const [isEncrypting, setIsEncrypting]: [boolean, (encrypting: boolean) => void] = React.useState<boolean>(false);
@@ -62,7 +62,13 @@ function CreatePassword() {
 
   let passwordMatchElements: JSX.Element = (<div />);
   // handle additional state where the user's password doesn't meet requirements
-  if (passwordMatchState === 'match') {
+  if (password.length > 0 && password.length < 8) {
+    passwordMatchElements = (
+      <div id="create-password-match-elements">
+        <p id="create-password-info-length" className="password-info text-danger">Make sure your password is at least 8 characters!</p>
+      </div>
+    );
+  } else if (passwordMatchState === 'match') {
     passwordMatchElements = (
       <div id="create-password-match-elements">
         <p id="create-password-info-match" className="password-info text-success">Success. Your passwords match!</p>
@@ -114,6 +120,6 @@ function CreatePassword() {
       {passwordMatchElements}
     </div>
   );
-}
+};
 
 export default CreatePassword;

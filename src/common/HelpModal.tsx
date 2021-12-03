@@ -9,7 +9,7 @@ export interface IHelpModalProps {
   description: string;
 }
 
-const HelpModal: React.FC<IHelpModalProps> = (props: IHelpModalProps) => {
+const HelpModal: React.FC<IHelpModalProps> = function HelpModal(props: IHelpModalProps) {
   const { title, description } = props;
 
   const [isOpen, setIsOpen] = React.useState(false);

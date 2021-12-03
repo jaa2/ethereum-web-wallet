@@ -18,7 +18,7 @@ async function ValidSecretPhrase(secretPhrase: string): Promise<boolean> {
   return (walletCreated && wallet !== null);
 }
 
-function ImportSecretPhrase() {
+const ImportSecretPhrase = function ImportSecretPhrase() {
   const [secretPhraseStatus, setSecretPhraseStatus]:
   [string, (state: string) => void] = React.useState<string>('length');
   const [inputDisabled, setInputDisabled]:
@@ -30,7 +30,15 @@ function ImportSecretPhrase() {
       .trim()
       .replaceAll(/\s{2,}/g, ' ');
     setSecretPhrase(val);
-    setSecretPhraseStatus(ethers.utils.isValidMnemonic(val) ? 'valid' : 'invalid');
+    const isValid = ethers.utils.isValidMnemonic(val);
+    setSecretPhraseStatus(isValid ? 'valid' : 'invalid');
+
+    const elem = document.getElementById('secret-phrase');
+    if (elem && isValid) {
+      elem.classList.add('is-valid');
+    } else if (elem) {
+      elem.classList.remove('is-valid');
+    }
   };
 
   const navigate: NavigateFunction = useNavigate();
@@ -50,7 +58,7 @@ function ImportSecretPhrase() {
   if (secretPhraseStatus === 'valid') {
     matchElements = (
       <div>
-        <div id="info-match" className="valid-feedback text-success">Success. This is a valid wallet account!</div>
+        <div id="info-match" className="valid-feedback text-success">Success. This is a valid wallet!</div>
         <button
           className="btn btn-primary"
           type="button"
@@ -80,7 +88,7 @@ function ImportSecretPhrase() {
         <p>Enter your 12-word secret recovery phrase below.</p>
         <div className="form-group">
           <textarea
-            className="form-control is-valid"
+            className="form-control"
             id="secret-phrase"
             disabled={inputDisabled}
             cols={40}
@@ -93,6 +101,6 @@ function ImportSecretPhrase() {
       </div>
     </div>
   );
-}
+};
 
 export default ImportSecretPhrase;

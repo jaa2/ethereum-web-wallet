@@ -23,8 +23,11 @@ class SimulationSendTransactions {
     // Mainnet: 0x5f4eC3Df9cbd43714FE2740f5E3616155c5b8419
     // Old Ropsten: 0x8468b2bDCE073A157E560AA4D9CcF6dB1DB98507
     // TODO: Find different address to calculate up to date conversion from ETH to USD
-    const chainlinkETHUSDFeed = new Contract('0x8468b2bDCE073A157E560AA4D9CcF6dB1DB98507',
-      abi, this.provider);
+    const chainlinkETHUSDFeed = new Contract(
+      '0x8468b2bDCE073A157E560AA4D9CcF6dB1DB98507',
+      abi,
+      this.provider,
+    );
     try {
       const priceInUSD = (BigNumber.from(await chainlinkETHUSDFeed.latestAnswer()).toNumber()
         / 10 ** 8) * amount;
@@ -79,7 +82,7 @@ class SimulationSendTransactions {
 
       return estGas;
     } catch {
-      return BigNumber.from(0);
+      return BigNumber.from(300000);
     }
   }
 
@@ -176,11 +179,11 @@ class SimulationSendTransactions {
       const simResults = await promises;
       // Simulation Check = Key; Boolean = Value
       const simulationChecks = new Map([
-        ['Gas Limit is Reasonable', simResults[0]],
+        [' Gas limit is reasonable', simResults[0]],
         // ['Gas Price is Reasonable', simResults[1]],
-        ['Address is Valid', true],
-        ['Total Fee is not More than Wallet', simResults[1] === false],
-        ['Data is Sent Correctly', simResults[2] === false]]);
+        [' Address is valid', true],
+        [' Total fee is not more than wallet', simResults[1] === false],
+        [' Data is sent correctly', simResults[2] === false]]);
 
       return { simulationChecks, t };
     } catch (e) {

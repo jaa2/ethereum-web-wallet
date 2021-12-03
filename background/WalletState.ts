@@ -207,5 +207,7 @@ export default class WalletState {
   async deleteWallet(): Promise<void> {
     await this.storageArea.remove('currentWallet');
     this.currentWallet = null;
+    this.encryptedWalletJSON = null;
+    this.isStateLoaded = false;
   }
 }

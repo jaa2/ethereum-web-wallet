@@ -1,3 +1,4 @@
+/* eslint-disable jsx-a11y/control-has-associated-label */
 import {
   BigNumber, ethers, Signer,
 } from 'ethers';
@@ -5,15 +6,16 @@ import React, { useEffect } from 'react';
 import { Link, NavigateFunction, useNavigate } from 'react-router-dom';
 import browser from 'webextension-polyfill';
 
-import { EtherscanProvider, TransactionResponse } from '@ethersproject/providers';
+import { EtherscanProvider, TransactionRequest, TransactionResponse } from '@ethersproject/providers';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
-  faCog, faLock, faPaperPlane, faExchangeAlt,
+  faCog, faLock, faPaperPlane, /* faExchangeAlt, */
 } from '@fortawesome/free-solid-svg-icons';
 import { Modal } from 'react-bootstrap';
 
 import PendingTransactionStore from '../background/PendingTransactionStore';
 import { BackgroundWindowInterface } from '../background/background';
+import { getCancelTransaction } from './common/TransactionReplacement';
 import AddressBox from './common/AddressBox';
 import HelpModal, { IHelpModalProps } from './common/HelpModal';
 import UserState from './common/UserState';
@@ -21,17 +23,53 @@ import UserState from './common/UserState';
 import './Home.scss';
 import WalletState from '../background/WalletState';
 import currentETHtoUSD from './common/UnitConversion';
+import SimulationSuite from './SimulationSuite';
+import ProviderSelect from './common/ProviderSelect';
 
-const CancelModal = () => {
+const CancelModal = function CancelModal(props: { oldTx: TransactionResponse }) {
   const [isOpen, setIsOpen] = React.useState(false);
+  const [feeToCancel, setFeeToCancel] = React.useState(BigNumber.from(0));
 
   const showModal = () => {
     setIsOpen(true);
+    const { oldTx } = props;
+    const cancelTx = getCancelTransaction(oldTx);
+    setFeeToCancel(SimulationSuite.getTransactionMaxFee(cancelTx));
   };
 
   const hideModal = () => {
     setIsOpen(false);
   };
+
+  const sendCancelTx = async () => {
+    try {
+      // Create cancel transaction
+      const { oldTx } = props;
+      const cancelTx: TransactionRequest = getCancelTransaction(oldTx);
+      // Send cancel transaction
+      const pendingTxStore = await UserState.getPendingTxStore();
+      const wallet = await UserState.getConnectedWallet();
+      const tResp: TransactionResponse = await wallet.sendTransaction(cancelTx);
+      await pendingTxStore.addPendingTransaction(tResp, true);
+    } finally { // TODO: Catch error and display as notification to user
+      // Hide the modal
+      hideModal();
+    }
+  };
+
+  let feeToCancelElement = <div />;
+
+  if (feeToCancel.gt(0)) {
+    feeToCancelElement = (
+      <p>
+        Estimated gas fee to cancel:
+        {' '}
+        {ethers.utils.formatEther(feeToCancel)}
+        {' '}
+        ETH
+      </p>
+    );
+  }
 
   return (
     <>
@@ -41,16 +79,14 @@ const CancelModal = () => {
           Cancel Transaction
         </Modal.Header>
         <Modal.Body>
+          {feeToCancelElement}
           <p>
             Are you sure you want to cancel this transaction?
-          </p>
-          <p>
-            Estimated gas fee for canceling: 0.00351 gwei
           </p>
         </Modal.Body>
         <Modal.Footer>
           <button type="button" className="btn btn-secondary" onClick={hideModal}>Close</button>
-          <button type="button" className="btn btn-primary" onClick={hideModal}>Confirm</button>
+          <button type="button" className="btn btn-primary" onClick={sendCancelTx}>Confirm</button>
         </Modal.Footer>
       </Modal>
     </>
@@ -94,10 +130,12 @@ interface TransactionEntry {
   nonce: number,
   date: string,
   destination: string | undefined,
-  amount: string
+  amount: string,
+  // Transaction hash
+  hash: string;
 }
 
-function Home() {
+const Home = function Home() {
   const [currentTransactions, setCurrentTransactions]:
   [Array<TransactionResponse>, (responses: Array<TransactionResponse>) => void] = React.useState<
   Array<TransactionResponse>
@@ -157,17 +195,28 @@ function Home() {
       }
       return provider;
     })
-      .then((provider) => currentETHtoUSD(1, provider))
+      .then((provider) => currentETHtoUSD(provider))
       .then((valInUSD) => {
         setCurrentETHValue(valInUSD);
       });
 
     UserState.getPendingTxStore().then((response : PendingTransactionStore) => {
       setPendingTransactions(response.pendingTransactions);
-    });
-
-    UserState.getPendingTxStore().then((response : PendingTransactionStore) => {
-      setPendingTransactions(response.pendingTransactions);
+      UserState.getProvider().then((provider) => {
+        provider?.on('block', () => {
+          const resPendingTransactions = response.pendingTransactions;
+          for (let i = 0; i < resPendingTransactions.length; i += 1) {
+            const txHash = resPendingTransactions[i].hash;
+            provider.getTransaction(txHash)
+              .then((res: TransactionResponse) => {
+                if (res !== null && res.blockNumber !== null) {
+                  currentTransactions.push(res);
+                  setPendingTransactions(pendingTransactions.filter((tx) => (tx.hash !== txHash)));
+                }
+              });
+          }
+        });
+      });
     });
   }, []);
 
@@ -202,6 +251,7 @@ function Home() {
       date,
       destination: currentTransactions[i].to,
       amount: ethers.utils.formatEther(currentTransactions[i].value),
+      hash: currentTransactions[i].hash,
     });
   }
 
@@ -224,6 +274,7 @@ function Home() {
       date,
       destination: pendingTransactions[i].to,
       amount: ethers.utils.formatEther(pendingTransactions[i].value),
+      hash: pendingTransactions[i].hash,
     });
   }
 
@@ -252,18 +303,16 @@ function Home() {
             </div>
             <button type="button" className="option btn btn-link" onClick={() => navigate('/ProfileSettings')}>
               <FontAwesomeIcon className="fa-icon" icon={faCog} size="1x" fixedWidth />
-              <p className="icon-label">Profile Settings</p>
+              <p className="icon-label">Settings</p>
             </button>
             <button type="button" className="option btn btn-link" onClick={lockWallet}>
               <FontAwesomeIcon className="fa-icon" icon={faLock} size="1x" fixedWidth />
-              <p className="icon-label">Lock Account</p>
+              <p className="icon-label">Lock Wallet</p>
             </button>
           </div>
         </div>
         <div className="field no-unit-field">
-          <select id="network-input" name="network">
-            <option>Main Ethereum Network</option>
-          </select>
+          <ProviderSelect />
           <HelpModal title={networkModalProps.title} description={networkModalProps.description} />
         </div>
       </div>
@@ -281,7 +330,7 @@ function Home() {
         </h2>
       </div>
 
-      <div id="assets" className="m-2">
+      {/* <div id="assets" className="m-2">
         <label className="form-label" htmlFor="assets-table">Assets</label>
         <table id="assets-table" className="table table-hover">
           <thead>
@@ -299,9 +348,13 @@ function Home() {
         </table>
         <FontAwesomeIcon className="fa-icon" icon={faExchangeAlt} size="3x" />
         <p>Swap</p>
-      </div>
+      </div> */}
 
       <div id="activity" className="m-2">
+        <Link to="/CreateTransaction">
+          <FontAwesomeIcon className="fa-icon" icon={faPaperPlane} size="3x" />
+          <p>Send</p>
+        </Link>
         <label className="form-label" htmlFor="activity-table">Recent Activity</label>
         <table id="activity-table" className="table table-hover">
           <thead>
@@ -323,12 +376,18 @@ function Home() {
                   <th>{transaction.amount}</th>
                   <th>
                     <div className="transcation-options">
-                      <CancelModal />
+                      <CancelModal oldTx={pendingTransactions.filter(
+                        (txResponse) => txResponse.hash === transaction.hash,
+                      )[0]}
+                      />
                       <button
                         type="button"
                         className="mx-1 btn btn-primary"
-                        onClick={() => onReplaceTransaction(transaction.nonce,
-                          String(transaction.destination), transaction.amount)}
+                        onClick={() => onReplaceTransaction(
+                          transaction.nonce,
+                          String(transaction.destination),
+                          transaction.amount,
+                        )}
                       >
                         Replace
                       </button>
@@ -337,6 +396,13 @@ function Home() {
                 </tr>
               ))
             }
+            <tr>
+              <th scope="row" />
+              <th scope="row" />
+              <th scope="row" />
+              <th scope="row" />
+              <th scope="row" />
+            </tr>
             {
               transactionList.map((transaction: TransactionEntry) => (
                 <tr>
@@ -350,13 +416,9 @@ function Home() {
             }
           </tbody>
         </table>
-        <Link to="/CreateTransaction">
-          <FontAwesomeIcon className="fa-icon" icon={faPaperPlane} size="3x" />
-          <p>Send</p>
-        </Link>
       </div>
     </div>
   );
-}
+};
 
 export default Home;

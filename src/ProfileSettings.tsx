@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faUserCircle, faEdit, faExclamationTriangle, faCogs, faArrowCircleLeft,
@@ -7,8 +8,9 @@ import {
 import './ProfileSettings.scss';
 import Modal from 'react-bootstrap/Modal';
 import AddressBox from './common/AddressBox';
+import UserState from './common/UserState';
 
-const DangerConfim = () => {
+const DangerConfim = function DangerConfirm() {
   const [isOpen, setIsOpen] = React.useState(false);
 
   const showModal = () => {
@@ -19,34 +21,47 @@ const DangerConfim = () => {
     setIsOpen(false);
   };
 
+  const navigate = useNavigate();
+  const deleteWallet = () => {
+    UserState.getWalletState()
+      .then((walletState) => (walletState === null ? Promise.reject(
+        new Error('Failed to load wallet state'),
+      ) : walletState))
+      .then((walletState) => walletState.deleteWallet())
+      .then(() => {
+        // Navigate to Create New Wallet screen, now that the wallet has been deleted
+        navigate('/');
+      });
+  };
+
   return (
-    <>
-      <div className="button-container">
-        <button type="button" className="btn btn-outline-danger" onClick={showModal}>Delete Account</button>
-        <Modal show={isOpen} onHide={hideModal}>
-          <Modal.Header>
-            <div id="max-tx-fee">
-              <h3>
-                <FontAwesomeIcon className="fa-icon" icon={faExclamationTriangle} size="2x" color="#489aca" />
-                {' '}
-                Confirm Delete Account
-              </h3>
-            </div>
-          </Modal.Header>
-          <Modal.Body>
-            If you delete account, you can not restore this account.
-            Are you sure to delete your account?
-          </Modal.Body>
-          <Modal.Footer>
-            <button type="button" className="btn btn-secondary" onClick={hideModal}>Cancel</button>
-            <button type="button" className="btn btn-danger" onClick={hideModal}>Delete</button>
-          </Modal.Footer>
-        </Modal>
-      </div>
-    </>
+    <div className="button-container">
+      <button type="button" className="btn btn-outline-danger" onClick={showModal}>Delete Wallet</button>
+      <Modal show={isOpen} onHide={hideModal}>
+        <Modal.Header>
+          <div id="max-tx-fee">
+            <h3>
+              <FontAwesomeIcon className="fa-icon" icon={faExclamationTriangle} size="2x" color="#489aca" />
+              {' '}
+              Confirm Wallet Deletion
+            </h3>
+          </div>
+        </Modal.Header>
+        <Modal.Body>
+          If you delete your wallet, you will only be able to recover it from your secret recovery
+          phrase (or private key) that you have already written down. Are you sure you want to
+          delete your wallet?
+        </Modal.Body>
+        <Modal.Footer>
+          <button type="button" className="btn btn-secondary" onClick={hideModal}>Cancel</button>
+          <button type="button" className="btn btn-danger" onClick={deleteWallet}>Delete</button>
+        </Modal.Footer>
+      </Modal>
+    </div>
   );
 };
 
+// const ProfileSettings = function ProfileSettings() {
 function ProfileSettings() {
   let DARK_STYLE_LINK = document.getElementById('dark-theme-style');
   let THEME_TOGGLER = document.getElementById('theme-toggler');
@@ -96,7 +111,7 @@ function ProfileSettings() {
         <FontAwesomeIcon className="fa-icon" icon={faCogs} size="4x" />
         <h1>Settings</h1>
         <div id="content-container" className="container">
-          <div>
+          <div className="container">
             <div id="profile-picture-edit" className="container">
               <FontAwesomeIcon className="fa-icon" icon={faUserCircle} size="9x" />
               <FontAwesomeIcon className="fa-icon" icon={faEdit} size="1x" />
@@ -109,9 +124,12 @@ function ProfileSettings() {
                 <FontAwesomeIcon className="fa-icon" icon={faEdit} size="1x" />
               </div>
             </div>
-            <AddressBox address="0x510928a823b" />
+            {/* TODO: get address from state */}
+            <div id="address-box" className="container">
+              <AddressBox address="0x510928a823b" />
+            </div>
           </div>
-          <div>
+          <div className="container">
             <fieldset>
               <legend className="mt-1">Delay Time</legend>
               <div className="form-group">
@@ -136,6 +154,7 @@ function ProfileSettings() {
                       aria-hidden="true"
                     />
                   </nav>
+
                 </div>
               </fieldset>
             </div>
@@ -145,6 +164,6 @@ function ProfileSettings() {
       <DangerConfim />
     </div>
   );
-}
+};
 
 export default ProfileSettings;
