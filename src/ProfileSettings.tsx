@@ -6,7 +6,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import './ProfileSettings.scss';
 import Modal from 'react-bootstrap/Modal';
-import AddressBox from './common/AddressBox';
+import { UserAddressBox } from './common/AddressBox';
 import UserState from './common/UserState';
 import { getTheme, setTheme } from './common/Theme';
 
@@ -92,9 +92,8 @@ const ProfileSettings = function ProfileSettings() {
                 <FontAwesomeIcon className="fa-icon" icon={faEdit} size="1x" />
               </div>
             </div>
-            {/* TODO: get address from state */}
             <div id="address-box" className="container">
-              <AddressBox address="0x510928a823b" />
+              <UserAddressBox />
             </div>
           </div>
           <div className="container">
