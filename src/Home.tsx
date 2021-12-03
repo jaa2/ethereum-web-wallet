@@ -371,10 +371,10 @@ const Home = function Home() {
               pendingTransactionList.map((transaction: TransactionEntry) => (
                 <tr>
                   <th scope="row">{transaction.type}</th>
-                  <th>&mdash;</th>
-                  <th>{transaction.destination}</th>
-                  <th>{transaction.amount}</th>
-                  <th>
+                  <td>&mdash;</td>
+                  <td>{transaction.destination}</td>
+                  <td>{transaction.amount}</td>
+                  <td>
                     <div className="transcation-options">
                       <CancelModal oldTx={pendingTransactions.filter(
                         (txResponse) => txResponse.hash === transaction.hash,
@@ -392,25 +392,25 @@ const Home = function Home() {
                         Replace
                       </button>
                     </div>
-                  </th>
+                  </td>
                 </tr>
               ))
             }
             <tr>
               <th scope="row" />
-              <th scope="row" />
-              <th scope="row" />
-              <th scope="row" />
-              <th scope="row" />
+              <td />
+              <td />
+              <td />
+              <td />
             </tr>
             {
               transactionList.map((transaction: TransactionEntry) => (
                 <tr>
                   <th scope="row">{transaction.type}</th>
-                  <th>{transaction.date}</th>
-                  <th>{transaction.destination}</th>
-                  <th>{transaction.amount}</th>
-                  <th>{' '}</th>
+                  <td>{transaction.date}</td>
+                  <td>{transaction.destination}</td>
+                  <td>{transaction.amount}</td>
+                  <td>{' '}</td>
                 </tr>
               ))
             }
