@@ -311,7 +311,7 @@ const Home = function Home() {
             </button>
           </div>
         </div>
-        <div className="field no-unit-field">
+        <div className="network align-items-center">
           <ProviderSelect />
           <HelpModal title={networkModalProps.title} description={networkModalProps.description} />
         </div>
