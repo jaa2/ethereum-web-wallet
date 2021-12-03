@@ -1,5 +1,5 @@
 import {
-  Routes, Route,
+  Navigate, Routes, Route,
 } from 'react-router-dom';
 import { useState, useMemo } from 'react';
 
@@ -36,7 +36,7 @@ const App = function App() {
     <div id="App">
       <WindowTypeContext.Provider value={contextValue}>
         <Routes>
-          <Route path="/" element={<ExistingWallet />} />
+          <Route path="/" element={<Navigate replace to="/ExistingWallet?windowType=popup" />} />
 
           <Route path="/NavigationDebug" element={<NavigationDebug />} />
 

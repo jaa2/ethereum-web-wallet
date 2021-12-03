@@ -1,6 +1,6 @@
 import React, { useContext } from 'react';
 import {
-  useLocation,
+  Link, useLocation,
 } from 'react-router-dom';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -21,33 +21,26 @@ export const WindowTypeContext = React.createContext({
   setWindowType: (_: WindowType) => {}, /* eslint-disable-line */
 });
 
+const DelayedClose = () => {
+  setTimeout(() => {
+    window.close();
+  }, 100);
+};
+
 const OpenNewWindow = function OpenNewWindow() {
   // Get global WindowType state
-  const { windowType, setWindowType } = useContext(WindowTypeContext);
-  const location = useLocation();
+  const { windowType } = useContext(WindowTypeContext);
 
-  // Check search params to see if WindowType changed
-  const locSearch = location.search ? location.search : window.location.search;
-  if (locSearch) {
-    const searchParams = new URLSearchParams(locSearch);
-    const newWindowType = searchParams.get('windowType');
-    if (newWindowType === 'popup') {
-      setWindowType(WindowType.POPUP);
-    }
+  // Render button if popup
+  if (windowType === WindowType.POPUP) {
+    return (
+      <Link to={useLocation().pathname} target="_blank" rel="noopener noreferrer" onClick={DelayedClose}>
+        <FontAwesomeIcon id="icon" className="fa-icon" icon={faExternalLinkAlt} size="2x" data-toggle="tooltip" title="Open in New Window" />
+      </Link>
+    );
   }
 
-  // Don't render button if fullscreen
-  if (windowType === WindowType.FULLSCREEN) {
-    return null;
-  }
-
-  // Reset search params
-  location.search = '';
-  return (
-    <a href={`${window.location.pathname}?windowType=fullscreen`} target="_blank" rel="noreferrer">
-      <FontAwesomeIcon id="icon" className="fa-icon" icon={faExternalLinkAlt} size="2x" data-toggle="tooltip" title="Open in New Window" />
-    </a>
-  );
+  return null;
 };
 
 export default OpenNewWindow;

@@ -21,6 +21,6 @@
             "1024": "ww-1024.png"
         },
         "default_title": "Ethereum Web Wallet",
-        "default_popup": "index.html?windowType=popup"
+        "default_popup": "index.html"
     }
 }
