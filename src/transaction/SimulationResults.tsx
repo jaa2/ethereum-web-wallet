@@ -1,3 +1,4 @@
+/* eslint-disable jsx-a11y/control-has-associated-label */
 /* eslint-disable react/destructuring-assignment */
 /* eslint-disable react/prop-types */
 import {
@@ -246,16 +247,70 @@ function createSimulationElements(simulationChecks:Map<string, Boolean>) {
 
 const SimulationResults = function SimulationResults() {
   const navigate: NavigateFunction = useNavigate();
+
   const onSendTransaction = async (txReq: TransactionRequest) => {
     const pendingTxStore = await UserState.getPendingTxStore();
-    const wallet = await UserState.getConnectedWallet();
-    if (wallet === null) {
-      return;
-    }
+    try {
+      const wallet = await UserState.getConnectedWallet();
+      if (wallet === null) {
+        const toastMsg = document.getElementById('toast-message');
+        toastMsg!.textContent = "Couldn't connect to wallet. Try resending the transaction.";
 
-    const tResp: TransactionResponse = await wallet.sendTransaction(txReq);
-    await pendingTxStore.addPendingTransaction(tResp, true);
-    navigate('/Home');
+        const toast = document.getElementById('errToast');
+        toast!.className = 'toast show';
+        setTimeout(() => {
+          toast!.className = 'toast hide';
+        }, 3000);
+      } else {
+        try {
+          const tResp: TransactionResponse = await wallet.sendTransaction(txReq);
+          await pendingTxStore.addPendingTransaction(tResp, true);
+          navigate('/Home');
+        } catch (err:any) {
+          let errMsg = err.message;
+
+          const toastMsg = document.getElementById('toast-message');
+          const i = errMsg.indexOf('(');
+          if (errMsg.includes('bad response')) {
+            toastMsg!.textContent = 'The simulation ran into a network error. Please try testing the transaction again.';
+          } else if (i !== -1) {
+            errMsg = errMsg.substring(0, i - 1);
+            errMsg = errMsg[0].toUpperCase().concat(errMsg.substring(1));
+            toastMsg!.textContent = errMsg;
+          } else {
+            errMsg = errMsg[0].toUpperCase().concat(errMsg.substring(1));
+            toastMsg!.textContent = errMsg;
+          }
+
+          const toast = document.getElementById('errToast');
+          toast!.className = 'toast show';
+          setTimeout(() => {
+            toast!.className = 'toast hide';
+          }, 3000);
+        }
+      }
+    } catch (e:any) {
+      let errMsg = e.message;
+
+      const toastMsg = document.getElementById('toast-message');
+      const i = errMsg.indexOf('(');
+      if (errMsg.includes('bad response')) {
+        toastMsg!.textContent = 'The simulation ran into a network error. Please try testing the transaction again.';
+      } else if (i !== -1) {
+        errMsg = errMsg.substring(0, i - 1);
+        errMsg = errMsg[0].toUpperCase().concat(errMsg.substring(1));
+        toastMsg!.textContent = errMsg;
+      } else {
+        errMsg = errMsg[0].toUpperCase().concat(errMsg.substring(1));
+        toastMsg!.textContent = errMsg;
+      }
+
+      const toast = document.getElementById('errToast');
+      toast!.className = 'toast show';
+      setTimeout(() => {
+        toast!.className = 'toast hide';
+      }, 3000);
+    }
   };
 
   const gasModalProps: IHelpModalProps = {
@@ -265,6 +320,11 @@ const SimulationResults = function SimulationResults() {
 
   const onEditTransaction = (txReq: TransactionRequest) => {
     navigate('/CreateTransaction', { state: { txReq } });
+  };
+
+  const onCloseToast = () => {
+    const toast = document.getElementById('errToast');
+    toast!.className = 'toast hide';
   };
 
   const { simulationChecks } = useLocation().state;
@@ -381,16 +441,6 @@ const SimulationResults = function SimulationResults() {
           </div>
         )))}
       </div>
-      {/* <h1> </h1>
-      <h3>Token Transfers</h3>
-      <p>
-        0x51092...094ef to
-        {' '}
-        <b>James Augsten</b>
-        {' '}
-        for 1 ETH
-        {' '}
-      </p> */}
       <h6>{' '}</h6>
       <h6>{' '}</h6>
       <div id="bottom-buttons">
@@ -401,6 +451,19 @@ const SimulationResults = function SimulationResults() {
         <button type="button" className={(areAllSimulationsPassed(simulationChecks) ? 'btn btn-primary' : 'btn btn-info')} onClick={() => onEditTransaction(data[0])}>Edit</button>
 
         <button type="button" className={(areAllSimulationsPassed(simulationChecks) ? 'btn btn-success' : 'btn btn-primary')} onClick={() => onSendTransaction(data[0])}>Send</button>
+      </div>
+      <div className="position-fixed bottom-0 end-0 p-3" data-style="z-index:11">
+        <div className="toast hide" id="errToast" role="alert" aria-live="assertive" aria-atomic="true">
+          <div className="toast-header">
+            <strong className="me-auto">
+              Something went wrong
+            </strong>
+            <button type="button" onClick={onCloseToast} className="btn-close ms-2 mb-1" data-bs-dismiss="toast" aria-label="Close">
+              <span aria-hidden="true" />
+            </button>
+          </div>
+          <div id="toast-message" className="toast-body" />
+        </div>
       </div>
     </div>
   );

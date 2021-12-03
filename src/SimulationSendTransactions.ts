@@ -82,7 +82,7 @@ class SimulationSendTransactions {
 
       return estGas;
     } catch {
-      return BigNumber.from(0);
+      return BigNumber.from(300000);
     }
   }
 
