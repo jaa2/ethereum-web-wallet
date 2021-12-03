@@ -160,7 +160,7 @@ const CreateTransaction = function CreateTransaction(props: TransactionAction) {
   };
 
   const loadingTestButtonProps: ILoadingButtonProps = {
-    buttonId: 'test',
+    buttonId: 'test-button',
     buttonClasses: ['btn', 'btn-info'],
     buttonText: 'Test Transaction',
     buttonOnClick: onTestTransaction,

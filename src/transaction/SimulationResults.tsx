@@ -322,7 +322,7 @@ const SimulationResults = function SimulationResults() {
   }
 
   const loadingSendButtonProps: ILoadingButtonProps = {
-    buttonId: 'test',
+    buttonId: 'send-button',
     buttonClasses: ['btn', 'btn-success'],
     buttonText: 'Send Transaction',
     buttonOnClick: () => onSendTransaction(data[0]),
