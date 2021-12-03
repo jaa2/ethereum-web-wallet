@@ -1,8 +1,23 @@
-import React, { useEffect } from 'react';
-import { NavigateFunction, useNavigate } from 'react-router-dom';
+import React, { useContext, useEffect } from 'react';
+import { NavigateFunction, useNavigate, useLocation } from 'react-router-dom';
+
+import { WindowType, WindowTypeContext } from './common/OpenNewWindow';
 import UserState, { WalletStatus } from './common/UserState';
 
 const ExistingWallet = function ExistingWallet() {
+  const { setWindowType } = useContext(WindowTypeContext);
+  const location = useLocation();
+
+  // If extension popup, set global state
+  const locSearch = location.search ? location.search : window.location.search;
+  if (locSearch) {
+    const searchParams = new URLSearchParams(locSearch);
+    const newWindowType = searchParams.get('windowType');
+    if (newWindowType === 'popup') {
+      setWindowType(WindowType.POPUP);
+    }
+  }
+
   const [walletStatus, setWalletStatus]:
   [WalletStatus, (walletStatus: WalletStatus) => void] = React.useState<
   WalletStatus>(WalletStatus.UNKNOWN);

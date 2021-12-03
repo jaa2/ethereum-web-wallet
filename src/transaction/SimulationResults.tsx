@@ -21,6 +21,7 @@ import { faEthereum } from '@fortawesome/free-brands-svg-icons';
 
 import { BackgroundWindowInterface } from '../../background/background';
 import HelpModal, { IHelpModalProps } from '../common/HelpModal';
+import LoadingButton, { ILoadingButtonProps } from '../common/LoadingButton';
 import SimulationSendTransactions from '../SimulationSendTransactions';
 import UserState from '../common/UserState';
 // import WalletState from '../../background/WalletState';
@@ -248,7 +249,11 @@ function createSimulationElements(simulationChecks:Map<string, Boolean>) {
 const SimulationResults = function SimulationResults() {
   const navigate: NavigateFunction = useNavigate();
 
+  const [sendButtonEnabled, setSendButtonEnabled]:
+  [boolean, (state: boolean) => void] = React.useState<boolean>(true);
+
   const onSendTransaction = async (txReq: TransactionRequest) => {
+    setSendButtonEnabled(false);
     const pendingTxStore = await UserState.getPendingTxStore();
     try {
       const wallet = await UserState.getConnectedWallet();
@@ -373,6 +378,16 @@ const SimulationResults = function SimulationResults() {
     simulationStatus = 'Simulation Failed!';
   }
 
+  const loadingSendButtonProps: ILoadingButtonProps = {
+    buttonId: 'send-button',
+    buttonClasses: areAllSimulationsPassed(simulationChecks)
+      ? ['btn', 'btn-success']
+      : ['btn', 'btn-primary'],
+    buttonText: 'Send',
+    buttonOnClick: () => onSendTransaction(data[0]),
+    buttonEnabled: sendButtonEnabled,
+  };
+
   return (
     <div id="simulation-results">
       <div className="card border-info mb-3">
@@ -450,7 +465,7 @@ const SimulationResults = function SimulationResults() {
 
         <button type="button" className={(areAllSimulationsPassed(simulationChecks) ? 'btn btn-primary' : 'btn btn-info')} onClick={() => onEditTransaction(data[0])}>Edit</button>
 
-        <button type="button" className={(areAllSimulationsPassed(simulationChecks) ? 'btn btn-success' : 'btn btn-primary')} onClick={() => onSendTransaction(data[0])}>Send</button>
+        <LoadingButton {...loadingSendButtonProps} /> {/* eslint-disable-line */}
       </div>
       <div className="position-fixed bottom-0 end-0 p-3" data-style="z-index:11">
         <div className="toast hide" id="errToast" role="alert" aria-live="assertive" aria-atomic="true">
