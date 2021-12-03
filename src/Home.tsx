@@ -1,3 +1,4 @@
+/* eslint-disable jsx-a11y/control-has-associated-label */
 import {
   BigNumber, ethers, Signer,
 } from 'ethers';
@@ -164,6 +165,21 @@ const Home = function Home() {
 
     UserState.getPendingTxStore().then((response : PendingTransactionStore) => {
       setPendingTransactions(response.pendingTransactions);
+      UserState.getProvider().then((provider) => {
+        provider?.on('block', () => {
+          const resPendingTransactions = response.pendingTransactions;
+          for (let i = 0; i < resPendingTransactions.length; i += 1) {
+            const txHash = resPendingTransactions[i].hash;
+            provider.getTransaction(txHash)
+              .then((res: TransactionResponse) => {
+                if (res !== null && res.blockNumber !== null) {
+                  currentTransactions.push(res);
+                  setPendingTransactions(pendingTransactions.filter((tx) => (tx.hash !== txHash)));
+                }
+              });
+          }
+        });
+      });
     });
   }, []);
 
@@ -336,6 +352,13 @@ const Home = function Home() {
                 </tr>
               ))
             }
+            <tr>
+              <th scope="row" />
+              <th scope="row" />
+              <th scope="row" />
+              <th scope="row" />
+              <th scope="row" />
+            </tr>
             {
               transactionList.map((transaction: TransactionEntry) => (
                 <tr>
