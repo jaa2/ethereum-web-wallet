@@ -67,12 +67,27 @@ export default class PendingTransactionStore {
   }
 
   /**
+   * Shows a browser notification on transaction confirmation
+   * @param nonce Transaction nonce
+   * @param status Transaction status (1 = confirmed, 0 = failed)
+   */
+  static showNotification(nonce: number, status?: number) {
+    browser.notifications.create(undefined, {
+      type: 'basic',
+      title: `Transaction ${status === 1 ? 'Confirmed' : 'Reverted'}`,
+      message: `Transaction ${nonce.toString()} ${status === 1 ? 'Confirmed!' : 'Reverted!'}`,
+      iconUrl: 'ww-1024.png',
+    });
+  }
+
+  /**
    * Watches a pending transaction and, once it gets included, creates a browser notification
    * and removes the transaction from the pending transactions list
    * @param txResponse TransactionResponse object
    * @returns TransactionReceipt of included transaction
    */
   async watchForPendingTransaction(txResponse: TransactionResponse): Promise<TransactionReceipt> {
+    const txNonce = txResponse.nonce;
     return txResponse.wait(1).then((receipt: TransactionReceipt) => {
     // Remove from pending transactions list
       for (let i = 0; i < this.pendingTransactions.length; i += 1) {
@@ -84,21 +99,18 @@ export default class PendingTransactionStore {
       // Remove other pending transactions with the same nonce
       this.removePendingTransactionsByNonce(txResponse.nonce);
       this.save();
-      browser.notifications.create(undefined, {
-        type: 'basic',
-        title: `Transaction ${receipt.status === 1 ? 'Confirmed' : 'Rejected'}`,
-        message: `Transaction ${txResponse.nonce.toString()} ${receipt.status === 1 ? 'Confirmed!' : 'Rejected!'}`,
-        iconUrl: 'ww-1024.png',
-      });
+      PendingTransactionStore.showNotification(txResponse.nonce, receipt.status);
       return receipt;
     })
       .catch((e: any) => {
         // Remove hash from list
         let targetHash = '';
+        let didFail = false;
         switch (e.code) {
           case Logger.errors.CALL_EXCEPTION:
           // Transaction failed
             targetHash = e.transactionHash;
+            didFail = true;
             break;
           case Logger.errors.TRANSACTION_REPLACED:
           // Transaction was replaced
@@ -114,6 +126,9 @@ export default class PendingTransactionStore {
           }
         }
         this.save();
+        if (didFail) {
+          PendingTransactionStore.showNotification(txNonce, 0);
+        }
         return e.receipt;
       });
   }
