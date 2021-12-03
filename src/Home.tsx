@@ -135,6 +135,14 @@ interface TransactionEntry {
   hash: string;
 }
 
+const AddressTruncate = (address: string | undefined) => {
+  if (address === undefined) {
+    return '';
+  }
+
+  return `${address.substring(0, 6)}...${address.substring(address.length - 4)}`;
+};
+
 const Home = function Home() {
   const [currentTransactions, setCurrentTransactions]:
   [Array<TransactionResponse>, (responses: Array<TransactionResponse>) => void] = React.useState<
@@ -369,17 +377,45 @@ const Home = function Home() {
           <tbody>
             {
               pendingTransactionList.map((transaction: TransactionEntry) => (
-                <tr>
-                  <th scope="row">{transaction.type}</th>
-                  <td>&mdash;</td>
-                  <td>{transaction.destination}</td>
-                  <td>{transaction.amount}</td>
-                  <td>
-                    <div className="transcation-options">
+                <>
+                  <tr>
+                    <th scope="row">{transaction.type}</th>
+                    <td>&mdash;</td>
+                    <td>
+                      <p className="history-address" data-toggle="tooltip" title={transaction.destination}>
+                        {AddressTruncate(transaction.destination)}
+                      </p>
+                    </td>
+                    <td>{transaction.amount}</td>
+                    <td>
+                      <div className="transcation-options">
+                        <CancelModal oldTx={pendingTransactions.filter(
+                          (txResponse) => txResponse.hash === transaction.hash,
+                        )[0]}
+                        />
+                        <button
+                          type="button"
+                          className="mx-1 btn btn-primary"
+                          onClick={() => onReplaceTransaction(
+                            transaction.nonce,
+                            String(transaction.destination),
+                            transaction.amount,
+                          )}
+                        >
+                          Replace
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                  <tr className="table-info">
+                    <th scope="row">TRANSACTION OPTIONS</th>
+                    <td>
                       <CancelModal oldTx={pendingTransactions.filter(
                         (txResponse) => txResponse.hash === transaction.hash,
                       )[0]}
                       />
+                    </td>
+                    <td>
                       <button
                         type="button"
                         className="mx-1 btn btn-primary"
@@ -391,9 +427,11 @@ const Home = function Home() {
                       >
                         Replace
                       </button>
-                    </div>
-                  </td>
-                </tr>
+                    </td>
+                    <td>&mdash;</td>
+                    <td />
+                  </tr>
+                </>
               ))
             }
             <tr>
@@ -408,7 +446,11 @@ const Home = function Home() {
                 <tr>
                   <th scope="row">{transaction.type}</th>
                   <td>{transaction.date}</td>
-                  <td>{transaction.destination}</td>
+                  <td>
+                    <p className="history-address" data-toggle="tooltip" title={transaction.destination}>
+                      {AddressTruncate(transaction.destination)}
+                    </p>
+                  </td>
                   <td>{transaction.amount}</td>
                   <td>{' '}</td>
                 </tr>

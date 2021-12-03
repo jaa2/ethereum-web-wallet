@@ -81,5 +81,10 @@
       display: flex;
       flex-direction: row;
     }
+
+    .history-address {
+      user-select: none;
+      text-transform: none;
+    }
   }
 }
