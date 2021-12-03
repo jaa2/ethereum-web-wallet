@@ -61,8 +61,7 @@ const DangerConfim = function DangerConfirm() {
   );
 };
 
-// const ProfileSettings = function ProfileSettings() {
-function ProfileSettings() {
+const ProfileSettings = function ProfileSettings() {
   let DARK_STYLE_LINK = document.getElementById('dark-theme-style');
   let THEME_TOGGLER = document.getElementById('theme-toggler');
   const LOCAL_STORAGE_KEY = 'toggle-bootstrap-theme';
