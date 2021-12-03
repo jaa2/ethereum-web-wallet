@@ -19,6 +19,7 @@ import CreateTransaction from './transaction/CreateTransaction';
 import SimulationResults from './transaction/SimulationResults';
 
 import './App.scss';
+import { ThemeSetter } from './common/Theme';
 import ExistingWallet from './ExistingWallet';
 
 import { WindowType, WindowTypeContext } from './common/OpenNewWindow';
@@ -34,6 +35,7 @@ const App = function App() {
 
   return (
     <div id="App">
+      <ThemeSetter />
       <WindowTypeContext.Provider value={contextValue}>
         <Routes>
           <Route path="/" element={<Navigate replace to="/ExistingWallet?windowType=popup" />} />

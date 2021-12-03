@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { ChangeEvent } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
@@ -8,6 +8,7 @@ import './ProfileSettings.scss';
 import Modal from 'react-bootstrap/Modal';
 import AddressBox from './common/AddressBox';
 import UserState from './common/UserState';
+import { getTheme, setTheme } from './common/Theme';
 
 const DangerConfim = function DangerConfirm() {
   const [isOpen, setIsOpen] = React.useState(false);
@@ -61,6 +62,14 @@ const DangerConfim = function DangerConfirm() {
 };
 
 const ProfileSettings = function ProfileSettings() {
+  const [themeString, setThemeString] = React.useState<string>(getTheme());
+
+  function toggleTheme(e: ChangeEvent<HTMLInputElement>) {
+    const newTheme = e.currentTarget.checked ? 'dark' : 'light';
+    setThemeString(newTheme);
+    setTheme(newTheme, true);
+  }
+
   return (
     <div id="profile-settings" className="container">
       <Link className="back-icon" to="/Home">
@@ -105,7 +114,13 @@ const ProfileSettings = function ProfileSettings() {
               <fieldset>
                 <legend className="mt-1">Dark Mode</legend>
                 <div id="appearance-switch" className="form-check form-switch">
-                  <input className="form-check-input" type="checkbox" id="flexSwitchCheckDefault" />
+                  <input
+                    className="form-check-input"
+                    type="checkbox"
+                    id="flexSwitchCheckDefault"
+                    checked={themeString === 'dark'}
+                    onChange={toggleTheme}
+                  />
                 </div>
               </fieldset>
             </div>
