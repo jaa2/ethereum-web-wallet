@@ -18,7 +18,7 @@ function ImportPrivateKey() {
   console.log('TODO: Importing from private key!'); // eslint-disable-line
 }
 
-function WalletSetup() {
+const WalletSetup = function WalletSetup() {
   return (
     <div id="wallet-setup">
       <div id="wallet-setup-header">
@@ -52,6 +52,6 @@ function WalletSetup() {
       </div>
     </div>
   );
-}
+};
 
 export default WalletSetup;

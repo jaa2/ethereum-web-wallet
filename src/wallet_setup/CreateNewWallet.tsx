@@ -30,7 +30,7 @@ async function loadNewWallet(): Promise<string | null> {
   throw new Error('Could not create new random wallet');
 }
 
-function CreateNewWallet() {
+const CreateNewWallet = function CreateNewWallet() {
   const [phraseMatchState, setPhraseMatchState]: [string, (matchState: string) => void] = React.useState<string>('empty');
 
   const [phrase, setPhrase]: [string, (phrase: string) => void] = React.useState<string>('');
@@ -38,6 +38,13 @@ function CreateNewWallet() {
   const [confirmPhrase, setConfirmPhrase]: [string, (confirmPhrase: string) => void] = React.useState<string>('');
   const handleConfirmPhrase = (event: React.ChangeEvent<HTMLInputElement>) => {
     setConfirmPhrase(event.target.value);
+
+    const elem = document.getElementById('create-phrase-phrase-input');
+    if (elem && event.target.value !== '') {
+      elem.style.color = 'var(--bs-body-bg)';
+    } else if (elem) {
+      elem.style.color = 'var(--bs-body-color)';
+    }
   };
 
   useEffect(() => {
@@ -127,6 +134,6 @@ function CreateNewWallet() {
       </div>
     </div>
   );
-}
+};
 
 export default CreateNewWallet;

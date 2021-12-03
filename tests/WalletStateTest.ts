@@ -34,6 +34,8 @@ describe('WalletState tests', () => {
     // Delete
     await state2.deleteWallet();
     expect((await state2.getWallet()) === null);
+    expect(state2.encryptedWalletJSON === null);
+    expect(state2.isStateLoaded === false);
 
     // Ensure that it no longer resides in local storage
     const state3: WalletState = new WalletState(storage);

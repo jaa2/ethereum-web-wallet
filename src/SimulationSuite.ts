@@ -185,6 +185,34 @@ class SimulationSuite {
     return true;
   }
 
+  /**
+   * Calculates the maximum transaction fee
+   * @param t TransactionRequest object
+   * @returns Maximum transaction fee (not including the transaction value)
+   */
+  static getTransactionMaxFee(t: TransactionRequest): BigNumber {
+    let maxGasPrice = BigNumber.from(0);
+    const tGasLimit = BigNumber.from(t.gasLimit);
+    const { type } = t;
+
+    if (type === 2) {
+      const tMaxFeePerGas = BigNumber.from(t.maxFeePerGas);
+      const tMaxPriorityFeePerGas = BigNumber.from(t.maxPriorityFeePerGas);
+      if (tMaxFeePerGas === undefined || tMaxPriorityFeePerGas === undefined) {
+        throw new Error('Max fee per gas/max priority fee per gas not defined');
+      }
+      maxGasPrice = tMaxFeePerGas;
+    } else {
+      if (t.gasPrice === undefined) {
+        throw new Error('Gas price not defined in transaction');
+      }
+      maxGasPrice = BigNumber.from(t.gasPrice);
+    }
+
+    const tTotalGasFees = tGasLimit.mul(maxGasPrice);
+    return tTotalGasFees;
+  }
+
   // TODO: Need address book or list of recent addresses to complete this
   /**
      * Returns true if the transaction is sent to an address it has not been sent to before
@@ -208,26 +236,7 @@ class SimulationSuite {
     }
 
     try {
-      let tGasPrice = BigNumber.from(0);
-      const tGasLimit = BigNumber.from(t.gasLimit);
-      const { type } = t;
-
-      if (type === 2) {
-        const tMaxFeePerGas = BigNumber.from(t.maxFeePerGas);
-        const tMaxPriorityFeePerGas = BigNumber.from(t.maxPriorityFeePerGas);
-        if (tMaxFeePerGas === undefined || tMaxPriorityFeePerGas === undefined) {
-          return true;
-        }
-
-        tGasPrice = tMaxFeePerGas.add(tMaxPriorityFeePerGas);
-      } else {
-        tGasPrice = BigNumber.from(t.gasPrice);
-        if (tGasPrice === undefined) {
-          return true;
-        }
-      }
-
-      const tTotalGasFees = tGasLimit.mul(tGasPrice);
+      const tTotalGasFees = this.getTransactionMaxFee(t);
       const amount = BigNumber.from(t.value);
       if (amount.add(tTotalGasFees).gt(balance)) {
         return true;

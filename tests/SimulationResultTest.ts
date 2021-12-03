@@ -7,7 +7,7 @@ import { BigNumber, Transaction } from 'ethers';
 import { parseEther } from '@ethersproject/units';
 import SimulationSuite from '../src/SimulationSuite';
 
-function TransactionToRequest(t: Transaction) {
+const TransactionToRequest = function TransactionToRequest(t: Transaction) {
   if (t === null) {
     return null;
   }
@@ -28,7 +28,7 @@ function TransactionToRequest(t: Transaction) {
   };
 
   return req;
-}
+};
 
 // Source: https://stackoverflow.com/questions/14226803/wait-5-seconds-before-executing-next-line
 // Used to create delays
@@ -36,7 +36,7 @@ describe('SimulationResults tests', () => {
   let sr: SimulationSuite;
   let provider: Provider;
 
-  const delay = (ms: number) => new Promise((res) => setTimeout(res, ms));
+  const delay = (ms: number) => new Promise((res) => { setTimeout(res, ms); });
 
   before(async () => {
     // TODO: Put API key in environment variable/config file instead
