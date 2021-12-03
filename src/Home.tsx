@@ -388,7 +388,7 @@ const Home = function Home() {
           <p>Send</p>
         </Link>
         <label className="form-label" htmlFor="activity-table">Recent Activity</label>
-        <table id="activity-table" className="table table-hover">
+        <table id="activity-table" className="table">
           <thead>
             <tr>
               <th scope="col">Type</th>
@@ -400,37 +400,47 @@ const Home = function Home() {
           <tbody>
             {
               pendingTransactionList.map((transaction: TransactionEntry) => (
-                <tr>
-                  <th scope="row">{transaction.type}</th>
-                  <td>
-                    <div>
-                      <p>&mdash;</p>
-                      <CancelModal oldTx={pendingTransactions.filter(
-                        (txResponse) => txResponse.hash === transaction.hash,
-                      )[0]}
-                      />
-                    </div>
-                  </td>
-                  <td>
-                    <div>
-                      <p className="history-address" data-toggle="tooltip" title={transaction.destination}>
-                        {AddressTruncate(transaction.destination)}
-                      </p>
-                      <button
-                        type="button"
-                        className="mx-1 btn btn-primary"
-                        onClick={() => onReplaceTransaction(
-                          transaction.nonce,
-                          String(transaction.destination),
-                          transaction.amount,
-                        )}
-                      >
-                        Replace
-                      </button>
-                    </div>
-                  </td>
-                  <td>{transaction.amount}</td>
-                </tr>
+                <>
+                  <tr>
+                    <th scope="row" rowSpan={2} align="center">
+                      {transaction.type}
+                    </th>
+                    <td>
+                      <div>
+                        <p>&mdash;</p>
+                      </div>
+                    </td>
+                    <td>
+                      <div>
+                        <p className="history-address" data-toggle="tooltip" title={transaction.destination}>
+                          {AddressTruncate(transaction.destination)}
+                        </p>
+                      </div>
+                    </td>
+                    <td>{transaction.amount}</td>
+                  </tr>
+                  <tr>
+                    <td colSpan={3}>
+                      <span className="d-flex justify-content-around">
+                        <CancelModal oldTx={pendingTransactions.filter(
+                          (txResponse) => txResponse.hash === transaction.hash,
+                        )[0]}
+                        />
+                        <button
+                          type="button"
+                          className="mx-1 btn btn-primary"
+                          onClick={() => onReplaceTransaction(
+                            transaction.nonce,
+                            String(transaction.destination),
+                            transaction.amount,
+                          )}
+                        >
+                          Replace
+                        </button>
+                      </span>
+                    </td>
+                  </tr>
+                </>
               ))
             }
             <tr>

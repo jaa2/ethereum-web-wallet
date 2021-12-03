@@ -34,9 +34,11 @@ const OpenNewWindow = function OpenNewWindow() {
   // Render button if popup
   if (windowType === WindowType.POPUP) {
     return (
-      <Link to={useLocation().pathname} target="_blank" rel="noopener noreferrer" onClick={DelayedClose}>
-        <FontAwesomeIcon id="icon" className="fa-icon" icon={faExternalLinkAlt} size="2x" data-toggle="tooltip" title="Open in New Window" />
-      </Link>
+      <div className="mx-2">
+        <Link to={useLocation().pathname} target="_blank" rel="noopener noreferrer" onClick={DelayedClose}>
+          <FontAwesomeIcon id="icon" className="fa-icon" icon={faExternalLinkAlt} size="2x" data-toggle="tooltip" title="Open in New Window" />
+        </Link>
+      </div>
     );
   }
 
