@@ -18,6 +18,7 @@ import { BackgroundWindowInterface } from '../background/background';
 import { getCancelTransaction } from './common/TransactionReplacement';
 import AddressBox from './common/AddressBox';
 import HelpModal, { IHelpModalProps } from './common/HelpModal';
+import OpenNewWindow from './common/OpenNewWindow';
 import UserState from './common/UserState';
 
 import './Home.scss';
@@ -91,6 +92,63 @@ const CancelModal = function CancelModal(props: { oldTx: TransactionResponse }) 
       </Modal>
     </>
   );
+};
+
+/**
+ * Takes user's transaction history and transforms it into a form that can be rendered in a table
+ * @param rawTransactions Unfiltered transaction response data
+ * @param selfAddress Address of the current user
+ * @param limit Number of elements to return
+ * @returns Table ready transaction history
+ */
+const GetTableTransactions = (
+  rawTransactions: Array<TransactionResponse>,
+  selfAddress: string,
+  limit: number,
+) => {
+  // using reduce() to filter for unique transactions by their hash
+  // loosely based on https://stackoverflow.com/questions/51908601/how-to-get-unique-array-of-objects-filtering-by-object-key
+  const uniqueTransactions: Array<TransactionResponse> = Array.from(
+    rawTransactions.reduce((
+      mapping: Map<string, TransactionResponse>,
+      transaction: TransactionResponse,
+    ) => {
+      if (!mapping.has(transaction.hash)) {
+        mapping.set(transaction.hash, transaction);
+      }
+      return mapping;
+    }, new Map<string, TransactionResponse>()).values(),
+  );
+
+  const transactionList: Array<TransactionEntry> = [];
+  for (let i = 0; i < uniqueTransactions.length; i += 1) {
+    // Find the date the transaction was included, if available
+    let date:string = '';
+    const { timestamp } = uniqueTransactions[i];
+    if (timestamp !== undefined) {
+      date = (new Date(timestamp * 1000)).toLocaleString();
+    }
+    // Find the transaction type (IN or OUT) - Etherscan only
+    let type = 'OUT';
+
+    // checking for SELF transactions
+    if (uniqueTransactions[i].to === uniqueTransactions[i].from) {
+      type = 'SELF';
+    } else if (uniqueTransactions[i].to === selfAddress
+      && uniqueTransactions[i].from !== selfAddress) {
+      type = 'IN';
+    }
+    transactionList.push({
+      type,
+      nonce: uniqueTransactions[i].nonce,
+      date,
+      destination: uniqueTransactions[i].to,
+      amount: ethers.utils.formatEther(uniqueTransactions[i].value),
+      hash: uniqueTransactions[i].hash,
+    });
+  }
+
+  return transactionList.slice(0, limit);
 };
 
 /**
@@ -240,51 +298,16 @@ const Home = function Home() {
     });
   };
 
-  const transactionList: Array<TransactionEntry> = [];
-  for (let i = 0; i < currentTransactions.length; i += 1) {
-    // Find the date the transaction was included, if available
-    let date:string = '';
-    const { timestamp } = currentTransactions[i];
-    if (timestamp !== undefined) {
-      date = (new Date(timestamp * 1000)).toLocaleString();
-    }
-    // Find the transaction type (IN or OUT) - Etherscan only
-    let type = 'OUT';
-    if (currentTransactions[i].to === address && currentTransactions[i].from !== address) {
-      type = 'IN';
-    }
-    transactionList.push({
-      type,
-      nonce: currentTransactions[i].nonce,
-      date,
-      destination: currentTransactions[i].to,
-      amount: ethers.utils.formatEther(currentTransactions[i].value),
-      hash: currentTransactions[i].hash,
-    });
-  }
-
-  const pendingTransactionList: Array<TransactionEntry> = [];
-  for (let i = 0; i < pendingTransactions.length; i += 1) {
-    // Find the date the transaction was included, if available
-    let date:string = '';
-    const { timestamp } = pendingTransactions[i];
-    if (timestamp !== undefined) {
-      date = (new Date(timestamp * 1000)).toLocaleString();
-    }
-    // Find the transaction type (IN or OUT) - Etherscan only
-    let type = 'OUT';
-    if (pendingTransactions[i].to === address && pendingTransactions[i].from !== address) {
-      type = 'IN';
-    }
-    pendingTransactionList.push({
-      type,
-      nonce: pendingTransactions[i].nonce,
-      date,
-      destination: pendingTransactions[i].to,
-      amount: ethers.utils.formatEther(pendingTransactions[i].value),
-      hash: pendingTransactions[i].hash,
-    });
-  }
+  const transactionList: Array<TransactionEntry> = GetTableTransactions(
+    currentTransactions,
+    address,
+    10,
+  );
+  const pendingTransactionList: Array<TransactionEntry> = GetTableTransactions(
+    pendingTransactions,
+    address,
+    10,
+  );
 
   const onReplaceTransaction = (nonce: number, dest: string, amount: string) => {
     navigate('/CreateTransaction', {
@@ -319,7 +342,8 @@ const Home = function Home() {
             </button>
           </div>
         </div>
-        <div className="field no-unit-field">
+        <OpenNewWindow />
+        <div className="network align-items-center">
           <ProviderSelect />
           <HelpModal title={networkModalProps.title} description={networkModalProps.description} />
         </div>
