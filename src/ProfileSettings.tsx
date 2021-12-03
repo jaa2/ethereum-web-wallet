@@ -82,15 +82,13 @@ const ProfileSettings = function ProfileSettings() {
           <div className="container">
             <div id="profile-picture-edit" className="container">
               <FontAwesomeIcon className="fa-icon" icon={faUserCircle} size="9x" />
-              <FontAwesomeIcon className="fa-icon" icon={faEdit} size="1x" />
+              <FontAwesomeIcon className="fa-icon" id="edit-icon" icon={faEdit} size="1x" />
             </div>
             <div id="profile-name-edit" className="container">
-              <div>
-                <p>Name</p>
+              <div id="name">
+                Name
               </div>
-              <div>
-                <FontAwesomeIcon className="fa-icon" icon={faEdit} size="1x" />
-              </div>
+              <FontAwesomeIcon className="fa-icon" icon={faEdit} size="1x" />
             </div>
             <div id="address-box" className="container">
               <UserAddressBox />
@@ -99,8 +97,8 @@ const ProfileSettings = function ProfileSettings() {
           <div className="container">
             <fieldset>
               <legend className="mt-1">Delay Time</legend>
-              <div className="form-group">
-                <select className="form-select" id="exampleSelect1">
+              <div id="time-container" className="form-group">
+                <select className="form-select" id="time">
                   <option>5 sec</option>
                   <option>10 sec</option>
                   <option>20 sec</option>
