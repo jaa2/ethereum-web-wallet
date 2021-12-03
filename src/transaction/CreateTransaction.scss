@@ -1,6 +1,7 @@
 @import '../common/colors';
 
 .transaction-container {
+    z-index: -2;
     margin: 5px auto;
     padding: 10px;
   
@@ -56,6 +57,7 @@
       }
 
     .field-entry {
+        z-index: 0;
         width: 100%;
         display: flex;
         flex-direction: column;

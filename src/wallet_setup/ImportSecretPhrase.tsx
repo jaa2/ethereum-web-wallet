@@ -30,7 +30,15 @@ const ImportSecretPhrase = function ImportSecretPhrase() {
       .trim()
       .replaceAll(/\s{2,}/g, ' ');
     setSecretPhrase(val);
-    setSecretPhraseStatus(ethers.utils.isValidMnemonic(val) ? 'valid' : 'invalid');
+    const isValid = ethers.utils.isValidMnemonic(val);
+    setSecretPhraseStatus(isValid ? 'valid' : 'invalid');
+
+    const elem = document.getElementById('secret-phrase');
+    if (elem && isValid) {
+      elem.classList.add('is-valid');
+    } else if (elem) {
+      elem.classList.remove('is-valid');
+    }
   };
 
   const navigate: NavigateFunction = useNavigate();
@@ -80,7 +88,7 @@ const ImportSecretPhrase = function ImportSecretPhrase() {
         <p>Enter your 12-word secret recovery phrase below.</p>
         <div className="form-group">
           <textarea
-            className="form-control is-valid"
+            className="form-control"
             id="secret-phrase"
             disabled={inputDisabled}
             cols={40}
