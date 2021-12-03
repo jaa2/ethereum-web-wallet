@@ -395,51 +395,27 @@ const Home = function Home() {
               <th scope="col">Date</th>
               <th scope="col">Destination</th>
               <th scope="col">Amount</th>
-              <th scope="col">{' '}</th>
             </tr>
           </thead>
           <tbody>
             {
               pendingTransactionList.map((transaction: TransactionEntry) => (
-                <>
-                  <tr>
-                    <th scope="row">{transaction.type}</th>
-                    <td>&mdash;</td>
-                    <td>
-                      <p className="history-address" data-toggle="tooltip" title={transaction.destination}>
-                        {AddressTruncate(transaction.destination)}
-                      </p>
-                    </td>
-                    <td>{transaction.amount}</td>
-                    <td>
-                      <div className="transcation-options">
-                        <CancelModal oldTx={pendingTransactions.filter(
-                          (txResponse) => txResponse.hash === transaction.hash,
-                        )[0]}
-                        />
-                        <button
-                          type="button"
-                          className="mx-1 btn btn-primary"
-                          onClick={() => onReplaceTransaction(
-                            transaction.nonce,
-                            String(transaction.destination),
-                            transaction.amount,
-                          )}
-                        >
-                          Replace
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                  <tr className="table-info">
-                    <th scope="row">TRANSACTION OPTIONS</th>
-                    <td>
+                <tr>
+                  <th scope="row">{transaction.type}</th>
+                  <td>
+                    <div>
+                      <p>&mdash;</p>
                       <CancelModal oldTx={pendingTransactions.filter(
                         (txResponse) => txResponse.hash === transaction.hash,
                       )[0]}
                       />
-                    </td>
-                    <td>
+                    </div>
+                  </td>
+                  <td>
+                    <div>
+                      <p className="history-address" data-toggle="tooltip" title={transaction.destination}>
+                        {AddressTruncate(transaction.destination)}
+                      </p>
                       <button
                         type="button"
                         className="mx-1 btn btn-primary"
@@ -451,16 +427,14 @@ const Home = function Home() {
                       >
                         Replace
                       </button>
-                    </td>
-                    <td>&mdash;</td>
-                    <td />
-                  </tr>
-                </>
+                    </div>
+                  </td>
+                  <td>{transaction.amount}</td>
+                </tr>
               ))
             }
             <tr>
               <th scope="row" />
-              <td />
               <td />
               <td />
               <td />
@@ -476,7 +450,6 @@ const Home = function Home() {
                     </p>
                   </td>
                   <td>{transaction.amount}</td>
-                  <td>{' '}</td>
                 </tr>
               ))
             }
