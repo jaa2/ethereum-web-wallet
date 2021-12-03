@@ -41,18 +41,21 @@
   } 
   #profile-name-edit {
     display: flex;
-    justify-content: space-evenly;
+    justify-content: center;
 
+    #name {
+      margin-left: 20px;
+      margin-right: 5px;
+    }
   }
 
   #profile-picture-edit {
-    display: flex;
-    justify-content: space-evenly;
+    justify-content: center;
     flex-direction: row;
 
-    // .pic-section {
-    //   align-items: center;
-    // }
+    #edit-icon {
+      position: absolute;
+    }
   }
 
   .button-container {
@@ -61,5 +64,12 @@
     justify-content: center;
     margin: 10px;
 
+  }
+
+  #time-container {
+    text-align: -webkit-center;
+    #time {
+      width: fit-content;
+    }
   }
 }
