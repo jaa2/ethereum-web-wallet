@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
@@ -7,14 +7,6 @@ import {
 import './ProfileSettings.scss';
 import Modal from 'react-bootstrap/Modal';
 import AddressBox from './common/AddressBox';
-import { toggleTheme } from './common/Theme';
-// import
-// // you can use app's unique identifier here
-// export const LOCAL_STORAGE_KEY = 'toggle-bootstrap-theme';
-// export const LOCAL_META_DATA = JSON.parse(localStorage.getItem(LOCAL_STORAGE_KEY) || '{}');
-// // you can change this url as needed
-// export const DARK_THEME_PATH = 'https://bootswatch.com/4/cyborg/bootstrap.min.css';
-// export let isDark = LOCAL_META_DATA && LOCAL_META_DATA.isDark;
 
 const DangerConfim = () => {
   const [isOpen, setIsOpen] = React.useState(false);
@@ -55,11 +47,42 @@ const DangerConfim = () => {
   );
 };
 
-// let isDark = '';
-// export const isDarkChange = () => LOCAL_META_DATA && LOCAL_META_DATA.isDark;
-// export { isDark as default};
-
 function ProfileSettings() {
+  let DARK_STYLE_LINK = document.getElementById('dark-theme-style');
+  let THEME_TOGGLER = document.getElementById('theme-toggler');
+  useEffect(() => {
+    DARK_STYLE_LINK = document.getElementById('dark-theme-style');
+    THEME_TOGGLER = document.getElementById('theme-toggler');
+  }, []);
+  const LOCAL_STORAGE_KEY = 'toggle-bootstrap-theme';
+  const LOCAL_META_DATA = JSON.parse(localStorage.getItem(LOCAL_STORAGE_KEY) || '{}');
+  const DARK_THEME_PATH = 'https://bootswatch.com/4/cyborg/bootstrap.min.css';
+  let isDark = LOCAL_META_DATA && LOCAL_META_DATA.isDark;
+
+  function enableDarkTheme() {
+    if (DARK_STYLE_LINK && THEME_TOGGLER) {
+      DARK_STYLE_LINK.setAttribute('href', DARK_THEME_PATH);
+      THEME_TOGGLER.innerHTML = '🌙 Dark';
+    }
+  }
+
+  function disableDarkTheme() {
+    if (DARK_STYLE_LINK && THEME_TOGGLER) {
+      DARK_STYLE_LINK.setAttribute('href', '');
+      THEME_TOGGLER.innerHTML = '🌞 Light';
+    }
+  }
+
+  function toggleTheme() {
+    isDark = !isDark;
+    if (isDark) {
+      enableDarkTheme();
+    } else {
+      disableDarkTheme();
+    }
+    const META = { isDark };
+    localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(META));
+  }
   return (
     <div id="profile-settings" className="container">
       <Link className="back-icon" to="/Home">
@@ -82,7 +105,6 @@ function ProfileSettings() {
                 <FontAwesomeIcon className="fa-icon" icon={faEdit} size="1x" />
               </div>
             </div>
-            {/* TODO: get address from state */}
             <AddressBox address="0x510928a823b" />
           </div>
           <div>
@@ -97,12 +119,10 @@ function ProfileSettings() {
                 </select>
               </div>
             </fieldset>
-            {/* </div> */}
             <div id="dark-mode">
               <fieldset>
                 <legend className="mt-1">Dark Mode</legend>
                 <div className="form-check form-switch">
-                  <link id="dark-theme-style" rel="stylesheet" />
                   <nav className="navbar navbar-transparent">
                     <button
                       type="button"
