@@ -54,7 +54,7 @@ const ProviderSelect = function ProviderSelect() {
     <select
       id="network-input"
       name="network"
-      className="form-select"
+      className="form-select network-select"
       defaultValue={selectedNetwork}
       onChange={(e) => { changeNetwork(e.currentTarget.value); }}
     >

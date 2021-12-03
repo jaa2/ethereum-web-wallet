@@ -63,6 +63,17 @@
         }
       }
     }
+
+    .network {
+      display: flex;
+      flex-direction: row;
+      margin-left: 50px;
+      max-width: fit-content;
+
+      .network-select {
+        margin-right: 10px;
+      }
+    }
   }
 
   #assets {
