@@ -16,7 +16,7 @@ import { Modal } from 'react-bootstrap';
 import PendingTransactionStore from 'background/PendingTransactionStore';
 import { BackgroundWindowInterface } from '../background/background';
 import { getCancelTransaction } from './common/TransactionReplacement';
-import AddressBox from './common/AddressBox';
+import { UserAddressBox } from './common/AddressBox';
 import HelpModal, { IHelpModalProps } from './common/HelpModal';
 import OpenNewWindow from './common/OpenNewWindow';
 import UserState from './common/UserState';
@@ -330,7 +330,7 @@ const Home = function Home() {
           <FontAwesomeIcon className="fa-icon" icon={faUserCircle} size="6x" />
           <div id="home-user-options">
             <div className="option">
-              <AddressBox address={address} />
+              <UserAddressBox />
             </div>
             <button type="button" className="option btn btn-link" onClick={() => navigate('/ProfileSettings')}>
               <FontAwesomeIcon className="fa-icon" icon={faCog} size="1x" fixedWidth />
