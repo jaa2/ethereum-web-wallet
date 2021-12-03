@@ -66,11 +66,10 @@
     .network {
       display: flex;
       flex-direction: row;
-      margin-left: 100px;
+      margin-left: 50px;
       max-width: fit-content;
 
       #network-input {
-        height: 50%;
         margin-right: 10px;
       }
     }

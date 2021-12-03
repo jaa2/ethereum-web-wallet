@@ -260,8 +260,7 @@ function Home() {
             </button>
           </div>
         </div>
-        {/* <div className="field no-unit-field"> */}
-        <div className="network">
+        <div className="network align-items-center">
           <select id="network-input" name="network" className="form-select">
             <option>Main Ethereum Network</option>
           </select>
@@ -270,7 +269,6 @@ function Home() {
             description={networkModalProps.description}
           />
         </div>
-        {/* </div> */}
       </div>
 
       <div id="total" className="m-2">
