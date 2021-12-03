@@ -24,6 +24,10 @@ export enum WalletStatus {
  * Class containing common state functions
  */
 export default class UserState {
+  static async getBackgroundWindow(): Promise<BackgroundWindowInterface> {
+    return browser.runtime.getBackgroundPage();
+  }
+
   /**
     * Fetch the user's address, even if the wallet is encrypted
     * @returns the user's address, or null if no wallet is found at all

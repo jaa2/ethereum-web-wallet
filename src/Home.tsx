@@ -23,6 +23,7 @@ import './Home.scss';
 import WalletState from '../background/WalletState';
 import currentETHtoUSD from './common/UnitConversion';
 import SimulationSuite from './SimulationSuite';
+import ProviderSelect from './common/ProviderSelect';
 
 const CancelModal = function CancelModal(props: { oldTx: TransactionResponse }) {
   const [isOpen, setIsOpen] = React.useState(false);
@@ -299,9 +300,7 @@ const Home = function Home() {
           </div>
         </div>
         <div className="field no-unit-field">
-          <select id="network-input" name="network">
-            <option>Main Ethereum Network</option>
-          </select>
+          <ProviderSelect />
           <HelpModal title={networkModalProps.title} description={networkModalProps.description} />
         </div>
       </div>
