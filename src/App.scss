@@ -1,7 +1,8 @@
 @import './common/colors';
 
 #App {
-  width: 700px;
+  min-width: 700px;
+  max-width: 1500px;
   min-height: 600px;
   margin: auto;
   padding: 20px;
