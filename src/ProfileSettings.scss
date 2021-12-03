@@ -1,0 +1,73 @@
+@import 'common/colors';
+
+#profile-settings {
+  margin: auto;
+  padding: 10px;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+  text-align: center;
+  .back-icon {
+    align-self: flex-start;
+  }
+
+  .fa-icon {
+    color: $icon-color;
+  }
+  
+  #content-container {
+    display: flex;
+    justify-content: space-evenly;
+
+    #appearance-switch {
+      display: flex;
+      justify-content: space-evenly;
+      text-align: center;
+      align-items: center;
+    }
+
+    #address-box{
+      display: flex;
+      justify-content: space-evenly;
+      text-align: center;
+      align-items: center;
+      place-content: center;
+
+    }
+    
+  } 
+  #profile-name-edit {
+    display: flex;
+    justify-content: center;
+
+    #name {
+      margin-left: 20px;
+      margin-right: 5px;
+    }
+  }
+
+  #profile-picture-edit {
+    justify-content: center;
+    flex-direction: row;
+
+    #edit-icon {
+      position: absolute;
+    }
+  }
+
+  .button-container {
+    display:flex;
+    align-items: center;
+    justify-content: center;
+    margin: 10px;
+
+  }
+
+  #time-container {
+    text-align: -webkit-center;
+    #time {
+      width: fit-content;
+    } 
+  }
+}

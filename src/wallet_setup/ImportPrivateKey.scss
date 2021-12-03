@@ -1,0 +1,28 @@
+@import '../common/colors';
+
+#import-private-key {
+  margin: auto;
+  padding: 10px;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+  align-items: center;
+
+  text-align: center;
+
+  .back-icon {
+    align-self: flex-start;
+  }
+
+  .content-container {
+    margin: 5px;
+  }
+  .fa-icon {
+    color: $icon-color;
+  }
+
+  .continue-button {
+    margin: 10px;
+  }
+}

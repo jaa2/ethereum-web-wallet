@@ -1,0 +1,20 @@
+@import 'common/colors';
+
+.unlock-page {
+  margin: auto;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+  align-items: center;
+
+  .fa-icon {
+    color: $icon-color;
+  }
+}
+
+.progress-instant {
+  div {
+    transition: width 0s !important;
+  }
+}
