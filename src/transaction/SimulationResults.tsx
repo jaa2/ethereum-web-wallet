@@ -329,9 +329,7 @@ const SimulationResults = function SimulationResults() {
                   <p>
                     Amount
                     <h5>
-                      {' '}
                       {tAmount}
-                      {' '}
                     </h5>
                   </p>
                 </div>
@@ -340,9 +338,7 @@ const SimulationResults = function SimulationResults() {
                   <p>
                     {maxGasFeeTitle}
                     <h5>
-                      {' '}
                       {totalGasFee}
-                      {' '}
                     </h5>
                   </p>
                   <GasOptions
