@@ -19,6 +19,7 @@ import SimulationResults from './transaction/SimulationResults';
 
 import './App.scss';
 import ExistingWallet from './ExistingWallet';
+import './common/Theme';
 
 // TODO: Gate off routes based on if the user has authenticated or not
 
