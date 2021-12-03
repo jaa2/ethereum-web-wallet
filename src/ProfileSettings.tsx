@@ -143,17 +143,14 @@ const ProfileSettings = function ProfileSettings() {
             <div id="dark-mode">
               <fieldset>
                 <legend className="mt-1">Dark Mode</legend>
-                <div className="form-check form-switch">
-                  <nav className="navbar navbar-transparent">
-                    <button
-                      type="button"
-                      className="btn btn-outline-info btn-lg ml-auto font-weight-bold"
-                      id="theme-toggler"
-                      onClick={toggleTheme}
-                      aria-hidden="true"
-                    />
-                  </nav>
-
+                <div className="d-flex justify-content-center">
+                  <button
+                    type="button"
+                    className="btn btn-light"
+                    id="theme-toggler"
+                    onClick={toggleTheme}
+                    aria-hidden="true"
+                  />
                 </div>
               </fieldset>
             </div>
