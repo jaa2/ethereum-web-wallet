@@ -1,5 +1,5 @@
 import { Provider } from '@ethersproject/providers';
-import { ethers, Signer } from 'ethers';
+import { ethers, Signer, Wallet } from 'ethers';
 import browser from 'webextension-polyfill';
 
 import { BackgroundWindowInterface } from '../../background/background';
@@ -24,6 +24,10 @@ export enum WalletStatus {
  * Class containing common state functions
  */
 export default class UserState {
+  static async getBackgroundWindow(): Promise<BackgroundWindowInterface> {
+    return browser.runtime.getBackgroundPage();
+  }
+
   /**
     * Fetch the user's address, even if the wallet is encrypted
     * @returns the user's address, or null if no wallet is found at all
@@ -60,6 +64,23 @@ export default class UserState {
     const backgroundWindow: BackgroundWindowInterface = await browser.runtime.getBackgroundPage();
     const { walletState } = backgroundWindow.stateObj;
     return walletState;
+  }
+
+  /**
+   * Gets a wallet that is connected to the background window's currently selected provider
+   * @returns A connected wallet
+   */
+  static async getConnectedWallet(): Promise<Wallet> {
+    let wallet = await (await UserState.getWalletState()).getWallet();
+    if (wallet === null) {
+      return Promise.reject(new Error('Wallet is null'));
+    }
+    const provider = await UserState.getProvider();
+    if (provider === null) {
+      return Promise.reject(new Error('Provider is null'));
+    }
+    wallet = wallet.connect(provider);
+    return wallet;
   }
 
   /**

@@ -54,6 +54,19 @@ export default class PendingTransactionStore {
   }
 
   /**
+   * Removes pending transactions with a given nonce
+   * @param nonce Any pending transactions with this nonce will be removed
+   */
+  removePendingTransactionsByNonce(nonce: number) {
+    for (let i = 0; i < this.pendingTransactions.length; i += 1) {
+      if (this.pendingTransactions[i].nonce === nonce) {
+        this.pendingTransactions.splice(i, 1);
+        i -= 1;
+      }
+    }
+  }
+
+  /**
    * Watches a pending transaction and, once it gets included, creates a browser notification
    * and removes the transaction from the pending transactions list
    * @param txResponse TransactionResponse object
@@ -65,8 +78,11 @@ export default class PendingTransactionStore {
       for (let i = 0; i < this.pendingTransactions.length; i += 1) {
         if (this.pendingTransactions[i].hash === txResponse.hash) {
           this.pendingTransactions.splice(i, 1);
+          i -= 1;
         }
       }
+      // Remove other pending transactions with the same nonce
+      this.removePendingTransactionsByNonce(txResponse.nonce);
       this.save();
       browser.notifications.create(undefined, {
         type: 'basic',
@@ -77,7 +93,7 @@ export default class PendingTransactionStore {
       return receipt;
     })
       .catch((e: any) => {
-      // Remove hash from list
+        // Remove hash from list
         let targetHash = '';
         switch (e.code) {
           case Logger.errors.CALL_EXCEPTION:
@@ -94,6 +110,7 @@ export default class PendingTransactionStore {
         for (let i = 0; i < this.pendingTransactions.length; i += 1) {
           if (this.pendingTransactions[i].hash === targetHash) {
             this.pendingTransactions.splice(i, 1);
+            i -= 1;
           }
         }
         this.save();
@@ -128,7 +145,8 @@ export default class PendingTransactionStore {
           .then((settledResult: PromiseSettledResult<TransactionResponse>[]) => {
             const txsAny = settledResult.filter((result) => result.status === 'fulfilled');
             const txsFulfilled = txsAny as PromiseFulfilledResult<TransactionResponse>[];
-            return txsFulfilled.map((promiseResult) => promiseResult.value);
+            return txsFulfilled.map((promiseResult) => promiseResult.value)
+              .filter((txResponse) => txResponse !== null);
           });
       })
       .then((txResponses: TransactionResponse[]) => {
@@ -138,7 +156,6 @@ export default class PendingTransactionStore {
         );
         for (let i = 0; i < pendingTxResponses.length; i += 1) {
           this.addPendingTransaction(pendingTxResponses[i]);
-          console.log(pendingTxResponses[i]); // eslint-disable-line
         }
       })
       .catch((reason) => Promise.reject(reason));

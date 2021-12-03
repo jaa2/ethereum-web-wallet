@@ -6,7 +6,7 @@ import React, { useEffect } from 'react';
 import { Link, NavigateFunction, useNavigate } from 'react-router-dom';
 import browser from 'webextension-polyfill';
 
-import { EtherscanProvider, TransactionResponse } from '@ethersproject/providers';
+import { EtherscanProvider, TransactionRequest, TransactionResponse } from '@ethersproject/providers';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faCog, faLock, faPaperPlane, /* faExchangeAlt, */
@@ -15,6 +15,7 @@ import { Modal } from 'react-bootstrap';
 
 import PendingTransactionStore from 'background/PendingTransactionStore';
 import { BackgroundWindowInterface } from '../background/background';
+import { getCancelTransaction } from './common/TransactionReplacement';
 import AddressBox from './common/AddressBox';
 import HelpModal, { IHelpModalProps } from './common/HelpModal';
 import UserState from './common/UserState';
@@ -22,17 +23,53 @@ import UserState from './common/UserState';
 import './Home.scss';
 import WalletState from '../background/WalletState';
 import currentETHtoUSD from './common/UnitConversion';
+import SimulationSuite from './SimulationSuite';
+import ProviderSelect from './common/ProviderSelect';
 
-const CancelModal = function CancelModal() {
+const CancelModal = function CancelModal(props: { oldTx: TransactionResponse }) {
   const [isOpen, setIsOpen] = React.useState(false);
+  const [feeToCancel, setFeeToCancel] = React.useState(BigNumber.from(0));
 
   const showModal = () => {
     setIsOpen(true);
+    const { oldTx } = props;
+    const cancelTx = getCancelTransaction(oldTx);
+    setFeeToCancel(SimulationSuite.getTransactionMaxFee(cancelTx));
   };
 
   const hideModal = () => {
     setIsOpen(false);
   };
+
+  const sendCancelTx = async () => {
+    try {
+      // Create cancel transaction
+      const { oldTx } = props;
+      const cancelTx: TransactionRequest = getCancelTransaction(oldTx);
+      // Send cancel transaction
+      const pendingTxStore = await UserState.getPendingTxStore();
+      const wallet = await UserState.getConnectedWallet();
+      const tResp: TransactionResponse = await wallet.sendTransaction(cancelTx);
+      await pendingTxStore.addPendingTransaction(tResp, true);
+    } finally { // TODO: Catch error and display as notification to user
+      // Hide the modal
+      hideModal();
+    }
+  };
+
+  let feeToCancelElement = <div />;
+
+  if (feeToCancel.gt(0)) {
+    feeToCancelElement = (
+      <p>
+        Estimated gas fee to cancel:
+        {' '}
+        {ethers.utils.formatEther(feeToCancel)}
+        {' '}
+        ETH
+      </p>
+    );
+  }
 
   return (
     <>
@@ -42,16 +79,14 @@ const CancelModal = function CancelModal() {
           Cancel Transaction
         </Modal.Header>
         <Modal.Body>
+          {feeToCancelElement}
           <p>
             Are you sure you want to cancel this transaction?
-          </p>
-          <p>
-            Estimated gas fee for canceling: 0.00351 gwei
           </p>
         </Modal.Body>
         <Modal.Footer>
           <button type="button" className="btn btn-secondary" onClick={hideModal}>Close</button>
-          <button type="button" className="btn btn-primary" onClick={hideModal}>Confirm</button>
+          <button type="button" className="btn btn-primary" onClick={sendCancelTx}>Confirm</button>
         </Modal.Footer>
       </Modal>
     </>
@@ -95,7 +130,9 @@ interface TransactionEntry {
   nonce: number,
   date: string,
   destination: string | undefined,
-  amount: string
+  amount: string,
+  // Transaction hash
+  hash: string;
 }
 
 const Home = function Home() {
@@ -214,6 +251,7 @@ const Home = function Home() {
       date,
       destination: currentTransactions[i].to,
       amount: ethers.utils.formatEther(currentTransactions[i].value),
+      hash: currentTransactions[i].hash,
     });
   }
 
@@ -236,6 +274,7 @@ const Home = function Home() {
       date,
       destination: pendingTransactions[i].to,
       amount: ethers.utils.formatEther(pendingTransactions[i].value),
+      hash: pendingTransactions[i].hash,
     });
   }
 
@@ -273,9 +312,7 @@ const Home = function Home() {
           </div>
         </div>
         <div className="field no-unit-field">
-          <select id="network-input" name="network">
-            <option>Main Ethereum Network</option>
-          </select>
+          <ProviderSelect />
           <HelpModal title={networkModalProps.title} description={networkModalProps.description} />
         </div>
       </div>
@@ -314,6 +351,10 @@ const Home = function Home() {
       </div> */}
 
       <div id="activity" className="m-2">
+        <Link to="/CreateTransaction">
+          <FontAwesomeIcon className="fa-icon" icon={faPaperPlane} size="3x" />
+          <p>Send</p>
+        </Link>
         <label className="form-label" htmlFor="activity-table">Recent Activity</label>
         <table id="activity-table" className="table table-hover">
           <thead>
@@ -335,7 +376,10 @@ const Home = function Home() {
                   <th>{transaction.amount}</th>
                   <th>
                     <div className="transcation-options">
-                      <CancelModal />
+                      <CancelModal oldTx={pendingTransactions.filter(
+                        (txResponse) => txResponse.hash === transaction.hash,
+                      )[0]}
+                      />
                       <button
                         type="button"
                         className="mx-1 btn btn-primary"
@@ -372,10 +416,6 @@ const Home = function Home() {
             }
           </tbody>
         </table>
-        <Link to="/CreateTransaction">
-          <FontAwesomeIcon className="fa-icon" icon={faPaperPlane} size="3x" />
-          <p>Send</p>
-        </Link>
       </div>
     </div>
   );
