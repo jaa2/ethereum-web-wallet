@@ -50,15 +50,10 @@ const DangerConfim = () => {
 function ProfileSettings() {
   let DARK_STYLE_LINK = document.getElementById('dark-theme-style');
   let THEME_TOGGLER = document.getElementById('theme-toggler');
-  useEffect(() => {
-    DARK_STYLE_LINK = document.getElementById('dark-theme-style');
-    THEME_TOGGLER = document.getElementById('theme-toggler');
-  }, []);
   const LOCAL_STORAGE_KEY = 'toggle-bootstrap-theme';
   const LOCAL_META_DATA = JSON.parse(localStorage.getItem(LOCAL_STORAGE_KEY) || '{}');
   const DARK_THEME_PATH = 'https://bootswatch.com/4/cyborg/bootstrap.min.css';
   let isDark = LOCAL_META_DATA && LOCAL_META_DATA.isDark;
-
   function enableDarkTheme() {
     if (DARK_STYLE_LINK && THEME_TOGGLER) {
       DARK_STYLE_LINK.setAttribute('href', DARK_THEME_PATH);
@@ -72,6 +67,15 @@ function ProfileSettings() {
       THEME_TOGGLER.innerHTML = '🌞 Light';
     }
   }
+  useEffect(() => {
+    DARK_STYLE_LINK = document.getElementById('dark-theme-style');
+    THEME_TOGGLER = document.getElementById('theme-toggler');
+    if (isDark) {
+      enableDarkTheme();
+    } else {
+      disableDarkTheme();
+    }
+  }, []);
 
   function toggleTheme() {
     isDark = !isDark;
