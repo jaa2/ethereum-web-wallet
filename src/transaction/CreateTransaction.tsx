@@ -192,7 +192,7 @@ const CreateTransaction = function CreateTransaction(props: TransactionAction) {
     if (amountElem.value === '') {
       const feedbackElem = document.getElementById('amt-feedback');
       amountElem.className = 'form-control is-invalid';
-      feedbackElem!.textContent = 'Invalid amount inputted';
+      feedbackElem!.textContent = 'Invalid amount';
       feedbackElem!.className = 'invalid-feedback';
     }
 
@@ -245,7 +245,7 @@ const CreateTransaction = function CreateTransaction(props: TransactionAction) {
         ethers.utils.parseEther(amountInput);
         // const state = await getStateObj();
         // const provider = state.provider as Provider;
-        document.getElementById('amount-in-usd')!.textContent = (getCurrentETHInUSD(+amountInput, currentETHValue)).toString().concat(' USD');
+        document.getElementById('amount-in-usd')!.textContent = (getCurrentETHInUSD(+amountInput, currentETHValue)).toFixed(2).concat(' USD');
         amountElem.className = 'form-control is-valid';
         feedbackElem!.textContent = '';
         feedbackElem!.className = 'valid-feedback';
@@ -266,7 +266,7 @@ const CreateTransaction = function CreateTransaction(props: TransactionAction) {
       }
     } else {
       amountElem.className = 'form-control is-invalid';
-      feedbackElem!.textContent = 'Invalid amount inputted';
+      feedbackElem!.textContent = 'Invalid amount';
       feedbackElem!.className = 'invalid-feedback';
     }
   };
