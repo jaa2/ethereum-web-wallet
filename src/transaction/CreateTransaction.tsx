@@ -192,7 +192,7 @@ const CreateTransaction = function CreateTransaction(props: TransactionAction) {
     if (amountElem.value === '') {
       const feedbackElem = document.getElementById('amt-feedback');
       amountElem.className = 'form-control is-invalid';
-      feedbackElem!.textContent = 'Invalid amount inputted';
+      feedbackElem!.textContent = 'Invalid amount';
       feedbackElem!.className = 'invalid-feedback';
     }
 
@@ -266,7 +266,7 @@ const CreateTransaction = function CreateTransaction(props: TransactionAction) {
       }
     } else {
       amountElem.className = 'form-control is-invalid';
-      feedbackElem!.textContent = 'Invalid amount inputted';
+      feedbackElem!.textContent = 'Invalid amount';
       feedbackElem!.className = 'invalid-feedback';
     }
   };
