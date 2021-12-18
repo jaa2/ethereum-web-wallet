@@ -31,6 +31,12 @@ const Unlock = function Unlock() {
       });
   }
 
+  function onSubmit(e: React.FormEvent<HTMLFormElement>) {
+    // Do not actually submit a form
+    e.preventDefault();
+    checkPassword();
+  }
+
   let progressBar: JSX.Element = <div />;
   if (decryptionProgress !== undefined) {
     progressBar = (
@@ -48,17 +54,19 @@ const Unlock = function Unlock() {
   }
 
   return (
-    <div className="unlock-page">
-      <FontAwesomeIcon className="fa-icon" icon={faLock} size="3x" />
-      <h1>Unlock Your Wallet</h1>
-      <div className="form-group mb-3">
-        <label className="form-label" htmlFor="unlock-password-input">Password</label>
-        <input type="password" id="unlock-password-input" className="form-control" onChange={handlePassword} placeholder="Password" />
-        {invalidFeedback}
-        {progressBar}
+    <form onSubmit={onSubmit}>
+      <div className="unlock-page">
+        <FontAwesomeIcon className="fa-icon" icon={faLock} size="3x" />
+        <h1>Unlock Your Wallet</h1>
+        <div className="form-group mb-3">
+          <label className="form-label" htmlFor="unlock-password-input">Password</label>
+          <input type="password" id="unlock-password-input" className="form-control" onChange={handlePassword} placeholder="Password" />
+          {invalidFeedback}
+          {progressBar}
+        </div>
+        <button type="submit" id="unlock-button" className="btn btn-primary" disabled={!canUnlock}>Unlock</button>
       </div>
-      <button type="button" id="unlock-button" className="btn btn-primary" onClick={checkPassword} disabled={!canUnlock}>Unlock</button>
-    </div>
+    </form>
   );
 };
 

@@ -6,18 +6,6 @@ import { faCloudUploadAlt, faKey, faPlus } from '@fortawesome/free-solid-svg-ico
 
 import './WalletSetup.scss';
 
-function CreateNewWallet() {
-  console.log('TODO: Creating new wallet!'); // eslint-disable-line
-}
-
-function ImportSecretPhrase() {
-  console.log('TODO: Importing from secret recovery page!'); // eslint-disable-line
-}
-
-function ImportPrivateKey() {
-  console.log('TODO: Importing from private key!'); // eslint-disable-line
-}
-
 const WalletSetup = function WalletSetup() {
   return (
     <div id="wallet-setup">
@@ -28,7 +16,7 @@ const WalletSetup = function WalletSetup() {
 
       <h2>Wallet Setup</h2>
 
-      <Link id="wallet-setup-create-wallet" to="/CreateNewWallet" onClick={CreateNewWallet}>
+      <Link id="wallet-setup-create-wallet" to="/CreateNewWallet">
         <button type="button" id="wallet-setup-create-wallet-button" className="btn btn-outline-secondary">
           <FontAwesomeIcon className="fa-icon" icon={faPlus} size="3x" />
           <p className="text-primary">Create New Wallet</p>
@@ -36,14 +24,14 @@ const WalletSetup = function WalletSetup() {
       </Link>
 
       <div id="wallet-setup-other-options">
-        <Link id="wallet-setup-import-phrase" to="/ImportSecretPhrase" onClick={ImportSecretPhrase}>
+        <Link id="wallet-setup-import-phrase" to="/ImportSecretPhrase">
           <button type="button" id="wallet-setup-import-phrase-button" className="btn btn-outline-secondary">
             <FontAwesomeIcon className="fa-icon" icon={faCloudUploadAlt} size="2x" />
             <p className="text-primary">Import Secret Recovery Phrase</p>
           </button>
         </Link>
 
-        <Link id="wallet-setup-import-key" to="/ImportPrivateKey" onClick={ImportPrivateKey}>
+        <Link id="wallet-setup-import-key" to="/ImportPrivateKey">
           <button type="button" id="wallet-setup-import-key-button" className="btn btn-outline-secondary">
             <FontAwesomeIcon className="fa-icon" icon={faKey} size="2x" />
             <p className="text-primary">Import Wallet by Private Key</p>
