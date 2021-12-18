@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, NavigateFunction, useNavigate } from 'react-router-dom';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlus, faArrowCircleLeft } from '@fortawesome/free-solid-svg-icons';
@@ -8,10 +8,6 @@ import { Wallet } from 'ethers';
 
 import { BackgroundWindowInterface } from '../../background/background';
 import './CreateNewWallet.scss';
-
-function NewWalletCreated() {
-
-}
 
 async function loadNewWallet(): Promise<string | null> {
   // Create a new wallet
@@ -66,15 +62,22 @@ const CreateNewWallet = function CreateNewWallet() {
     }
   }, [phrase, confirmPhrase]);
 
+  const navigate: NavigateFunction = useNavigate();
+  function onSubmit(e: React.FormEvent<HTMLFormElement>) {
+    // Do not actually submit a form
+    e.preventDefault();
+    navigate('/CreatePassword');
+  }
+
   let phraseMatchElements: JSX.Element = (<div />);
   // handle additional state where the user's phrase doesn't meet requirements
   if (phraseMatchState === 'match') {
     phraseMatchElements = (
       <div id="create-phrase-match-elements">
         <p id="create-phrase-info-match" className="phrase-info text-success">Success. Your phrases match!</p>
-        <Link id="create-phrase-continue-link" className="link hoverable" to="/CreatePassword" onClick={NewWalletCreated}>
-          <button type="button" className="btn btn-primary">Continue</button>
-        </Link>
+        <div className="link hoverable">
+          <button type="submit" className="btn btn-primary">Continue</button>
+        </div>
       </div>
     );
   } else if (phraseMatchState === 'mismatch') {
@@ -122,15 +125,17 @@ const CreateNewWallet = function CreateNewWallet() {
             and do not enter it into any website.
           </p>
         </div>
-        <div className="form-group">
-          <h5 id="create-phrase-phrase-label">Secret Recovery Phrase</h5>
-          <p id="create-phrase-phrase-input">{phrase}</p>
-          <label htmlFor="create-phrase-confirm-phrase-input" className="form-label mt-4">Confirm Secret Recovery Phrase</label>
-          <div className="input-group mb-3">
-            <input className="form-control" id="create-phrase-confirm-phrase-input" type="phrase" name="confirm phrase" onChange={handleConfirmPhrase} />
+        <form onSubmit={onSubmit}>
+          <div className="form-group">
+            <h5>Secret Recovery Phrase</h5>
+            <p id="create-phrase-phrase-input">{phrase}</p>
+            <label htmlFor="create-phrase-confirm-phrase-input" className="form-label mt-4">Confirm Secret Recovery Phrase</label>
+            <div className="input-group mb-3">
+              <input className="form-control" id="create-phrase-confirm-phrase-input" type="phrase" name="confirm phrase" onChange={handleConfirmPhrase} />
+            </div>
           </div>
-        </div>
-        {phraseMatchElements}
+          {phraseMatchElements}
+        </form>
       </div>
     </div>
   );

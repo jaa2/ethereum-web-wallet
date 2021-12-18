@@ -15,8 +15,6 @@ export default class WalletState {
   // If non-null, a valid wallet object is available
   currentWallet: Wallet | null = null;
 
-  stateObject: JSON | null = null;
-
   // If true, the encrypted local storage contents have been loaded into memory
   isStateLoaded: boolean = false;
 
