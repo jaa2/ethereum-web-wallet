@@ -55,15 +55,21 @@ const ImportPrivateKey = function ImportPrivateKey() {
     }
   };
 
+  function onSubmit(e: React.FormEvent<HTMLFormElement>) {
+    // Do not actually submit a form
+    e.preventDefault();
+    onValidPrivateKey();
+  }
+
   let privateKeyStatusElements: JSX.Element = (<div />);
 
   if (privateKeyStatus === 'valid') {
     privateKeyStatusElements = (
       <div>
         <p className="phrase-info text-success">Valid private key.</p>
-        <Link id="continue-link" className="link hoverable" to="/CreatePassword" onClick={onValidPrivateKey}>
-          <button type="button" className="btn btn-primary">Continue</button>
-        </Link>
+        <div className="link hoverable">
+          <button type="submit" className="btn btn-primary">Continue</button>
+        </div>
       </div>
     );
   } else if (privateKeyStatus === 'encoding') {
@@ -90,13 +96,15 @@ const ImportPrivateKey = function ImportPrivateKey() {
         <h1>Import Private Key</h1>
       </div>
 
-      <div className="form-group">
-        <label htmlFor="private-key-input" className="form-label mt-4">Enter your private key below</label>
-        <div className="input-group mb-3">
-          <input className="form-control" id="private-key-input" type="text" name="privateKey" onChange={handlePrivateKey} />
+      <form onSubmit={onSubmit}>
+        <div className="form-group">
+          <label htmlFor="private-key-input" className="form-label mt-4">Enter your private key below</label>
+          <div className="input-group mb-3">
+            <input className="form-control" id="private-key-input" type="text" name="privateKey" onChange={handlePrivateKey} />
+          </div>
+          {privateKeyStatusElements}
         </div>
-      </div>
-      {privateKeyStatusElements}
+      </form>
     </div>
   );
 };

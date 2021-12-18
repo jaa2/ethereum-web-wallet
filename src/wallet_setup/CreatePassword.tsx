@@ -60,6 +60,11 @@ const CreatePassword = function CreatePassword() {
     navigate('/Home');
   };
 
+  function onSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    handlePasswordCompleted();
+  }
+
   let passwordMatchElements: JSX.Element = (<div />);
   // handle additional state where the user's password doesn't meet requirements
   if (password.length > 0 && password.length < 8) {
@@ -72,7 +77,7 @@ const CreatePassword = function CreatePassword() {
     passwordMatchElements = (
       <div id="create-password-match-elements">
         <p id="create-password-info-match" className="password-info text-success">Success. Your passwords match!</p>
-        <button type="button" id="create-password-continue-link" className="btn btn-primary" onClick={handlePasswordCompleted}>
+        <button type="submit" className="btn btn-primary">
           Continue
         </button>
       </div>
@@ -108,16 +113,17 @@ const CreatePassword = function CreatePassword() {
         To access your wallet, create a strong password that is at least 8 characters
         long.
       </p>
-      <div id="create-password-password-entry" className="form-group mb-3">
-        <label className="form-label" htmlFor="sign-in-password-input">Password</label>
-        <input type="password" id="create-password-password-input" className="form-control" onChange={handlePassword} placeholder="Password" />
-      </div>
-      <div id="create-password-confirm-password-entry" className="form-group mb-3">
-        <label className="form-label" htmlFor="sign-in-confirm-password-input">Confirm Password</label>
-        <input type="password" id="create-password-confirm-password-input" className="form-control" onChange={handleConfirmPassword} placeholder="Confirm Password" />
-      </div>
-
-      {passwordMatchElements}
+      <form className="container-md" onSubmit={onSubmit}>
+        <div className="form-group mb-3">
+          <label className="form-label" htmlFor="password-input">Password</label>
+          <input type="password" id="password-input" className="form-control" onChange={handlePassword} placeholder="Password" />
+        </div>
+        <div className="form-group mb-3">
+          <label className="form-label" htmlFor="confirm-password-input">Confirm Password</label>
+          <input type="password" id="confirm-password-input" className="form-control" onChange={handleConfirmPassword} placeholder="Confirm Password" />
+        </div>
+        {passwordMatchElements}
+      </form>
     </div>
   );
 };
