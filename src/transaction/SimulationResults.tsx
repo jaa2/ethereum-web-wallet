@@ -1,7 +1,8 @@
+/* eslint-disable jsx-a11y/control-has-associated-label */
 /* eslint-disable react/destructuring-assignment */
 /* eslint-disable react/prop-types */
 import {
-  BigNumber, BigNumberish, ethers, Wallet,
+  BigNumber, BigNumberish, ethers,
 } from 'ethers';
 import React, { useEffect } from 'react';
 import Modal from 'react-bootstrap/Modal';
@@ -20,6 +21,7 @@ import { faEthereum } from '@fortawesome/free-brands-svg-icons';
 
 import { BackgroundWindowInterface } from '../../background/background';
 import HelpModal, { IHelpModalProps } from '../common/HelpModal';
+import LoadingButton, { ILoadingButtonProps } from '../common/LoadingButton';
 import SimulationSendTransactions from '../SimulationSendTransactions';
 import UserState from '../common/UserState';
 // import WalletState from '../../background/WalletState';
@@ -38,21 +40,6 @@ async function getTransactionController() {
   SimulationSendTransactions(provider);
 
   return transactionController;
-}
-
-/**
- * Grabs the user's wallet
- * @returns the wallet object from wallet state
- */
-async function grabWallet() {
-  const window: BackgroundWindowInterface = await browser.runtime.getBackgroundPage();
-  const state = window.stateObj;
-  const wallet = await state.walletState.getWallet() as Wallet;
-  const provider = await UserState.getProvider();
-  if (provider === null) {
-    throw Error('Provider not found');
-  }
-  return wallet.connect(provider);
 }
 
 /**
@@ -128,7 +115,7 @@ modalToSimulationResults: (arg0: ethers.providers.TransactionRequest,
         tRequest.maxPriorityFeePerGas = ethers.utils.parseUnits(mpfpgValue, 'gwei');
 
         const transactionController = await getTransactionController();
-        const wallet = await grabWallet();
+        const wallet = await UserState.getConnectedWallet();
         const checksAndTx = await transactionController.simulateTransaction(tRequest, wallet);
         // TODO: fix gas-related simulation tests and then replace true with passedAllSimulations
         const passedAllSimulations = areAllSimulationsPassed(checksAndTx.simulationChecks);
@@ -261,16 +248,74 @@ function createSimulationElements(simulationChecks:Map<string, Boolean>) {
 
 const SimulationResults = function SimulationResults() {
   const navigate: NavigateFunction = useNavigate();
-  const onSendTransaction = async (txReq: TransactionRequest) => {
-    const pendingTxStore = await UserState.getPendingTxStore();
-    const wallet = await grabWallet();
-    if (wallet === null) {
-      return;
-    }
 
-    const tResp: TransactionResponse = await wallet.sendTransaction(txReq);
-    await pendingTxStore.addPendingTransaction(tResp, true);
-    navigate('/Home');
+  const [sendButtonEnabled, setSendButtonEnabled]:
+  [boolean, (state: boolean) => void] = React.useState<boolean>(true);
+
+  const onSendTransaction = async (txReq: TransactionRequest) => {
+    setSendButtonEnabled(false);
+    const pendingTxStore = await UserState.getPendingTxStore();
+    try {
+      const wallet = await UserState.getConnectedWallet();
+      if (wallet === null) {
+        const toastMsg = document.getElementById('toast-message');
+        toastMsg!.textContent = "Couldn't connect to wallet. Try resending the transaction.";
+
+        const toast = document.getElementById('errToast');
+        toast!.className = 'toast show';
+        setTimeout(() => {
+          toast!.className = 'toast hide';
+        }, 3000);
+      } else {
+        try {
+          const tResp: TransactionResponse = await wallet.sendTransaction(txReq);
+          await pendingTxStore.addPendingTransaction(tResp, true);
+          navigate('/Home');
+        } catch (err:any) {
+          let errMsg = err.message;
+
+          const toastMsg = document.getElementById('toast-message');
+          const i = errMsg.indexOf('(');
+          if (errMsg.includes('bad response')) {
+            toastMsg!.textContent = 'The simulation ran into a network error. Please try testing the transaction again.';
+          } else if (i !== -1) {
+            errMsg = errMsg.substring(0, i - 1);
+            errMsg = errMsg[0].toUpperCase().concat(errMsg.substring(1));
+            toastMsg!.textContent = errMsg;
+          } else {
+            errMsg = errMsg[0].toUpperCase().concat(errMsg.substring(1));
+            toastMsg!.textContent = errMsg;
+          }
+
+          const toast = document.getElementById('errToast');
+          toast!.className = 'toast show';
+          setTimeout(() => {
+            toast!.className = 'toast hide';
+          }, 3000);
+        }
+      }
+    } catch (e:any) {
+      let errMsg = e.message;
+
+      const toastMsg = document.getElementById('toast-message');
+      const i = errMsg.indexOf('(');
+      if (errMsg.includes('bad response')) {
+        toastMsg!.textContent = 'The simulation ran into a network error. Please try testing the transaction again.';
+      } else if (i !== -1) {
+        errMsg = errMsg.substring(0, i - 1);
+        errMsg = errMsg[0].toUpperCase().concat(errMsg.substring(1));
+        toastMsg!.textContent = errMsg;
+      } else {
+        errMsg = errMsg[0].toUpperCase().concat(errMsg.substring(1));
+        toastMsg!.textContent = errMsg;
+      }
+
+      const toast = document.getElementById('errToast');
+      toast!.className = 'toast show';
+      setTimeout(() => {
+        toast!.className = 'toast hide';
+      }, 3000);
+    }
   };
 
   const gasModalProps: IHelpModalProps = {
@@ -280,6 +325,11 @@ const SimulationResults = function SimulationResults() {
 
   const onEditTransaction = (txReq: TransactionRequest) => {
     navigate('/CreateTransaction', { state: { txReq } });
+  };
+
+  const onCloseToast = () => {
+    const toast = document.getElementById('errToast');
+    toast!.className = 'toast hide';
   };
 
   const { simulationChecks } = useLocation().state;
@@ -319,7 +369,6 @@ const SimulationResults = function SimulationResults() {
   }
 
   const tAmount = ethers.utils.formatEther(data[0].value as BigNumberish).concat(' ETH');
-  const gasLimit = 'Gas Limit: '.concat((BigNumber.from(data[0].gasLimit as BigNumberish)).toString());
   const maxGasFeeTitle = 'Max Gas Fee';
   const totalGasFee = SimulationSendTransactions.totalGasFeeInETH(data[0])?.concat(' ETH');
   const totalTransactionFee = SimulationSendTransactions.totalTransactionFeeInETH(data[0])?.concat(' ETH');
@@ -329,72 +378,74 @@ const SimulationResults = function SimulationResults() {
     simulationStatus = 'Simulation Failed!';
   }
 
+  const loadingSendButtonProps: ILoadingButtonProps = {
+    buttonId: 'send-button',
+    buttonClasses: areAllSimulationsPassed(simulationChecks)
+      ? ['btn', 'btn-success']
+      : ['btn', 'btn-primary'],
+    buttonText: 'Send',
+    buttonOnClick: () => onSendTransaction(data[0]),
+    buttonEnabled: sendButtonEnabled,
+  };
+
   return (
     <div id="simulation-results">
       <div className="card border-info mb-3">
         <div className="card-body">
-          <h3 className="card-title">Transaction Details</h3>
-          <p className="card-text">
-            <div id="top-box">
+          <div id="top-box">
+            <h3 className="card-title">Transaction Details</h3>
+            <p className="card-text">
               <p>{sourceToDest}</p>
-              <p><b>{transferLabel}</b></p>
+              <p>{transferLabel}</p>
               {/* <p><b>Contract Interaction</b></p> */}
               <div id="transaction-details">
                 <div id="amount">
                   <FontAwesomeIcon className="fa-icon" icon={faEthereum} size="2x" />
                   <p>
-                    Sent to &quot;
-                    {dest}
-                    &quot;
-                    <h3>
-                      {' '}
+                    Amount
+                    <h5>
                       {tAmount}
-                      {' '}
-                    </h3>
+                    </h5>
                   </p>
                 </div>
                 <div id="max-tx-fee">
                   <FontAwesomeIcon className="fa-icon" icon={faFire} size="2x" />
                   <p>
-                    {gasLimit}
-                    <br />
                     {maxGasFeeTitle}
-                    <h3>
-                      {' '}
+                    <h5>
                       {totalGasFee}
-                      {' '}
-                    </h3>
+                    </h5>
                   </p>
                   <GasOptions
                     t={txReq}
                     modalToSimulationResults={modalToSimulationResults}
                   />
                 </div>
-                <div id="total-fee">
-                  <p>
-                    Total Cost
-                    <h3>
-                      {' '}
-                      {totalTransactionFee}
-                      {' '}
-                    </h3>
-                  </p>
-                  <HelpModal
-                    title={gasModalProps.title}
-                    description={gasModalProps.description}
-                  />
-                </div>
+                <HelpModal
+                  title={gasModalProps.title}
+                  description={gasModalProps.description}
+                />
               </div>
-            </div>
-          </p>
+              <div id="total-fee">
+                <p>
+                  <h4>
+                    Total Cost:
+                    {' '}
+                    {totalTransactionFee}
+                    {' '}
+                  </h4>
+                </p>
+              </div>
+            </p>
+          </div>
         </div>
       </div>
 
       <div id="simulation-text"><h1>{simulationStatus}</h1></div>
 
-      <div>
+      <div className="checklist">
         {simulationElements.map(([simulationCheck, passed]) => (passed ? (
-          <div>
+          <div className="item">
             <FontAwesomeIcon icon={faCheckCircle} color="#6cbc7a" />
             {simulationCheck}
           </div>
@@ -405,24 +456,29 @@ const SimulationResults = function SimulationResults() {
           </div>
         )))}
       </div>
-      {/* <h1> </h1>
-      <h3>Token Transfers</h3>
-      <p>
-        0x51092...094ef to
-        {' '}
-        <b>James Augsten</b>
-        {' '}
-        for 1 ETH
-        {' '}
-      </p> */}
+      <h6>{' '}</h6>
+      <h6>{' '}</h6>
       <div id="bottom-buttons">
         <Link to="/Home">
-          <button type="button" className="btn btn-primary">Reject Transaction</button>
+          <button type="button" className="btn btn-primary">Reject</button>
         </Link>
 
-        <button type="button" className="btn btn-primary" onClick={() => onEditTransaction(data[0])}>Edit Transaction</button>
+        <button type="button" className={(areAllSimulationsPassed(simulationChecks) ? 'btn btn-primary' : 'btn btn-info')} onClick={() => onEditTransaction(data[0])}>Edit</button>
 
-        <button type="button" className="btn btn-success" onClick={() => onSendTransaction(data[0])}>Send Transaction</button>
+        <LoadingButton {...loadingSendButtonProps} /> {/* eslint-disable-line */}
+      </div>
+      <div className="position-fixed bottom-0 end-0 p-3" data-style="z-index:11">
+        <div className="toast hide" id="errToast" role="alert" aria-live="assertive" aria-atomic="true">
+          <div className="toast-header">
+            <strong className="me-auto">
+              Something went wrong
+            </strong>
+            <button type="button" onClick={onCloseToast} className="btn-close ms-2 mb-1" data-bs-dismiss="toast" aria-label="Close">
+              <span aria-hidden="true" />
+            </button>
+          </div>
+          <div id="toast-message" className="toast-body" />
+        </div>
       </div>
     </div>
   );

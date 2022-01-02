@@ -54,35 +54,63 @@ export default class PendingTransactionStore {
   }
 
   /**
+   * Removes pending transactions with a given nonce
+   * @param nonce Any pending transactions with this nonce will be removed
+   */
+  removePendingTransactionsByNonce(nonce: number) {
+    for (let i = 0; i < this.pendingTransactions.length; i += 1) {
+      if (this.pendingTransactions[i].nonce === nonce) {
+        this.pendingTransactions.splice(i, 1);
+        i -= 1;
+      }
+    }
+  }
+
+  /**
+   * Shows a browser notification on transaction confirmation
+   * @param nonce Transaction nonce
+   * @param status Transaction status (1 = confirmed, 0 = failed)
+   */
+  static showNotification(nonce: number, status?: number) {
+    browser.notifications.create(undefined, {
+      type: 'basic',
+      title: `Transaction ${status === 1 ? 'Confirmed' : 'Reverted'}`,
+      message: `Transaction ${nonce.toString()} ${status === 1 ? 'Confirmed!' : 'Reverted!'}`,
+      iconUrl: 'ww-1024.png',
+    });
+  }
+
+  /**
    * Watches a pending transaction and, once it gets included, creates a browser notification
    * and removes the transaction from the pending transactions list
    * @param txResponse TransactionResponse object
    * @returns TransactionReceipt of included transaction
    */
   async watchForPendingTransaction(txResponse: TransactionResponse): Promise<TransactionReceipt> {
+    const txNonce = txResponse.nonce;
     return txResponse.wait(1).then((receipt: TransactionReceipt) => {
     // Remove from pending transactions list
       for (let i = 0; i < this.pendingTransactions.length; i += 1) {
         if (this.pendingTransactions[i].hash === txResponse.hash) {
           this.pendingTransactions.splice(i, 1);
+          i -= 1;
         }
       }
+      // Remove other pending transactions with the same nonce
+      this.removePendingTransactionsByNonce(txResponse.nonce);
       this.save();
-      browser.notifications.create(undefined, {
-        type: 'basic',
-        title: `Transaction ${receipt.status === 1 ? 'Confirmed' : 'Rejected'}`,
-        message: `Transaction ${txResponse.nonce.toString()} ${receipt.status === 1 ? 'Confirmed!' : 'Rejected!'}`,
-        iconUrl: 'ww-1024.png',
-      });
+      PendingTransactionStore.showNotification(txResponse.nonce, receipt.status);
       return receipt;
     })
       .catch((e: any) => {
-      // Remove hash from list
+        // Remove hash from list
         let targetHash = '';
+        let didFail = false;
         switch (e.code) {
           case Logger.errors.CALL_EXCEPTION:
           // Transaction failed
             targetHash = e.transactionHash;
+            didFail = true;
             break;
           case Logger.errors.TRANSACTION_REPLACED:
           // Transaction was replaced
@@ -94,9 +122,13 @@ export default class PendingTransactionStore {
         for (let i = 0; i < this.pendingTransactions.length; i += 1) {
           if (this.pendingTransactions[i].hash === targetHash) {
             this.pendingTransactions.splice(i, 1);
+            i -= 1;
           }
         }
         this.save();
+        if (didFail) {
+          PendingTransactionStore.showNotification(txNonce, 0);
+        }
         return e.receipt;
       });
   }
@@ -128,7 +160,8 @@ export default class PendingTransactionStore {
           .then((settledResult: PromiseSettledResult<TransactionResponse>[]) => {
             const txsAny = settledResult.filter((result) => result.status === 'fulfilled');
             const txsFulfilled = txsAny as PromiseFulfilledResult<TransactionResponse>[];
-            return txsFulfilled.map((promiseResult) => promiseResult.value);
+            return txsFulfilled.map((promiseResult) => promiseResult.value)
+              .filter((txResponse) => txResponse !== null);
           });
       })
       .then((txResponses: TransactionResponse[]) => {
@@ -138,7 +171,6 @@ export default class PendingTransactionStore {
         );
         for (let i = 0; i < pendingTxResponses.length; i += 1) {
           this.addPendingTransaction(pendingTxResponses[i]);
-          console.log(pendingTxResponses[i]); // eslint-disable-line
         }
       })
       .catch((reason) => Promise.reject(reason));

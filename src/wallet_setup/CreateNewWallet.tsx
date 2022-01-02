@@ -38,6 +38,13 @@ const CreateNewWallet = function CreateNewWallet() {
   const [confirmPhrase, setConfirmPhrase]: [string, (confirmPhrase: string) => void] = React.useState<string>('');
   const handleConfirmPhrase = (event: React.ChangeEvent<HTMLInputElement>) => {
     setConfirmPhrase(event.target.value);
+
+    const elem = document.getElementById('create-phrase-phrase-input');
+    if (elem && event.target.value !== '') {
+      elem.style.color = 'var(--bs-body-bg)';
+    } else if (elem) {
+      elem.style.color = 'var(--bs-body-color)';
+    }
   };
 
   useEffect(() => {
