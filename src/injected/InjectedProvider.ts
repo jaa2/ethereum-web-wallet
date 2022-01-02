@@ -45,10 +45,17 @@ export class OurInjectedProvider extends EventEmitter implements InjectedProvide
     });
   }
 
-  // Deprecated, but Uniswap uses it
+  // Deprecated compatibility measures
   enable(): Promise<any> {
     return this.request({
       method: 'eth_requestAccounts',
+    });
+  }
+
+  send(method: string, params?: Array<unknown>): Promise<any> {
+    return this.request({
+      method,
+      params,
     });
   }
 }
