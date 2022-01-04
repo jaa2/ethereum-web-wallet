@@ -1,3 +1,5 @@
+import { BlockTag, EtherscanProvider, TransactionRequest } from '@ethersproject/providers';
+import { Deferrable } from 'ethers/lib/utils';
 import { RequestArguments } from '../src/injected/InjectedProvider';
 
 function handleRequest(args: RequestArguments): Promise<any> {
@@ -14,6 +16,19 @@ function handleRequest(args: RequestArguments): Promise<any> {
           .then((network) => network.chainId);
       }
       // TODO: Throw exception
+      break;
+    case 'eth_call':
+      if (window.stateObj.provider !== null) {
+        const params = args.params as [transaction: Deferrable<TransactionRequest>,
+          blockTag?: BlockTag | Promise<BlockTag> | undefined];
+        if (window.stateObj.provider instanceof EtherscanProvider) {
+          // Strip the BlockTag argument, as Etherscan doesn't support it
+          if (params.length > 1) {
+            params.pop();
+          }
+        }
+        return window.stateObj.provider.call(...params);
+      }
       break;
     case 'eth_accounts':
       // TODO: Enforce consent as outlined above
