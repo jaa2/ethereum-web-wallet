@@ -1,7 +1,9 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
 /* eslint-disable react/style-prop-object */
 /* eslint-disable no-param-reassign */
-import { BigNumber, ethers, Wallet } from 'ethers';
+import {
+  BigNumber, BytesLike, ethers, Wallet,
+} from 'ethers';
 import React, { useEffect } from 'react';
 import {
   Link, Location, NavigateFunction, useLocation, useNavigate,
@@ -25,6 +27,7 @@ import SimulationSendTransactions from '../SimulationSendTransactions';
 import SimulationSuite from '../SimulationSuite';
 import currentETHtoUSD from '../common/UnitConversion';
 import './CreateTransaction.scss';
+import DataField from './DataField';
 
 /**
  * Gets the background state object
@@ -46,6 +49,7 @@ async function TestTransaction(
   addressElem: HTMLInputElement,
   amountElem: HTMLInputElement,
   location: Location,
+  data: BytesLike | undefined,
 ) {
   const addressInput = addressElem.value;
   const amountInput = amountElem.value;
@@ -86,7 +90,7 @@ async function TestTransaction(
 
       txReq.value = value;
       txReq.from = await wallet.getAddress();
-      txReq.data = '0x';
+      txReq.data = data;
       txReq.gasLimit = await transactionController.getGasLimit(txReq);
 
       // Execute simulations and go to simulations page
@@ -155,7 +159,7 @@ const CreateTransaction = function CreateTransaction(props: TransactionAction) {
   [boolean, (state: boolean) => void] = React.useState<boolean>(true);
 
   const [address, setAddress]:
-  [string, (matchState: string) => void] = React.useState<string>('0x510928a823b892093ac83904ef');
+  [string, (matchState: string) => void] = React.useState<string>('');
   const [currentETHValue, setCurrentETHValue] = React.useState<number>(0);
 
   useEffect(() => {
@@ -196,7 +200,18 @@ const CreateTransaction = function CreateTransaction(props: TransactionAction) {
       feedbackElem!.className = 'invalid-feedback';
     }
 
-    const validatedTransaction = await TestTransaction(addressElem, amountElem, location);
+    const dataFieldElem = document.getElementById('dataField');
+    let data: BytesLike | undefined;
+    if (dataFieldElem !== null && dataFieldElem instanceof HTMLTextAreaElement) {
+      if (!ethers.utils.isBytesLike(dataFieldElem.value.trim())) {
+        // Failed
+        setTestButtonEnabled(true);
+        return;
+      }
+      data = dataFieldElem.value.trim();
+    }
+
+    const validatedTransaction = await TestTransaction(addressElem, amountElem, location, data);
 
     if (validatedTransaction) {
       navigate('/SimulationResults', {
@@ -243,8 +258,6 @@ const CreateTransaction = function CreateTransaction(props: TransactionAction) {
     if (amountRegex.test(amountInput)) {
       try {
         ethers.utils.parseEther(amountInput);
-        // const state = await getStateObj();
-        // const provider = state.provider as Provider;
         document.getElementById('amount-in-usd')!.textContent = (getCurrentETHInUSD(+amountInput, currentETHValue)).toFixed(2).concat(' USD');
         amountElem.className = 'form-control is-valid';
         feedbackElem!.textContent = '';
@@ -254,7 +267,7 @@ const CreateTransaction = function CreateTransaction(props: TransactionAction) {
 
         amountElem.className = 'form-control is-invalid';
         if (errMsg.includes('fractional component exceeds')) {
-          feedbackElem!.textContent = 'Amount has too many decimal places';
+          feedbackElem!.textContent = 'Too many decimal places';
           feedbackElem!.className = 'invalid-feedback';
         } else {
           const i = errMsg.indexOf('(');
@@ -280,16 +293,19 @@ const CreateTransaction = function CreateTransaction(props: TransactionAction) {
 
   let dest = '';
   let tAmount = '';
+  let data = '0x';
   if (location.state !== null) {
-    if (location.state.txReq !== undefined && location.state.txReq !== null) {
+    if (location.state.txReq) {
       dest = location.state.txReq.to;
       tAmount = ethers.utils.formatEther(BigNumber.from(location.state.txReq.value).toString());
-    } else if ((location.state.nonce !== undefined && location.state.nonce !== null)
-    && (location.state.dest !== undefined && location.state.dest !== null)
-    && (location.state.amount !== undefined && location.state.amount !== null)) {
+      data = location.state.txReq.data;
+    } else if (location.state.dest && location.state.amount) {
       dest = location.state.dest;
       tAmount = location.state.amount;
       action = 'Replace';
+    }
+    if (location.state.data) {
+      data = location.state.data;
     }
   }
 
@@ -351,6 +367,7 @@ const CreateTransaction = function CreateTransaction(props: TransactionAction) {
             <h5 id="amount-in-usd">USD</h5>
           </div>
         </div>
+        <DataField initialData={data} />
       </div>
       {action === 'Send'
         && (
