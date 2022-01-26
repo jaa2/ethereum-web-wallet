@@ -77,17 +77,17 @@ class SimulationSendTransactions {
     try {
       let estGas = await this.provider.estimateGas(t);
       if (estGas.gte(BigNumber.from(21000))) {
-        estGas = BigNumber.from(estGas.toNumber() * 1.2);
+        // Padding of 1.2x the estimated gas limit is used
+        estGas = BigNumber.from(Math.floor(estGas.toNumber() * 1.2));
       }
 
       return estGas;
-    } catch {
-      return BigNumber.from(300000);
+    } catch (e) {
+      // TODO: Use some other metric for determining the gas limit
+      return BigNumber.from(1000000);
     }
   }
 
-  // source:
-  // https://ethereum.stackexchange.com/questions/84004/ethers-formatetherwei-with-max-4-decimal-places/97885
   /**
    * Calculates the total gas fee in ETH
    * @param t Transaction
@@ -115,8 +115,6 @@ class SimulationSendTransactions {
     return tTotalGasFees;
   }
 
-  // Source:
-  // https://ethereum.stackexchange.com/questions/84004/ethers-formatetherwei-with-max-4-decimal-places/97885
   /**
    * Calculates the total transaction fee in ETH
    * @param t Transaction
