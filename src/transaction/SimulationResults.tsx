@@ -332,9 +332,10 @@ const SimulationResults = function SimulationResults() {
     toast!.className = 'toast hide';
   };
 
-  const { simulationChecks } = useLocation().state;
-  const { txReq } = useLocation().state;
-  const { contractOrEOA } = useLocation().state;
+  // TODO: Create interface for passing data to and from simulation checks
+  const { simulationChecks } = useLocation().state as any;
+  const txReq = (useLocation().state as any).txReq as any;
+  const { contractOrEOA } = useLocation().state as any;
 
   // eslint-disable-next-line max-len
   const [simulationElements, setSimulationElements]: [[string, Boolean][], (simulationElements: [string, Boolean][]) => void ] = React.useState<[string, Boolean][]>([]);
