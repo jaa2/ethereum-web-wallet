@@ -29,6 +29,14 @@ import currentETHtoUSD from '../common/UnitConversion';
 import './CreateTransaction.scss';
 import DataField from './DataField';
 
+interface CreateTransactionLocationState {
+  nonce: number | null;
+  dest: string | null;
+  amount: string | null;
+  data: string | null;
+  txReq: TransactionRequest | null;
+}
+
 /**
  * Gets the background state object
  * @returns background state object
@@ -83,9 +91,9 @@ async function TestTransaction(
 
     if (wallet !== null) {
       // finish creating create transaction request object
-      if (location.state !== null
-        && (location.state.nonce !== undefined && location.state.nonce !== null)) {
-        txReq.nonce = location.state.nonce;
+      const locState = location.state as CreateTransactionLocationState | null;
+      if (locState !== null && locState.nonce) {
+        txReq.nonce = locState.nonce;
       }
 
       txReq.value = value;
@@ -294,18 +302,19 @@ const CreateTransaction = function CreateTransaction(props: TransactionAction) {
   let dest = '';
   let tAmount = '';
   let data = '0x';
-  if (location.state !== null) {
-    if (location.state.txReq) {
-      dest = location.state.txReq.to;
-      tAmount = ethers.utils.formatEther(BigNumber.from(location.state.txReq.value).toString());
-      data = location.state.txReq.data;
-    } else if (location.state.dest && location.state.amount) {
-      dest = location.state.dest;
-      tAmount = location.state.amount;
+  const locState = location.state as CreateTransactionLocationState | null;
+  if (locState !== null) {
+    if (locState.txReq) {
+      dest = locState.txReq.to ? locState.txReq.to : dest;
+      tAmount = ethers.utils.formatEther(BigNumber.from(locState.txReq.value).toString());
+      data = locState.txReq.data ? locState.txReq.data.toString() : data;
+    } else if (locState.dest && locState.amount) {
+      dest = locState.dest;
+      tAmount = locState.amount;
       action = 'Replace';
     }
-    if (location.state.data) {
-      data = location.state.data;
+    if (locState.data) {
+      data = locState.data;
     }
   }
 
