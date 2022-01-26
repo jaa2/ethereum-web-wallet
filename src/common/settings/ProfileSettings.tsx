@@ -2,13 +2,15 @@ import React, { ChangeEvent } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
-  faUserCircle, faEdit, faExclamationTriangle, faCogs, faArrowCircleLeft,
+  faUserCircle, faExclamationTriangle, faCogs, faArrowCircleLeft,
 } from '@fortawesome/free-solid-svg-icons';
 import './ProfileSettings.scss';
 import Modal from 'react-bootstrap/Modal';
-import { UserAddressBox } from './common/AddressBox';
-import UserState from './common/UserState';
-import { getTheme, setTheme } from './common/Theme';
+import { UserAddressBox } from '../AddressBox';
+import UserState from '../UserState';
+import { getTheme, setTheme } from './Theme';
+import Config from './Config';
+import Toggle from './Toggle';
 
 const DangerConfim = function DangerConfirm() {
   const [isOpen, setIsOpen] = React.useState(false);
@@ -61,6 +63,8 @@ const DangerConfim = function DangerConfirm() {
   );
 };
 
+const config: Config = new Config();
+
 const ProfileSettings = function ProfileSettings() {
   const [themeString, setThemeString] = React.useState<string>(getTheme());
 
@@ -82,44 +86,25 @@ const ProfileSettings = function ProfileSettings() {
           <div className="container">
             <div id="profile-picture-edit" className="container">
               <FontAwesomeIcon className="fa-icon" icon={faUserCircle} size="9x" />
-              <FontAwesomeIcon className="fa-icon" id="edit-icon" icon={faEdit} size="1x" />
-            </div>
-            <div id="profile-name-edit" className="container">
-              <div id="name">
-                Name
-              </div>
-              <FontAwesomeIcon className="fa-icon" icon={faEdit} size="1x" />
             </div>
             <div id="address-box" className="container">
               <UserAddressBox />
             </div>
           </div>
           <div className="container">
-            <fieldset>
-              <legend className="mt-1">Delay Time</legend>
-              <div id="time-container" className="form-group">
-                <select className="form-select" id="time">
-                  <option>5 sec</option>
-                  <option>10 sec</option>
-                  <option>20 sec</option>
-                  <option>30 sec</option>
-                </select>
-              </div>
-            </fieldset>
-            {/* </div> */}
             <div>
               <fieldset>
                 <legend className="mt-1">Dark Mode</legend>
-                <div id="appearance-switch" className="form-check form-switch">
+                <div className="settings-switch form-check form-switch">
                   <input
                     className="form-check-input"
                     type="checkbox"
-                    id="flexSwitchCheckDefault"
                     checked={themeString === 'dark'}
                     onChange={toggleTheme}
                   />
                 </div>
               </fieldset>
+              <Toggle config={config} configKey="showDataField" label="Show Data Field" />
             </div>
           </div>
         </div>

@@ -12,14 +12,14 @@ import ImportSecretPhrase from './wallet_setup/ImportSecretPhrase';
 import WalletSetup from './wallet_setup/WalletSetup';
 
 import Home from './Home';
-import ProfileSettings from './ProfileSettings';
+import ProfileSettings from './common/settings/ProfileSettings';
 import Unlock from './Unlock';
 
 import CreateTransaction from './transaction/CreateTransaction';
 import SimulationResults from './transaction/SimulationResults';
 
 import './App.scss';
-import { ThemeSetter } from './common/Theme';
+import { ThemeSetter } from './common/settings/Theme';
 import ExistingWallet from './ExistingWallet';
 
 import { WindowType, WindowTypeContext } from './common/OpenNewWindow';

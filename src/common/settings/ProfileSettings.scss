@@ -1,4 +1,4 @@
-@import 'common/colors';
+@import '../colors';
 
 #profile-settings {
   margin: auto;
@@ -20,7 +20,7 @@
     display: flex;
     justify-content: space-evenly;
 
-    #appearance-switch {
+    .settings-switch {
       display: flex;
       justify-content: space-evenly;
       text-align: center;
@@ -36,15 +36,6 @@
 
     }
     
-  } 
-  #profile-name-edit {
-    display: flex;
-    justify-content: center;
-
-    #name {
-      margin-left: 20px;
-      margin-right: 5px;
-    }
   }
 
   #profile-picture-edit {
