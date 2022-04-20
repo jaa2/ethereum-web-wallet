@@ -8,21 +8,25 @@ export function getProviderNetworks(): Array<ProviderNetwork> {
       displayName: 'Ropsten Test Network',
       internalName: 'ropsten',
       networkID: 3,
+      explorerURL: 'https://ropsten.etherscan.io',
     },
     {
       displayName: 'Kovan Test Network',
       internalName: 'kovan',
       networkID: 42,
+      explorerURL: 'https://kovan.etherscan.io',
     },
     {
       displayName: 'Rinkeby Test Network',
       internalName: 'rinkeby',
       networkID: 4,
+      explorerURL: 'https://rinkeby.etherscan.io',
     },
     {
       displayName: 'Goerli Test Network',
       internalName: 'goerli',
       networkID: 5,
+      explorerURL: 'https://rinkeby.etherscan.io',
     },
   ];
   return networks;
@@ -34,4 +38,6 @@ export default interface ProviderNetwork {
   internalName?: string;
   // Network ID
   networkID: number;
+  // Explorer link
+  explorerURL?: string;
 }
