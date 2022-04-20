@@ -2,14 +2,14 @@
 import {
   BigNumber, ethers, Signer,
 } from 'ethers';
-import React, { useEffect } from 'react';
+import React, { ReactElement, useEffect } from 'react';
 import { Link, NavigateFunction, useNavigate } from 'react-router-dom';
 import browser from 'webextension-polyfill';
 
 import { EtherscanProvider, TransactionRequest, TransactionResponse } from '@ethersproject/providers';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
-  faCog, faLock, faPaperPlane, faUserCircle, /* faExchangeAlt, */
+  faCog, faLock, faPaperPlane, faUserCircle, faExternalLinkAlt, /* faExchangeAlt, */
 } from '@fortawesome/free-solid-svg-icons';
 import { Modal } from 'react-bootstrap';
 
@@ -152,6 +152,16 @@ const GetTableTransactions = (
 };
 
 /**
+ * Gets a link to an explorer's page containing a transaction
+ * @param explorerURL Base explorer URL, without trailing slash
+ * @param txHash Transaction hash
+ * @returns A ReactElement containing a link to the transaction in the explorer
+ */
+function getExplorerTxLink(explorerURL: string, txHash: string): ReactElement {
+  return <a href={`${explorerURL}/tx/${txHash}`} target="_blank" rel="noreferrer">View</a>;
+}
+
+/**
  * Get a list of recent transactions
  * @returns A promise containing a list of recent transactions
  */
@@ -217,8 +227,17 @@ const Home = function Home() {
   const [currentETHValue, setCurrentETHValue] = React.useState<number>(0);
   const [currentETHAsUSD, setCurrentETHAsUSD]:
   [number, (state: number) => void] = React.useState<number>(0);
+  const [explorerURL, setExplorerURL]: [string, (url: string) => void] = React.useState<string>('');
 
   useEffect(() => {
+    UserState.getBackgroundWindow()
+      .then((window) => window.stateObj.selectedNetwork)
+      .then((providerNetwork) => (providerNetwork === undefined ? Promise.reject()
+        : providerNetwork))
+      .then((providerNetwork) => (providerNetwork.explorerURL === undefined
+        ? Promise.reject() : providerNetwork.explorerURL))
+      .then((newExplorerURL) => setExplorerURL(newExplorerURL));
+
     UserState.getAddress().then((newAddress) => {
       if (newAddress === null) {
         return Promise.reject();
@@ -340,6 +359,10 @@ const Home = function Home() {
               <FontAwesomeIcon className="fa-icon" icon={faLock} size="1x" fixedWidth />
               <p className="icon-label">Lock Wallet</p>
             </button>
+            <a className="option btn btn-link" href={`${explorerURL}/address/${address}`} target="_blank" rel="noreferrer">
+              <FontAwesomeIcon className="fa-icon" icon={faExternalLinkAlt} size="1x" fixedWidth />
+              <p className="icon-label">View in Explorer</p>
+            </a>
           </div>
         </div>
         <OpenNewWindow />
@@ -395,6 +418,7 @@ const Home = function Home() {
               <th scope="col">Date</th>
               <th scope="col">Destination</th>
               <th scope="col">Amount</th>
+              <th scope="col">Explorer</th>
             </tr>
           </thead>
           <tbody>
@@ -418,9 +442,10 @@ const Home = function Home() {
                       </div>
                     </td>
                     <td>{transaction.amount}</td>
+                    <td>{getExplorerTxLink(explorerURL, transaction.hash)}</td>
                   </tr>
                   <tr>
-                    <td colSpan={3}>
+                    <td colSpan={4}>
                       <span className="d-flex justify-content-around">
                         <CancelModal oldTx={pendingTransactions.filter(
                           (txResponse) => txResponse.hash === transaction.hash,
@@ -448,6 +473,7 @@ const Home = function Home() {
               <td />
               <td />
               <td />
+              <td />
             </tr>
             {
               transactionList.map((transaction: TransactionEntry) => (
@@ -460,6 +486,7 @@ const Home = function Home() {
                     </p>
                   </td>
                   <td>{transaction.amount}</td>
+                  <td>{getExplorerTxLink(explorerURL, transaction.hash)}</td>
                 </tr>
               ))
             }
