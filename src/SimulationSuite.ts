@@ -96,7 +96,7 @@ class SimulationSuite {
     // Source:
     // https://ethereum.stackexchange.com/questions/109990/how-to-determine-if-a-pending-transaction-will-revert
     try {
-      const estGas = await this.provider.estimateGas({ to: t.to, data: t.data, value: t.value });
+      const estGas = await this.provider.estimateGas(t);
       const tGasLimit = BigNumber.from(t.gasLimit);
       if (tGasLimit.gte(estGas)) {
         return true;
