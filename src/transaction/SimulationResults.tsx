@@ -27,6 +27,7 @@ import UserState from '../common/UserState';
 // import WalletState from '../../background/WalletState';
 
 import './SimulationResults.scss';
+import { TokenTransferBox } from './TokenTransferBox';
 
 /**
  * Get the object that can simulate and send a transaction
@@ -457,8 +458,10 @@ const SimulationResults = function SimulationResults() {
           </div>
         )))}
       </div>
-      <h6>{' '}</h6>
-      <h6>{' '}</h6>
+      <br />
+      <h2 className="mt-3">Token Transfers</h2>
+      <TokenTransferBox tx={data[0]} />
+      <br />
       <div id="bottom-buttons">
         <Link to="/Home">
           <button type="button" className="btn btn-primary">Reject</button>

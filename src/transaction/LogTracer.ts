@@ -9,6 +9,21 @@ function bufferToHexString(buffer: any) {
   return ethers.utils.hexZeroPad(asbn.toHexString(), arr.length);
 }
 
+/**
+ * Encodes a number for use in debug_traceCall
+ * @param number Number to encode
+ * @returns Hex-encoded number with any highest-order zeros stripped
+ */
+function numberToHexString(number: BigNumberish) {
+  const bn = BigNumber.from(number);
+  let hexString = ethers.utils.hexStripZeros(bn.toHexString());
+  if (ethers.utils.hexDataLength(hexString) === 0) {
+    // All zeros were stripped, so add one back
+    hexString = '0x0';
+  }
+  return hexString;
+}
+
 export interface TokenTransfer {
   from: string,
   to: string,
@@ -63,13 +78,13 @@ Promise<Array<TokenTransfer>> {
     txObj.to = request.to;
   }
   if (request.gasLimit) {
-    txObj.gas = request.gasLimit;
+    txObj.gas = numberToHexString(request.gasLimit);
   }
   if (request.gasPrice) {
-    txObj.gasPrice = request.gasPrice;
+    txObj.gasPrice = numberToHexString(request.gasPrice);
   }
   if (request.value) {
-    txObj.value = request.value;
+    txObj.value = numberToHexString(request.value);
   }
   if (request.data) {
     txObj.data = request.data;

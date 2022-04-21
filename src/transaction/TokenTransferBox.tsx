@@ -2,6 +2,7 @@ import { TransactionRequest } from '@ethersproject/abstract-provider';
 import { JsonRpcProvider } from '@ethersproject/providers';
 import { ethers } from 'ethers';
 import React from 'react';
+import UserState from '../common/UserState';
 import { getTransferLogs, TokenTransfer } from './LogTracer';
 
 interface TokenTransferProps {
@@ -28,11 +29,16 @@ export class TokenTransferBox extends React.Component<TokenTransferProps> {
 
   async load() {
     const { tx } = this.state;
-    console.log("this tx", tx); // eslint-disable-line
-    const transfers: Array<TokenTransfer> = await getTransferLogs(new JsonRpcProvider(undefined, 'goerli'), tx);
-    this.setState({
-      tokenTransfers: transfers,
-    });
+    const provider = await UserState.getProvider();
+    if (provider !== null && (provider as JsonRpcProvider) !== undefined) {
+      const transfers: Array<TokenTransfer> = await getTransferLogs(
+        provider as JsonRpcProvider,
+        tx,
+      );
+      this.setState({
+        tokenTransfers: transfers,
+      });
+    }
   }
 
   render() {
