@@ -35,6 +35,11 @@ function handleRequest(args: RequestArguments): Promise<any> {
       return handleRequest({
         method: 'eth_requestAccounts',
       });
+    case 'eth_blockNumber':
+      if (window.stateObj.provider !== null) {
+        return window.stateObj.provider.getBlockNumber();
+      }
+      break;
     default:
       break;
   }
