@@ -40,6 +40,11 @@ function handleRequest(args: RequestArguments): Promise<any> {
         return window.stateObj.provider.getBlockNumber();
       }
       break;
+    case 'net_version':
+      if (window.stateObj.provider !== null) {
+        return (window.stateObj.provider.getNetwork()).then((network) => network.chainId);
+      }
+      break;
     default:
       break;
   }
