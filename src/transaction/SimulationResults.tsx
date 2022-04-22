@@ -252,7 +252,7 @@ const SimulationResults = function SimulationResults() {
   const [isExternalSigner, setIsExternalSigner] = React.useState<boolean>(false);
   const [signedTx, setSignedTx] = React.useState<Transaction | null>(null);
 
-  const { originRequestId } = useLocation().state;
+  const { originRequestId } = (useLocation() as any).state;
 
   const onSendTransaction = async (txReq: TransactionRequest) => {
     setIsSendingTx(true);
