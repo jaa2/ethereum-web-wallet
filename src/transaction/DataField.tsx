@@ -31,7 +31,10 @@ const DataField = function DataField(props: { initialData: string }) {
         defaultValue={initialData}
         placeholder="0x"
         onChange={
-          (e) => setValidData(ethers.utils.isBytesLike(e.currentTarget.value.trim()))
+          (e) => {
+            setValidData(ethers.utils.isBytesLike(e.currentTarget.value.trim()));
+            console.log(`changing to ${e.currentTarget.value}`);
+          }
         }
       />
       {feedback}
