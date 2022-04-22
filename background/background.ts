@@ -3,7 +3,6 @@ import { Wallet } from 'ethers';
 import browser from 'webextension-polyfill';
 import InjectedProviderReceiver from './InjectedProviderReceiver';
 import ProviderNetwork, { getProviderNetworks } from '../src/common/ProviderNetwork';
-import InjectedProviderReceiver from './InjectedProviderReceiver';
 import PendingTransactionStore from './PendingTransactionStore';
 import WalletState from './WalletState';
 import { WalletStorage } from './WalletStorage';

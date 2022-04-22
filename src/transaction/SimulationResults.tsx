@@ -252,7 +252,7 @@ const SimulationResults = function SimulationResults() {
   const [sendButtonEnabled, setSendButtonEnabled]:
   [boolean, (state: boolean) => void] = React.useState<boolean>(true);
 
-  const { originRequestId } = useLocation().state;
+  const { originRequestId } = (useLocation() as any).state;
 
   const onSendTransaction = async (txReq: TransactionRequest) => {
     setSendButtonEnabled(false);

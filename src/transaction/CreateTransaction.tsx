@@ -175,6 +175,13 @@ const CreateTransaction = function CreateTransaction(props: TransactionAction) {
   const [data, setData] = React.useState<string>('0x');
   const [originRequest, setOriginRequest] = React.useState<string>('');
 
+  function setDataField(newData: string) {
+    const dataFieldElem = document.getElementById('dataField') as HTMLTextAreaElement;
+    if (dataFieldElem !== null) {
+      dataFieldElem.value = newData;
+    }
+  }
+
   useEffect(() => {
     UserState.getAddress().then((newAddress) => {
       if (newAddress !== null) {
@@ -214,16 +221,22 @@ const CreateTransaction = function CreateTransaction(props: TransactionAction) {
     }
 
     const dataFieldElem = document.getElementById('dataField');
+    let currentData = data;
     if (dataFieldElem !== null && dataFieldElem instanceof HTMLTextAreaElement) {
       if (!ethers.utils.isBytesLike(dataFieldElem.value.trim())) {
         // Failed
         setTestButtonEnabled(true);
         return;
       }
-      // setData(dataFieldElem.value.trim());
+      currentData = dataFieldElem.value.trim();
     }
 
-    const validatedTransaction = await TestTransaction(addressElem, amountElem, location, data);
+    const validatedTransaction = await TestTransaction(
+      addressElem,
+      amountElem,
+      location,
+      currentData,
+    );
 
     if (validatedTransaction) {
       navigate('/SimulationResults', {
@@ -317,10 +330,8 @@ const CreateTransaction = function CreateTransaction(props: TransactionAction) {
         console.log('Data: ', txReq.data);
         setData(txReq.data ? txReq.data.toString() : data);
         // TODO: Find different way of setting this value
-        const dataFieldElem = document.getElementById('dataField') as HTMLTextAreaElement;
-        if (dataFieldElem !== null && txReq.data !== undefined) {
-          dataFieldElem.value = txReq.data.toString();
-          console.log(`Set data field value to ${dataFieldElem.value}`);
+        if (txReq.data !== undefined) {
+          setDataField(txReq.data.toString());
         }
         onAmountInput();
         onAddressInput();
@@ -335,17 +346,24 @@ const CreateTransaction = function CreateTransaction(props: TransactionAction) {
 
   const locState = location.state as CreateTransactionLocationState | null;
   if (locState !== null) {
+    console.log('locState: ', locState);
+    location.state = null;
+    console.log('locState afteR:', locState);
     if (locState.txReq) {
       setTo(locState.txReq.to ? locState.txReq.to : to);
       setAmount(ethers.utils.formatEther(BigNumber.from(locState.txReq.value).toString()));
-      setData(locState.txReq.data ? locState.txReq.data.toString() : data);
+      const dataStr = locState.txReq.data ? locState.txReq.data.toString() : data;
+      setData(dataStr);
+      setDataField(dataStr);
     } else if (locState.dest && locState.amount) {
       setTo(locState.dest);
       setAmount(locState.amount);
       action = 'Replace';
     }
     if (locState.data) {
+      console.log(`Setting data to ${locState.data}`);
       setData(locState.data);
+      setDataField(locState.data);
     }
   }
 
