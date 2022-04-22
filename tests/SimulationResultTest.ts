@@ -88,8 +88,11 @@ describe('SimulationResults tests', () => {
 
   it('Can determine that the gas limit is enough', async () => {
     // Transaction's gas limit is reasonable
-    const t: Transaction = await provider.getTransaction('0xc0f9db74a248ef15b041b576878375213037bc83767ce22b3ae20972c032afcc');
-    const tReq = TransactionToRequest(t);
+    const tReq = {
+      to: '0x8c9582289506c1cdbfcd97340a1541002343a95f',
+      value: BigNumber.from(1),
+      gasLimit: 21000,
+    };
     expect(await sr.isGasLimitEnough(tReq)).to.be.true;
 
     await delay(1000);
