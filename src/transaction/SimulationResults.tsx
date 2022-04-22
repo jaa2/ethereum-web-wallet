@@ -252,6 +252,8 @@ const SimulationResults = function SimulationResults() {
   const [isExternalSigner, setIsExternalSigner] = React.useState<boolean>(false);
   const [signedTx, setSignedTx] = React.useState<Transaction | null>(null);
 
+  const { originRequestId } = useLocation().state;
+
   const onSendTransaction = async (txReq: TransactionRequest) => {
     setIsSendingTx(true);
     const pendingTxStore = await UserState.getPendingTxStore();
@@ -286,6 +288,16 @@ const SimulationResults = function SimulationResults() {
             throw new Error('Could not find a signed transaction to send');
           }
           await pendingTxStore.addPendingTransaction(tResp, true);
+
+          // Send sendTransaction response to background
+          browser.runtime.sendMessage(undefined, {
+            type: 'sendTransactionResponse',
+            data: {
+              originRequestId,
+              hash: tResp.hash,
+            },
+          });
+
           navigate('/Home');
         } catch (err:any) {
           let errMsg = err.message;
