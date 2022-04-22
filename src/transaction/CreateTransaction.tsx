@@ -170,6 +170,11 @@ const CreateTransaction = function CreateTransaction(props: TransactionAction) {
   [string, (matchState: string) => void] = React.useState<string>('');
   const [currentETHValue, setCurrentETHValue] = React.useState<number>(0);
 
+  const [to, setTo] = React.useState<string>('');
+  const [amount, setAmount] = React.useState<string>('0.00');
+  const [data, setData] = React.useState<string>('0x');
+  const [originRequest, setOriginRequest] = React.useState<string>('');
+
   useEffect(() => {
     UserState.getAddress().then((newAddress) => {
       if (newAddress !== null) {
@@ -209,14 +214,13 @@ const CreateTransaction = function CreateTransaction(props: TransactionAction) {
     }
 
     const dataFieldElem = document.getElementById('dataField');
-    let data: BytesLike | undefined;
     if (dataFieldElem !== null && dataFieldElem instanceof HTMLTextAreaElement) {
       if (!ethers.utils.isBytesLike(dataFieldElem.value.trim())) {
         // Failed
         setTestButtonEnabled(true);
         return;
       }
-      data = dataFieldElem.value.trim();
+      // setData(dataFieldElem.value.trim());
     }
 
     const validatedTransaction = await TestTransaction(addressElem, amountElem, location, data);
@@ -227,8 +231,8 @@ const CreateTransaction = function CreateTransaction(props: TransactionAction) {
           simulationChecks: validatedTransaction.simulationChecks,
           txReq: validatedTransaction.txReq,
           contractOrEOA: validatedTransaction.contractOrEOA,
-        // eslint-disable-next-line @typescript-eslint/comma-dangle
-        }
+          originRequestId: originRequest,
+        },
       });
     } else {
       setTestButtonEnabled(true);
@@ -257,6 +261,7 @@ const CreateTransaction = function CreateTransaction(props: TransactionAction) {
   const onAmountInput = () => {
     const amountElem = (document.getElementById('amount') as HTMLInputElement);
     const amountInput = amountElem.value;
+    setAmount(amountInput);
     const feedbackElem = document.getElementById('amt-feedback');
 
     // Initial check to make sure there are no leading 0s (> 1)
@@ -299,22 +304,48 @@ const CreateTransaction = function CreateTransaction(props: TransactionAction) {
 
   let { action } = props;
 
-  let dest = '';
-  let tAmount = '';
-  let data = '0x';
+  useEffect(() => {
+    browser.runtime.sendMessage(undefined, {
+      type: 'populateCreateTransactionRequest',
+    }).then((result) => {
+      console.log('Content script got message back:', result);
+      if (result !== undefined && result.args !== undefined) {
+        const txReq: TransactionRequest = result.args[0];
+        setTo(txReq.to ? txReq.to : to);
+        setAmount(txReq.value ? ethers.utils.formatEther(BigNumber.from(txReq.value))
+          : amount);
+        console.log('Data: ', txReq.data);
+        setData(txReq.data ? txReq.data.toString() : data);
+        // TODO: Find different way of setting this value
+        const dataFieldElem = document.getElementById('dataField') as HTMLTextAreaElement;
+        if (dataFieldElem !== null && txReq.data !== undefined) {
+          dataFieldElem.value = txReq.data.toString();
+          console.log(`Set data field value to ${dataFieldElem.value}`);
+        }
+        onAmountInput();
+        onAddressInput();
+
+        if (result.originRequestId !== undefined) {
+          setOriginRequest(result.originRequestId);
+        }
+      }
+    });
+  }, []);
+  console.log('Should be listening for messages...');
+
   const locState = location.state as CreateTransactionLocationState | null;
   if (locState !== null) {
     if (locState.txReq) {
-      dest = locState.txReq.to ? locState.txReq.to : dest;
-      tAmount = ethers.utils.formatEther(BigNumber.from(locState.txReq.value).toString());
-      data = locState.txReq.data ? locState.txReq.data.toString() : data;
+      setTo(locState.txReq.to ? locState.txReq.to : to);
+      setAmount(ethers.utils.formatEther(BigNumber.from(locState.txReq.value).toString()));
+      setData(locState.txReq.data ? locState.txReq.data.toString() : data);
     } else if (locState.dest && locState.amount) {
-      dest = locState.dest;
-      tAmount = locState.amount;
+      setTo(locState.dest);
+      setAmount(locState.amount);
       action = 'Replace';
     }
     if (locState.data) {
-      data = locState.data;
+      setData(locState.data);
     }
   }
 
@@ -358,14 +389,14 @@ const CreateTransaction = function CreateTransaction(props: TransactionAction) {
       <div className="field-entry">
         <div className="form-group">
           <label className="col-form-label mt-4" htmlFor="toAddress">To</label>
-          <input type="text" className="form-control" defaultValue={dest} id="toAddress" onChange={() => onAddressInput()} />
+          <input type="text" className="form-control" defaultValue={to} id="toAddress" onChange={() => onAddressInput()} />
           <div id="to-feedback" className="" />
         </div>
         <div className="form-group">
           <label htmlFor="amount" className="form-label mt-4">Amount</label>
           <div className="form-group">
             <div className="input-group mb-3">
-              <input type="text" className="form-control" id="amount" defaultValue={tAmount} aria-label="Amount" onChange={onAmountInput} />
+              <input type="text" className="form-control" id="amount" value={amount} aria-label="Amount" onChange={onAmountInput} />
               <span className="input-group-text">ETH</span>
               <div id="amt-feedback" className="" />
             </div>

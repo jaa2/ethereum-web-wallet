@@ -252,6 +252,8 @@ const SimulationResults = function SimulationResults() {
   const [sendButtonEnabled, setSendButtonEnabled]:
   [boolean, (state: boolean) => void] = React.useState<boolean>(true);
 
+  const { originRequestId } = useLocation().state;
+
   const onSendTransaction = async (txReq: TransactionRequest) => {
     setSendButtonEnabled(false);
     const pendingTxStore = await UserState.getPendingTxStore();
@@ -270,6 +272,16 @@ const SimulationResults = function SimulationResults() {
         try {
           const tResp: TransactionResponse = await wallet.sendTransaction(txReq);
           await pendingTxStore.addPendingTransaction(tResp, true);
+
+          // Send sendTransaction response to background
+          browser.runtime.sendMessage(undefined, {
+            type: 'sendTransactionResponse',
+            data: {
+              originRequestId,
+              hash: tResp.hash,
+            },
+          });
+
           navigate('/Home');
         } catch (err:any) {
           let errMsg = err.message;
