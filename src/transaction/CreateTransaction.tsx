@@ -21,7 +21,6 @@ import {
 import { BackgroundWindowInterface } from '../../background/background';
 import AddressBox from '../common/AddressBox';
 import UserState from '../common/UserState';
-import HelpModal, { IHelpModalProps } from '../common/HelpModal';
 import LoadingButton, { ILoadingButtonProps } from '../common/LoadingButton';
 import SimulationSendTransactions from '../SimulationSendTransactions';
 import SimulationSuite from '../SimulationSuite';
@@ -318,15 +317,10 @@ const CreateTransaction = function CreateTransaction(props: TransactionAction) {
     }
   }
 
-  const simulationModalProps: IHelpModalProps = {
-    title: 'Simulation',
-    description: 'A simulation is a speculative process of taking the inputted parameters of a transaction and showing how it would fare under an ideal scenario. There is no risk nor cost to simulating a transaction.',
-  };
-
   const loadingTestButtonProps: ILoadingButtonProps = {
     buttonId: 'test-button',
-    buttonClasses: ['btn', 'btn-info'],
-    buttonText: 'Test Transaction',
+    buttonClasses: ['btn', 'btn-info', 'btn-long'],
+    buttonText: 'Next',
     buttonOnClick: onTestTransaction,
     buttonEnabled: testButtonEnabled,
   };
@@ -378,36 +372,21 @@ const CreateTransaction = function CreateTransaction(props: TransactionAction) {
         </div>
         <DataField initialData={data} />
       </div>
-      {action === 'Send'
-        && (
-        <div className="bottom-options">
+      <div className="bottom-options">
+        {action === 'Send' && (
           <Link className="back-icon" to="/Home">
             <FontAwesomeIcon className="fa-icon" icon={faArrowCircleLeft} size="2x" />
           </Link>
-          <span>
-            <LoadingButton {...loadingTestButtonProps} /> {/* eslint-disable-line */}
-            <HelpModal
-              title={simulationModalProps.title}
-              description={simulationModalProps.description}
-            />
-          </span>
-        </div>
         )}
-      {action === 'Replace'
-        && (
-        <div className="bottom-options">
+        {action === 'Replace' && (
           <Link to="/Home">
             <button type="button" className="btn btn-primary">Discard Changes</button>
           </Link>
-          <span>
-            <LoadingButton {...loadingTestButtonProps} /> {/* eslint-disable-line */}
-            <HelpModal
-              title={simulationModalProps.title}
-              description={simulationModalProps.description}
-            />
-          </span>
-        </div>
         )}
+        <span>
+            <LoadingButton {...loadingTestButtonProps} /> {/* eslint-disable-line */}
+        </span>
+      </div>
       <div className="position-fixed bottom-0 end-0 p-3" data-style="z-index:1">
         <div className="toast hide" id="errToast" role="alert" aria-live="assertive" aria-atomic="true">
           <div className="toast-header">
