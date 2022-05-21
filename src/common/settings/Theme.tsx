@@ -1,8 +1,8 @@
 import browser from 'webextension-polyfill';
 
 const themeStorageKey: string = 'theme';
-const lightThemeUrl: string = 'https://bootswatch.com/5/lux/bootstrap.min.css';
-const darkThemeUrl: string = 'https://bootswatch.com/5/darkly/bootstrap.min.css';
+const lightThemeUrl: string = 'themes/lux/bootstrap.min.css';
+const darkThemeUrl: string = 'themes/darkly/bootstrap.min.css';
 
 let currentTheme: string = 'light';
 
