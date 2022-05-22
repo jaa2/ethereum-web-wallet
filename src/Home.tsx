@@ -203,9 +203,12 @@ interface TransactionEntry {
   hash: string;
 }
 
-const AddressTruncate = (address: string | undefined) => {
+const AddressTruncate = (address: string | undefined | null) => {
   if (address === undefined) {
     return '';
+  }
+  if (address === null) {
+    return '[Contract Deployment]';
   }
 
   return `${address.substring(0, 6)}...${address.substring(address.length - 4)}`;
