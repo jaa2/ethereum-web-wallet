@@ -105,6 +105,7 @@ const ProfileSettings = function ProfileSettings() {
                 </div>
               </fieldset>
               <Toggle config={config} configKey="showDataField" label="Show Data Field" />
+              <Link to="/AddProviderNetwork">Add Network</Link>
             </div>
           </div>
         </div>
