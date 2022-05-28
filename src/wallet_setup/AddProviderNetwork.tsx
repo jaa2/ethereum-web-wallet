@@ -4,14 +4,15 @@ import { useNavigate } from 'react-router';
 import './CommonScreen.scss';
 import React from 'react';
 
-async function addNetwork(name: string, rpcUrl: string, networkID: number) {
-  console.log(name, rpcUrl, networkID); // eslint-disable-line
+async function addNetwork(name: string, networkID: number, rpcUrl: string, explorerURL?: string) {
+  console.log(name, networkID, rpcUrl, explorerURL); // eslint-disable-line
 }
 
 export default function AddProviderNetwork() {
   const navigate = useNavigate();
   const [name, setName]: [string, (name: string) => void] = React.useState<string>('');
   const [url, setURL]: [string, (url: string) => void] = React.useState<string>('');
+  const [explorerURL, setExplorerURL]: [string, (url: string) => void] = React.useState<string>('');
   const [networkID, setNetworkID]:
   [number, (networkID: number) => void] = React.useState<number>(1);
   return (
@@ -24,7 +25,7 @@ export default function AddProviderNetwork() {
         className="container-md mt-2"
         onSubmit={(event: React.FormEvent<HTMLFormElement>) => {
           event.preventDefault();
-          addNetwork(name, url, networkID)
+          addNetwork(name, networkID, url, explorerURL !== '' ? explorerURL : undefined)
             // Close modal
             .then(() => navigate(-1));
         }}
@@ -40,6 +41,23 @@ export default function AddProviderNetwork() {
             placeholder="Name"
             onChange={
             (event: React.ChangeEvent<HTMLInputElement>) => setName(event.target.value)
+          }
+            required
+          />
+        </div>
+        <div className="form-group mb-3">
+          <label className="form-label" htmlFor="network-id">
+            Network ID
+          </label>
+          <input
+            type="number"
+            min="0"
+            step="1"
+            id="network-id"
+            className="form-control"
+            placeholder="1"
+            onChange={
+            (event: React.ChangeEvent<HTMLInputElement>) => setNetworkID(Number(event.target.value))
           }
             required
           />
@@ -61,19 +79,16 @@ export default function AddProviderNetwork() {
         </div>
         <div className="form-group mb-3">
           <label className="form-label" htmlFor="network-id">
-            Network ID
+            Explorer URL (Optional)
           </label>
           <input
-            type="number"
-            min="0"
-            step="1"
-            id="network-id"
+            type="url"
+            id="explorer-url"
             className="form-control"
-            placeholder="1"
+            placeholder="http://..."
             onChange={
-            (event: React.ChangeEvent<HTMLInputElement>) => setNetworkID(Number(event.target.value))
+            (event: React.ChangeEvent<HTMLInputElement>) => setExplorerURL(event.target.value)
           }
-            required
           />
         </div>
         <button className="btn btn-info" type="submit">Add Network</button>
