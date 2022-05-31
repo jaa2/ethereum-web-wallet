@@ -70,7 +70,7 @@ export default function AddProviderNetwork() {
             type="url"
             id="rpc-url"
             className="form-control"
-            placeholder="http://..."
+            placeholder="https://..."
             onChange={
             (event: React.ChangeEvent<HTMLInputElement>) => setURL(event.target.value)
           }
@@ -85,7 +85,7 @@ export default function AddProviderNetwork() {
             type="url"
             id="explorer-url"
             className="form-control"
-            placeholder="http://..."
+            placeholder="https://..."
             onChange={
             (event: React.ChangeEvent<HTMLInputElement>) => setExplorerURL(event.target.value)
           }

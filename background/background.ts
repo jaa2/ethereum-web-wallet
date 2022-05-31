@@ -1,7 +1,9 @@
-import { EtherscanProvider, Provider } from '@ethersproject/providers';
+import {
+  JsonRpcProvider, WebSocketProvider, EtherscanProvider, Provider,
+} from '@ethersproject/providers';
 import { Wallet } from 'ethers';
 import browser from 'webextension-polyfill';
-import ProviderNetwork, { getProviderNetworks } from '../src/common/ProviderNetwork';
+import ProviderNetwork, { ConnectionType, getProviderNetworks } from '../src/common/ProviderNetwork';
 import PendingTransactionStore from './PendingTransactionStore';
 import WalletState from './WalletState';
 import { WalletStorage } from './WalletStorage';
@@ -30,22 +32,50 @@ window.stateObj = {
   selectedNetwork: undefined,
 };
 
+async function changeNetwork(network: ProviderNetwork) {
+  if (window.stateObj.provider !== null) {
+    console.log(window.stateObj.provider.listenerCount());
+    window.stateObj.provider.removeAllListeners();
+  }
+  switch (network.connectionType) {
+    case ConnectionType.JSON_RPC:
+      if (network.address === undefined) {
+        throw new Error('Undefined network address for a JSON-RPC connection type');
+      }
+      window.stateObj.provider = new JsonRpcProvider(network.address);
+      break;
+    case ConnectionType.WEBSOCKET:
+      if (network.address === undefined) {
+        throw new Error('Undefined network address for a WebSocket connection type');
+      }
+      window.stateObj.provider = new WebSocketProvider(network.address);
+      break;
+    case ConnectionType.ETHERSCAN_API:
+      window.stateObj.provider = new EtherscanProvider(network.internalName, 'AZ8GS7UXX1A8MZX9ZH2Q1K3H9DPZXB2F68');
+      break;
+    default:
+      throw new Error('changeNetwork: Unknown connection type');
+  }
+  window.stateObj.selectedNetwork = { ...network };
+  await browser.storage.local.set({
+    currentNetworkName: network.internalName,
+  });
+}
+
+window.changeNetwork = changeNetwork;
+
 window.stateObj.walletState.loadEncrypted()
   .catch((reason: string) => {
     const myConsole: Console = console;
     myConsole.warn(`[Background] Could not load encrypted: ${reason}`);
   });
-window.stateObj.provider = new EtherscanProvider('ropsten', 'AZ8GS7UXX1A8MZX9ZH2Q1K3H9DPZXB2F68');
-
-// Load pending transactions
-window.stateObj.pendingTransactionStore.load(window.stateObj.provider);
 
 window.connectWallet = async () => {
   window.stateObj.walletState.currentWallet = (await
   window.stateObj.walletState.getWallet() as Wallet).connect(window.stateObj.provider as Provider);
 };
 
-async function getSavedNetwork() {
+async function getSavedNetwork(loadPendingTransactions: boolean = false) {
   const record = await browser.storage.local.get('currentNetworkName');
   let selectedNetworkIndex: number = 0;
   if ('currentNetworkName' in record) {
@@ -60,18 +90,11 @@ async function getSavedNetwork() {
     }
   }
 
-  window.stateObj.selectedNetwork = getProviderNetworks()[selectedNetworkIndex];
-  window.stateObj.provider = new EtherscanProvider(
-    window.stateObj.selectedNetwork.internalName,
-    'AZ8GS7UXX1A8MZX9ZH2Q1K3H9DPZXB2F68',
-  );
-}
-getSavedNetwork();
+  await changeNetwork(getProviderNetworks()[selectedNetworkIndex]);
 
-window.changeNetwork = async (network: ProviderNetwork) => {
-  window.stateObj.provider = new EtherscanProvider(network.internalName, 'AZ8GS7UXX1A8MZX9ZH2Q1K3H9DPZXB2F68');
-  window.stateObj.selectedNetwork = { ...network };
-  await browser.storage.local.set({
-    currentNetworkName: network.internalName,
-  });
-};
+  if (loadPendingTransactions) {
+    window.stateObj.pendingTransactionStore.load(window.stateObj.provider);
+  }
+}
+
+getSavedNetwork();
