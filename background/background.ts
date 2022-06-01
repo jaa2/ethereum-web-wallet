@@ -34,7 +34,6 @@ window.stateObj = {
 
 async function changeNetwork(network: ProviderNetwork) {
   if (window.stateObj.provider !== null) {
-    console.log(window.stateObj.provider.listenerCount());
     window.stateObj.provider.removeAllListeners();
   }
   switch (network.connectionType) {
