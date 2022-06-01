@@ -1,0 +1,18 @@
+@import '../common/colors';
+
+.top-container {
+    margin: auto;
+    padding: 10px;
+  
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+    text-align: center;
+    .back-icon {
+      align-self: flex-start;
+    }
+  
+    .fa-icon {
+      color: $icon-color;
+    }
+}

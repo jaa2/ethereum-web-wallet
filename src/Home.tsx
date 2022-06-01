@@ -298,7 +298,9 @@ const Home = function Home() {
             provider.getTransaction(txHash)
               .then((res: TransactionResponse) => {
                 if (res !== null && res.blockNumber !== null) {
-                  currentTransactions.push(res);
+                  const newCurrentTransactionsList = currentTransactions.slice(0);
+                  newCurrentTransactionsList.push(res);
+                  setCurrentTransactions(newCurrentTransactionsList);
                   setPendingTransactions(pendingTransactions.filter((tx) => (tx.hash !== txHash)));
                 }
               });

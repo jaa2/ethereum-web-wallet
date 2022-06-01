@@ -1,5 +1,5 @@
 import React, { ReactElement, useEffect } from 'react';
-import { getProviderNetworks } from './ProviderNetwork';
+import ProviderNetwork, { getProviderNetworks } from './ProviderNetwork';
 import UserState from './UserState';
 
 export interface IHelpModalProps {
@@ -16,34 +16,42 @@ function changeNetwork(newNetwork: string) {
   if (newNetwork === '') {
     return;
   }
-  UserState.getBackgroundWindow()
-    .then((window) => window.changeNetwork(getProviderNetworks().filter(
-      (network) => network.internalName === newNetwork,
-    )[0]))
-    .then(() => {
-      window.location.reload();
-    });
+  (async function doChangeNetwork() {
+    const backgroundWindow = await UserState.getBackgroundWindow();
+    await backgroundWindow.changeNetwork((await getProviderNetworks()).filter(
+      (network) => network.displayName === newNetwork,
+    )[0]);
+    window.location.reload();
+  }());
 }
 
 const ProviderSelect = function ProviderSelect() {
   const [selectedNetwork, setSelectedNetwork] = React.useState<string>();
+  const [networks, setNetworks] = React.useState<ProviderNetwork[]>([]);
 
   useEffect(() => {
-    UserState.getBackgroundWindow().then((window) => {
-      const network = window.stateObj.selectedNetwork;
-      if (network !== undefined) {
-        setSelectedNetwork(network.internalName);
-      }
-    });
+    getProviderNetworks().then((providerNetworks) => {
+      setNetworks(providerNetworks);
+    })
+      .then(() => {
+        UserState.getBackgroundWindow().then((window) => {
+          const network = window.stateObj.selectedNetwork;
+          if (network !== undefined) {
+            setSelectedNetwork(network.displayName);
+          }
+        });
+      });
   }, []);
 
-  const networks = getProviderNetworks();
+  useEffect(() => {
+  }, []);
+
   const options: Array<ReactElement> = [];
   for (let i = 0; i < networks.length; i += 1) {
     options.push(
       <option
-        value={networks[i].internalName}
-        selected={networks[i].internalName === selectedNetwork}
+        value={networks[i].displayName}
+        selected={networks[i].displayName === selectedNetwork}
       >
         {networks[i].displayName}
       </option>,

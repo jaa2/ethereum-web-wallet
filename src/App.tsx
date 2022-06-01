@@ -10,6 +10,7 @@ import CreatePassword from './wallet_setup/CreatePassword';
 import ImportPrivateKey from './wallet_setup/ImportPrivateKey';
 import ImportSecretPhrase from './wallet_setup/ImportSecretPhrase';
 import WalletSetup from './wallet_setup/WalletSetup';
+import AddProviderNetwork from './wallet_setup/AddProviderNetwork';
 
 import Home from './Home';
 import ProfileSettings from './common/settings/ProfileSettings';
@@ -49,6 +50,7 @@ const App = function App() {
           <Route path="/ImportPrivateKey" element={<ImportPrivateKey />} />
           <Route path="/ImportSecretPhrase" element={<ImportSecretPhrase />} />
           <Route path="/WalletSetup" element={<WalletSetup />} />
+          <Route path="/AddProviderNetwork" element={<AddProviderNetwork />} />
 
           <Route path="/Home" element={<Home />} />
           <Route path="/ProfileSettings" element={<ProfileSettings />} />
