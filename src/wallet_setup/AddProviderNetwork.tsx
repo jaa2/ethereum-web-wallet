@@ -1,11 +1,19 @@
 import { faArrowCircleLeft } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useNavigate } from 'react-router';
-import './CommonScreen.scss';
 import React from 'react';
+import './CommonScreen.scss';
+import ProviderNetwork, { ConnectionType, addProviderNetwork } from '../common/ProviderNetwork';
 
 async function addNetwork(name: string, networkID: number, rpcUrl: string, explorerURL?: string) {
-  console.log(name, networkID, rpcUrl, explorerURL); // eslint-disable-line
+  const pn: ProviderNetwork = {
+    displayName: name,
+    connectionType: ConnectionType.JSON_RPC,
+    networkID,
+    address: rpcUrl,
+    explorerURL,
+  };
+  await addProviderNetwork(pn);
 }
 
 export default function AddProviderNetwork() {

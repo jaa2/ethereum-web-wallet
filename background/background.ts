@@ -58,7 +58,7 @@ async function changeNetwork(network: ProviderNetwork) {
   }
   window.stateObj.selectedNetwork = { ...network };
   await browser.storage.local.set({
-    currentNetworkName: network.internalName,
+    currentNetworkName: network.displayName,
   });
 }
 
@@ -81,16 +81,16 @@ async function getSavedNetwork(loadPendingTransactions: boolean = false) {
   if ('currentNetworkName' in record) {
     // Find network by name
     const selectedNetworkName: string = record.currentNetworkName;
-    const possibleNetworks = getProviderNetworks();
+    const possibleNetworks = await getProviderNetworks();
     for (let i = 0; i < possibleNetworks.length; i += 1) {
-      if (possibleNetworks[i].internalName === selectedNetworkName) {
+      if (possibleNetworks[i].displayName === selectedNetworkName) {
         selectedNetworkIndex = i;
         break;
       }
     }
   }
 
-  await changeNetwork(getProviderNetworks()[selectedNetworkIndex]);
+  await changeNetwork((await getProviderNetworks())[selectedNetworkIndex]);
 
   if (loadPendingTransactions) {
     window.stateObj.pendingTransactionStore.load(window.stateObj.provider);
