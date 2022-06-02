@@ -44,6 +44,12 @@ Promise<any> {
         return window.stateObj.provider.getBlockNumber();
       }
       break;
+    case 'eth_getBalance':
+      if (window.stateObj.provider !== null) {
+        return window.stateObj.provider.getBalance(...args.params)
+          .then((number) => number.toHexString());
+      }
+      break;
     case 'net_version':
       if (window.stateObj.provider !== null) {
         return (window.stateObj.provider.getNetwork()).then((network) => network.chainId);
