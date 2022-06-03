@@ -2,6 +2,12 @@ import { Wallet } from '@ethersproject/wallet';
 import { ethers, Signer, VoidSigner } from 'ethers';
 import { storageVersion, WalletStorage } from './WalletStorage';
 
+export enum WalletType {
+  Unknown = -1,
+  KeystoreWallet = 0,
+  NonSigningWallet = 1,
+}
+
 /**
  * A class that abstracts loading and handling the user's wallet
  * - Creating a wallet and encrypting it with a password
@@ -13,10 +19,12 @@ export default class WalletState {
   storageArea: WalletStorage;
 
   // If non-null, a valid wallet object is available
-  currentWallet: Wallet | null = null;
+  currentWallet: VoidSigner | Wallet | null = null;
 
   // If true, the encrypted local storage contents have been loaded into memory
   isStateLoaded: boolean = false;
+
+  walletType: WalletType = WalletType.Unknown;
 
   // Stores the encrypted wallet JSON, if it has been loaded
   encryptedWalletJSON: string | null = null;
@@ -49,7 +57,7 @@ export default class WalletState {
      * This function is dangerous, as the object it returns can be used to sign transactions.
      * @returns A wallet object, if it exists
      */
-  async getWallet(): Promise<Wallet | null> {
+  async getWallet(): Promise<VoidSigner | Wallet | null> {
     return this.currentWallet;
   }
 
@@ -60,15 +68,25 @@ export default class WalletState {
   async getWalletSafe(): Promise<Signer | null> {
     if (this.currentWallet !== null) {
       return new VoidSigner(this.currentWallet.address);
-    } if (this.encryptedWalletJSON !== null) {
-      try {
-        const jobj: any = JSON.parse(this.encryptedWalletJSON);
-        if ('address' in jobj) {
-          return new VoidSigner(jobj.address as string);
-        }
-      } catch (e) {
+    }
+    switch (this.walletType) {
+      case WalletType.Unknown:
         return null;
-      }
+      case WalletType.KeystoreWallet:
+      case WalletType.NonSigningWallet:
+        if (this.encryptedWalletJSON !== null) {
+          try {
+            const jobj: any = JSON.parse(this.encryptedWalletJSON);
+            if ('address' in jobj) {
+              return new VoidSigner(jobj.address as string);
+            }
+          } catch (e) {
+            return null;
+          }
+        }
+        break;
+      default:
+        return null;
     }
     return null;
   }
@@ -94,7 +112,24 @@ export default class WalletState {
         if (val.storageVersion !== storageVersion) {
           return Promise.reject(new Error('Storage version incompatible'));
         }
-        this.encryptedWalletJSON = val.currentWallet;
+        const walletInfo = val.currentWallet;
+        if (!('type' in walletInfo)) {
+          return Promise.reject(new Error('Wallet type not found'));
+        }
+        const walletType = walletInfo.type as WalletType;
+        this.walletType = walletType;
+        switch (walletType) {
+          case WalletType.KeystoreWallet:
+            this.encryptedWalletJSON = walletInfo.walletData;
+            break;
+          case WalletType.NonSigningWallet:
+            this.encryptedWalletJSON = walletInfo.walletData;
+            this.currentWallet = new VoidSigner(walletInfo.walletData.address);
+            break;
+          default:
+            return Promise.reject(new Error(`Wallet type unknown: ${walletType.toString()}`));
+        }
+
         this.isStateLoaded = true;
         return Promise.resolve();
       })
@@ -123,6 +158,7 @@ export default class WalletState {
       .then((wallet) => {
         // Success!
         this.currentWallet = wallet;
+        this.walletType = WalletType.KeystoreWallet;
       });
   }
 
@@ -143,6 +179,7 @@ export default class WalletState {
     } else {
       this.currentWallet = new ethers.Wallet(privateKey);
     }
+    this.walletType = WalletType.KeystoreWallet;
     return true;
   }
 
@@ -159,40 +196,79 @@ export default class WalletState {
 
     // Create the new wallet
     this.currentWallet = ethers.Wallet.fromMnemonic(phrase);
+    this.walletType = WalletType.KeystoreWallet;
     return true;
   }
 
   /**
-     * Encrypts the wallet object and saves it to the storage area
+   * Creates a non-signing wallet from an address
+   * @param overwrite If true, the wallet object will be saved even if one already exists
+   * @param address Address that the non-signing wallet refers to
+   * @returns true if the action succeeded following the overwrite argument
+   */
+  async createNonSigningWallet(overwrite: boolean, address: string): Promise<boolean> {
+    if (!overwrite && (await this.willOverwrite())) {
+      return false;
+    }
+    this.currentWallet = new VoidSigner(address);
+    this.walletType = WalletType.NonSigningWallet;
+    return true;
+  }
+
+  /**
+     * Encrypts the wallet object if necessary and saves it to the storage area
      * @param overwrite If true, the wallet object will be saved even if one already exists
-     * @param password Password to encrypt the wallet with
+     * @param password Password to encrypt the wallet with; only used for encrypted wallet types
      * @returns true if the action succeeded following the overwrite argument
      */
-  async saveEncryptedWallet(overwrite: boolean, password: string): Promise<boolean> {
+  async saveWallet(overwrite: boolean, password: string): Promise<boolean> {
     if (this.currentWallet === null || (!overwrite && (await this.willOverwrite()))) {
       return false;
     }
 
     // Save the new wallet
-    const encryptedWalletJSON = await this.currentWallet.encrypt(password, {
-      scrypt: {
-        N: 131072 / 4,
-      },
-    });
-    await this.storageArea.set({
-      storageVersion,
-      currentWallet: encryptedWalletJSON,
-    });
+    if (this.currentWallet instanceof Wallet) {
+      const encryptedWalletJSON = await this.currentWallet.encrypt(password, {
+        scrypt: {
+          N: 131072 / 4,
+        },
+      });
+      const walletJSON = {
+        type: WalletType.KeystoreWallet,
+        walletData: encryptedWalletJSON,
+      };
+      await this.storageArea.set({
+        storageVersion,
+        currentWallet: walletJSON,
+      });
+    } else if (this.currentWallet instanceof VoidSigner) {
+      const walletJSON = {
+        type: WalletType.NonSigningWallet,
+        walletData: {
+          address: this.currentWallet.address,
+        },
+      };
+      await this.storageArea.set({
+        storageVersion,
+        currentWallet: walletJSON,
+      });
+    }
     return true;
   }
 
   /**
    * "Locks" a wallet by clearing the currentWallet variable.
    * @returns true if a wallet was locked, false if no wallet was available to be locked
+   * Note: Non-signing wallets cannot be "locked", and for them this function will return true
    */
   lockWallet(): boolean {
     if (this.currentWallet !== null) {
+      if (this.currentWallet instanceof VoidSigner) {
+        // Non-signing wallets are not locked
+        return true;
+      }
       this.currentWallet = null;
+      this.walletType = WalletType.Unknown;
       return true;
     }
     return false;
@@ -205,6 +281,7 @@ export default class WalletState {
   async deleteWallet(): Promise<void> {
     await this.storageArea.remove('currentWallet');
     this.currentWallet = null;
+    this.walletType = WalletType.Unknown;
     this.encryptedWalletJSON = null;
     this.isStateLoaded = false;
   }

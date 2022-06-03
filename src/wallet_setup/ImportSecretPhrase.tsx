@@ -5,7 +5,7 @@ import { faArrowCircleLeft, faCloudUploadAlt } from '@fortawesome/free-solid-svg
 
 import './ImportSecretPhrase.scss';
 import React, { ChangeEvent } from 'react';
-import { ethers, Wallet } from 'ethers';
+import { ethers } from 'ethers';
 import browser from 'webextension-polyfill';
 import { BackgroundWindowInterface } from '../../background/background';
 
@@ -14,7 +14,7 @@ async function ValidSecretPhrase(secretPhrase: string): Promise<boolean> {
   const backgroundWindow: BackgroundWindowInterface = await browser.runtime.getBackgroundPage();
   const { walletState } = backgroundWindow.stateObj;
   const walletCreated: boolean = await walletState.createWalletFromPhrase(false, secretPhrase);
-  const wallet: Wallet | null = !walletCreated ? null : await walletState.getWallet();
+  const wallet = !walletCreated ? null : await walletState.getWallet();
   return (walletCreated && wallet !== null);
 }
 

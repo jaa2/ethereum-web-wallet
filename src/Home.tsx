@@ -14,6 +14,7 @@ import {
 import { Modal } from 'react-bootstrap';
 
 import PendingTransactionStore from 'background/PendingTransactionStore';
+import WalletState from '../background/WalletState';
 import { BackgroundWindowInterface } from '../background/background';
 import { getCancelTransaction } from './common/TransactionReplacement';
 import { UserAddressBox } from './common/AddressBox';
@@ -22,7 +23,6 @@ import OpenNewWindow from './common/OpenNewWindow';
 import UserState from './common/UserState';
 
 import './Home.scss';
-import WalletState from '../background/WalletState';
 import currentETHtoUSD from './common/UnitConversion';
 import SimulationSuite from './SimulationSuite';
 import ProviderSelect from './common/ProviderSelect';
@@ -318,7 +318,7 @@ const Home = function Home() {
   const lockWallet = () => {
     UserState.getWalletState().then((state) => {
       state.lockWallet();
-      navigate('/Unlock');
+      navigate('/ExistingWallet');
     });
   };
 
