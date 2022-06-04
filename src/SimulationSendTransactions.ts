@@ -188,16 +188,5 @@ class SimulationSendTransactions {
       throw new Error(e as string);
     }
   }
-
-  /**
-   * Sends a transaction
-   * @param t Transaction to send
-   * @returns the transaction hash and the promise from sending t
-   */
-  async sendTransaction(t: Transaction) {
-    const tHash = String(t.hash);
-    const response = await this.provider.sendTransaction(tHash);
-    return { hash: tHash, response };
-  }
 }
 export default SimulationSendTransactions;
