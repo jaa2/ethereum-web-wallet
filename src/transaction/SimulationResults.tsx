@@ -316,6 +316,9 @@ const SimulationResults = function SimulationResults() {
         toast!.className = 'toast hide';
       }, 3000);
     }
+
+    // Show button when an error occurs
+    setSendButtonEnabled(true);
   };
 
   const gasModalProps: IHelpModalProps = {
