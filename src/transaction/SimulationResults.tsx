@@ -1,6 +1,3 @@
-/* eslint-disable jsx-a11y/control-has-associated-label */
-/* eslint-disable react/destructuring-assignment */
-/* eslint-disable react/prop-types */
 import {
   BigNumber, BigNumberish, ethers,
 } from 'ethers';
@@ -24,7 +21,6 @@ import HelpModal, { IHelpModalProps } from '../common/HelpModal';
 import LoadingButton, { ILoadingButtonProps } from '../common/LoadingButton';
 import SimulationSendTransactions from '../SimulationSendTransactions';
 import UserState from '../common/UserState';
-// import WalletState from '../../background/WalletState';
 
 import './SimulationResults.scss';
 
@@ -43,17 +39,6 @@ async function getTransactionController() {
 }
 
 /**
- * Grabs the wallet's provider
- * @returns the provider from wallet state
- */
-// async function getProvider() {
-//   const window: BackgroundWindowInterface = await browser.runtime.getBackgroundPage();
-//   const state = window.stateObj;
-//   const provider = state.provider as Provider;
-//   return provider;
-// }
-
-/**
  * Returns true by checking if all simulation checks passed
  * @param simulationChecks simulation checks with simulation check as key and boolean as value
  * @returns true if simulationChecks match the function description
@@ -70,7 +55,7 @@ function areAllSimulationsPassed(simulationChecks:Map<string, Boolean>):Boolean 
 }
 
 const GasOptions = function GasOptions(props:
-{ t:
+{ tRequest:
 { gasLimit: any;
   maxFeePerGas: ethers.BigNumberish;
   maxPriorityFeePerGas: ethers.BigNumberish;
@@ -82,6 +67,8 @@ modalToSimulationResults: (arg0: ethers.providers.TransactionRequest,
   const showModal = () => {
     setIsOpen(true);
   };
+
+  const { modalToSimulationResults, tRequest } = props;
 
   const hideModal = async (hasEditedGas: Boolean) => {
     if (hasEditedGas) {
@@ -109,7 +96,6 @@ modalToSimulationResults: (arg0: ethers.providers.TransactionRequest,
       const isValidMpfpg = gasFeesRegex.test(mpfpgValue);
 
       if (isValidGasLimit && isValidMfpg && isValidMpfpg) {
-        const tRequest = props.t;
         tRequest.gasLimit = BigNumber.from(gasLimitValue);
         tRequest.maxFeePerGas = ethers.utils.parseUnits(mfpgValue, 'gwei');
         tRequest.maxPriorityFeePerGas = ethers.utils.parseUnits(mpfpgValue, 'gwei');
@@ -119,9 +105,8 @@ modalToSimulationResults: (arg0: ethers.providers.TransactionRequest,
         const checksAndTx = await transactionController.simulateTransaction(tRequest, wallet);
         // TODO: fix gas-related simulation tests and then replace true with passedAllSimulations
         const passedAllSimulations = areAllSimulationsPassed(checksAndTx.simulationChecks);
-        // console.log(passedAllSimulations);
         if (passedAllSimulations) {
-          props.modalToSimulationResults(checksAndTx.t, checksAndTx.simulationChecks);
+          modalToSimulationResults(checksAndTx.t, checksAndTx.simulationChecks);
           setIsOpen(false);
         } else {
           // TODO: Need banner, notification, or snackbar indicating failed simulation checks
@@ -154,7 +139,7 @@ modalToSimulationResults: (arg0: ethers.providers.TransactionRequest,
           } else {
             // This will drop the modal and reupdate the page with all of the new fees
             // and simulation checks
-            props.modalToSimulationResults(checksAndTx.t, checksAndTx.simulationChecks);
+            modalToSimulationResults(checksAndTx.t, checksAndTx.simulationChecks);
             setIsOpen(false);
           }
         }
@@ -196,7 +181,7 @@ modalToSimulationResults: (arg0: ethers.providers.TransactionRequest,
             <div className="form-group">
               <label className="form-label mt-4" htmlFor="gas-limit"> Gas Limit</label>
               <div className="input-group mb-3">
-                <input id="gasLimit" type="text" className="form-control" defaultValue={BigNumber.from(props.t.gasLimit).toString()} />
+                <input id="gasLimit" type="text" className="form-control" defaultValue={BigNumber.from(tRequest.gasLimit).toString()} />
               </div>
               <label className="form-label mt-4" htmlFor="gas-limit"> Max fee per gas</label>
               <div className="input-group mb-3">
@@ -205,7 +190,7 @@ modalToSimulationResults: (arg0: ethers.providers.TransactionRequest,
                   type="text"
                   className="form-control"
                   aria-label="Amount (to the nearest dollar)"
-                  defaultValue={ethers.utils.formatUnits(props.t.maxFeePerGas, 'gwei')}
+                  defaultValue={ethers.utils.formatUnits(tRequest.maxFeePerGas, 'gwei')}
 
                 />
                 <span className="input-group-text">Gwei</span>
@@ -217,7 +202,7 @@ modalToSimulationResults: (arg0: ethers.providers.TransactionRequest,
                   type="text"
                   className="form-control"
                   aria-label="Amount (to the nearest dollar)"
-                  defaultValue={ethers.utils.formatUnits(props.t.maxPriorityFeePerGas, 'gwei')}
+                  defaultValue={ethers.utils.formatUnits(tRequest.maxPriorityFeePerGas, 'gwei')}
                 />
                 <span className="input-group-text">Gwei</span>
               </div>
@@ -418,7 +403,7 @@ const SimulationResults = function SimulationResults() {
                     </h5>
                   </p>
                   <GasOptions
-                    t={txReq}
+                    tRequest={txReq}
                     modalToSimulationResults={modalToSimulationResults}
                   />
                 </div>
