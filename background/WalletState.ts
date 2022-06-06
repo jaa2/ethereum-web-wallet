@@ -1,5 +1,6 @@
-import { Wallet } from '@ethersproject/wallet';
-import { ethers, Signer, VoidSigner } from 'ethers';
+import {
+  ethers, Signer, VoidSigner, Wallet,
+} from 'ethers';
 import { storageVersion, WalletStorage } from './WalletStorage';
 
 export enum WalletType {

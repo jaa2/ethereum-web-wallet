@@ -1,7 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-expressions */
-
-import { Wallet } from '@ethersproject/wallet';
-import { VoidSigner } from 'ethers';
+import { VoidSigner, Wallet } from 'ethers';
 import chai, { expect } from 'chai';
 import chaiAsPromised from 'chai-as-promised';
 import WalletState, { WalletType } from '../background/WalletState';
