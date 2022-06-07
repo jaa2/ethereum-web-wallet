@@ -25,6 +25,7 @@ import UserState from '../common/UserState';
 
 import './SimulationResults.scss';
 import ExternalSignerField from './ExternalSignerField';
+import { formatETHCost } from '../Units';
 
 /**
  * Checks if a value is an ExternallyOwedAccount
@@ -393,8 +394,11 @@ const SimulationResults = function SimulationResults() {
 
   const tAmount = ethers.utils.formatEther(data[0].value as BigNumberish).concat(' ETH');
   const maxGasFeeTitle = 'Max Gas Fee';
-  const totalGasFee = SimulationSendTransactions.totalGasFeeInETH(data[0])?.concat(' ETH');
-  const totalTransactionFee = SimulationSendTransactions.totalTransactionFeeInETH(data[0])?.concat(' ETH');
+  const totalGasFee = formatETHCost(SimulationSendTransactions.totalGasFeeInETH(data[0]), 6).concat(' ETH');
+  const totalTransactionFee = formatETHCost(
+    SimulationSendTransactions.totalGasFeeInETH(data[0])
+      .add(data[0].value ? data[0].value : BigNumber.from(0)),
+  ).concat(' ETH');
 
   let simulationStatus = 'Simulation Successful!';
   if (!areAllSimulationsPassed(simulationChecks)) {
