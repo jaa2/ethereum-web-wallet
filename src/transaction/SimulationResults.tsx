@@ -335,6 +335,9 @@ const SimulationResults = function SimulationResults() {
 
       setIsSendingTx(false);
     }
+
+    // Show button when an error occurs
+    setIsSendingTx(false);
   };
 
   const gasModalProps: IHelpModalProps = {
