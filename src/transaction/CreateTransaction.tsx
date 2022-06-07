@@ -323,6 +323,7 @@ const CreateTransaction = function CreateTransaction(props: TransactionAction) {
     buttonText: 'Next',
     buttonOnClick: onTestTransaction,
     buttonEnabled: testButtonEnabled,
+    spin: true,
   };
 
   return (

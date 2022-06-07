@@ -1,3 +1,4 @@
+import { ExternallyOwnedAccount } from '@ethersproject/abstract-signer';
 import {
   ethers, Signer, VoidSigner, Wallet,
 } from 'ethers';
@@ -7,6 +8,16 @@ export enum WalletType {
   Unknown = -1,
   KeystoreWallet = 0,
   NonSigningWallet = 1,
+}
+
+/**
+ * Checks if a value is an ExternallyOwedAccount
+ * @param value account to check
+ * @returns true if the value is an ExternallyOwnedAccount
+ */
+export function isAccount(value: any): value is ExternallyOwnedAccount {
+  return (value != null && ethers.utils.isHexString(value.privateKey, 32)
+    && value.address != null);
 }
 
 /**

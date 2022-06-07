@@ -1,5 +1,5 @@
 import {
-  BigNumber, BigNumberish, ethers,
+  BigNumber, BigNumberish, ethers, Transaction,
 } from 'ethers';
 import React, { useEffect } from 'react';
 import Modal from 'react-bootstrap/Modal';
@@ -9,6 +9,7 @@ import {
 import browser from 'webextension-polyfill';
 
 import { Provider, TransactionRequest } from '@ethersproject/abstract-provider';
+import { ExternallyOwnedAccount } from '@ethersproject/abstract-signer';
 import { TransactionResponse } from '@ethersproject/providers';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
@@ -23,6 +24,17 @@ import SimulationSendTransactions from '../SimulationSendTransactions';
 import UserState from '../common/UserState';
 
 import './SimulationResults.scss';
+import ExternalSignerField from './ExternalSignerField';
+
+/**
+ * Checks if a value is an ExternallyOwedAccount
+ * @param value account to check
+ * @returns true if the value is an ExternallyOwnedAccount
+ */
+export function isAccount(value: any): value is ExternallyOwnedAccount {
+  return (value != null && ethers.utils.isHexString(value.privateKey, 32)
+    && value.address != null);
+}
 
 /**
  * Get the object that can simulate and send a transaction
@@ -234,11 +246,13 @@ function createSimulationElements(simulationChecks:Map<string, Boolean>) {
 const SimulationResults = function SimulationResults() {
   const navigate: NavigateFunction = useNavigate();
 
-  const [sendButtonEnabled, setSendButtonEnabled]:
-  [boolean, (state: boolean) => void] = React.useState<boolean>(true);
+  const [isSendingTx, setIsSendingTx]:
+  [boolean, (state: boolean) => void] = React.useState<boolean>(false);
+  const [isExternalSigner, setIsExternalSigner] = React.useState<boolean>(false);
+  const [signedTx, setSignedTx] = React.useState<Transaction | null>(null);
 
   const onSendTransaction = async (txReq: TransactionRequest) => {
-    setSendButtonEnabled(false);
+    setIsSendingTx(true);
     const pendingTxStore = await UserState.getPendingTxStore();
     try {
       const wallet = await UserState.getConnectedWallet();
@@ -253,7 +267,23 @@ const SimulationResults = function SimulationResults() {
         }, 3000);
       } else {
         try {
-          const tResp: TransactionResponse = await wallet.sendTransaction(txReq);
+          let tResp: TransactionResponse;
+          if (!isExternalSigner) {
+            tResp = await wallet.sendTransaction(txReq);
+          } else if (signedTx !== null && wallet.provider) {
+            if (signedTx.r === undefined || signedTx.s === undefined || signedTx.v === undefined) {
+              throw new Error('Signed transaction must have r, s, and v values');
+            }
+            tResp = await wallet.provider.sendTransaction(
+              ethers.utils.serializeTransaction(signedTx, {
+                r: signedTx.r,
+                s: signedTx.s,
+                v: signedTx.v,
+              }),
+            );
+          } else {
+            throw new Error('Could not find a signed transaction to send');
+          }
           await pendingTxStore.addPendingTransaction(tResp, true);
           navigate('/Home');
         } catch (err:any) {
@@ -277,6 +307,8 @@ const SimulationResults = function SimulationResults() {
           setTimeout(() => {
             toast!.className = 'toast hide';
           }, 3000);
+
+          setIsSendingTx(false);
         }
       }
     } catch (e:any) {
@@ -300,6 +332,8 @@ const SimulationResults = function SimulationResults() {
       setTimeout(() => {
         toast!.className = 'toast hide';
       }, 3000);
+
+      setIsSendingTx(false);
     }
   };
 
@@ -364,6 +398,30 @@ const SimulationResults = function SimulationResults() {
     simulationStatus = 'Simulation Failed!';
   }
 
+  useEffect(() => {
+    UserState.getWalletState().then((ws) => {
+      if (!isAccount(ws.currentWallet)) {
+        setIsExternalSigner(true);
+      }
+    });
+  }, []);
+
+  let externalSignerField = null;
+  let sendButtonEnabled = !isSendingTx;
+  if (isExternalSigner) {
+    externalSignerField = (
+      <ExternalSignerField
+        tx={data[0]}
+        callback={
+        (tx: Transaction) => {
+          setSignedTx(tx);
+        }
+      }
+      />
+    );
+    sendButtonEnabled &&= (signedTx !== null);
+  }
+
   const loadingSendButtonProps: ILoadingButtonProps = {
     buttonId: 'send-button',
     buttonClasses: areAllSimulationsPassed(simulationChecks)
@@ -372,6 +430,7 @@ const SimulationResults = function SimulationResults() {
     buttonText: 'Send',
     buttonOnClick: () => onSendTransaction(data[0]),
     buttonEnabled: sendButtonEnabled,
+    spin: isSendingTx,
   };
 
   return (
@@ -442,6 +501,7 @@ const SimulationResults = function SimulationResults() {
           </div>
         )))}
       </div>
+      {externalSignerField}
       <h6>{' '}</h6>
       <h6>{' '}</h6>
       <div id="bottom-buttons">
