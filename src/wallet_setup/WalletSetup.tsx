@@ -2,7 +2,9 @@ import { Link } from 'react-router-dom';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEthereum } from '@fortawesome/free-brands-svg-icons';
-import { faCloudUploadAlt, faKey, faPlus } from '@fortawesome/free-solid-svg-icons';
+import {
+  faBinoculars, faCloudUploadAlt, faKey, faPlus,
+} from '@fortawesome/free-solid-svg-icons';
 
 import './WalletSetup.scss';
 
@@ -38,6 +40,13 @@ const WalletSetup = function WalletSetup() {
           </button>
         </Link>
       </div>
+
+      <Link to="/CreateNonSigningWallet">
+        <button type="button" className="btn btn-outline-secondary">
+          <FontAwesomeIcon className="fa-icon" icon={faBinoculars} size="3x" />
+          <p className="text-primary">Create Non-Signing Wallet</p>
+        </button>
+      </Link>
     </div>
   );
 };

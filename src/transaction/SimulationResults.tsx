@@ -1,8 +1,5 @@
-/* eslint-disable jsx-a11y/control-has-associated-label */
-/* eslint-disable react/destructuring-assignment */
-/* eslint-disable react/prop-types */
 import {
-  BigNumber, BigNumberish, ethers,
+  BigNumber, BigNumberish, ethers, Transaction,
 } from 'ethers';
 import React, { useEffect } from 'react';
 import Modal from 'react-bootstrap/Modal';
@@ -12,6 +9,7 @@ import {
 import browser from 'webextension-polyfill';
 
 import { Provider, TransactionRequest } from '@ethersproject/abstract-provider';
+import { ExternallyOwnedAccount } from '@ethersproject/abstract-signer';
 import { TransactionResponse } from '@ethersproject/providers';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
@@ -24,9 +22,19 @@ import HelpModal, { IHelpModalProps } from '../common/HelpModal';
 import LoadingButton, { ILoadingButtonProps } from '../common/LoadingButton';
 import SimulationSendTransactions from '../SimulationSendTransactions';
 import UserState from '../common/UserState';
-// import WalletState from '../../background/WalletState';
 
 import './SimulationResults.scss';
+import ExternalSignerField from './ExternalSignerField';
+
+/**
+ * Checks if a value is an ExternallyOwedAccount
+ * @param value account to check
+ * @returns true if the value is an ExternallyOwnedAccount
+ */
+export function isAccount(value: any): value is ExternallyOwnedAccount {
+  return (value != null && ethers.utils.isHexString(value.privateKey, 32)
+    && value.address != null);
+}
 
 /**
  * Get the object that can simulate and send a transaction
@@ -41,17 +49,6 @@ async function getTransactionController() {
 
   return transactionController;
 }
-
-/**
- * Grabs the wallet's provider
- * @returns the provider from wallet state
- */
-// async function getProvider() {
-//   const window: BackgroundWindowInterface = await browser.runtime.getBackgroundPage();
-//   const state = window.stateObj;
-//   const provider = state.provider as Provider;
-//   return provider;
-// }
 
 /**
  * Returns true by checking if all simulation checks passed
@@ -70,7 +67,7 @@ function areAllSimulationsPassed(simulationChecks:Map<string, Boolean>):Boolean 
 }
 
 const GasOptions = function GasOptions(props:
-{ t:
+{ tRequest:
 { gasLimit: any;
   maxFeePerGas: ethers.BigNumberish;
   maxPriorityFeePerGas: ethers.BigNumberish;
@@ -82,6 +79,8 @@ modalToSimulationResults: (arg0: ethers.providers.TransactionRequest,
   const showModal = () => {
     setIsOpen(true);
   };
+
+  const { modalToSimulationResults, tRequest } = props;
 
   const hideModal = async (hasEditedGas: Boolean) => {
     if (hasEditedGas) {
@@ -109,7 +108,6 @@ modalToSimulationResults: (arg0: ethers.providers.TransactionRequest,
       const isValidMpfpg = gasFeesRegex.test(mpfpgValue);
 
       if (isValidGasLimit && isValidMfpg && isValidMpfpg) {
-        const tRequest = props.t;
         tRequest.gasLimit = BigNumber.from(gasLimitValue);
         tRequest.maxFeePerGas = ethers.utils.parseUnits(mfpgValue, 'gwei');
         tRequest.maxPriorityFeePerGas = ethers.utils.parseUnits(mpfpgValue, 'gwei');
@@ -119,9 +117,8 @@ modalToSimulationResults: (arg0: ethers.providers.TransactionRequest,
         const checksAndTx = await transactionController.simulateTransaction(tRequest, wallet);
         // TODO: fix gas-related simulation tests and then replace true with passedAllSimulations
         const passedAllSimulations = areAllSimulationsPassed(checksAndTx.simulationChecks);
-        // console.log(passedAllSimulations);
         if (passedAllSimulations) {
-          props.modalToSimulationResults(checksAndTx.t, checksAndTx.simulationChecks);
+          modalToSimulationResults(checksAndTx.t, checksAndTx.simulationChecks);
           setIsOpen(false);
         } else {
           // TODO: Need banner, notification, or snackbar indicating failed simulation checks
@@ -154,7 +151,7 @@ modalToSimulationResults: (arg0: ethers.providers.TransactionRequest,
           } else {
             // This will drop the modal and reupdate the page with all of the new fees
             // and simulation checks
-            props.modalToSimulationResults(checksAndTx.t, checksAndTx.simulationChecks);
+            modalToSimulationResults(checksAndTx.t, checksAndTx.simulationChecks);
             setIsOpen(false);
           }
         }
@@ -196,7 +193,7 @@ modalToSimulationResults: (arg0: ethers.providers.TransactionRequest,
             <div className="form-group">
               <label className="form-label mt-4" htmlFor="gas-limit"> Gas Limit</label>
               <div className="input-group mb-3">
-                <input id="gasLimit" type="text" className="form-control" defaultValue={BigNumber.from(props.t.gasLimit).toString()} />
+                <input id="gasLimit" type="text" className="form-control" defaultValue={BigNumber.from(tRequest.gasLimit).toString()} />
               </div>
               <label className="form-label mt-4" htmlFor="gas-limit"> Max fee per gas</label>
               <div className="input-group mb-3">
@@ -205,7 +202,7 @@ modalToSimulationResults: (arg0: ethers.providers.TransactionRequest,
                   type="text"
                   className="form-control"
                   aria-label="Amount (to the nearest dollar)"
-                  defaultValue={ethers.utils.formatUnits(props.t.maxFeePerGas, 'gwei')}
+                  defaultValue={ethers.utils.formatUnits(tRequest.maxFeePerGas, 'gwei')}
 
                 />
                 <span className="input-group-text">Gwei</span>
@@ -217,7 +214,7 @@ modalToSimulationResults: (arg0: ethers.providers.TransactionRequest,
                   type="text"
                   className="form-control"
                   aria-label="Amount (to the nearest dollar)"
-                  defaultValue={ethers.utils.formatUnits(props.t.maxPriorityFeePerGas, 'gwei')}
+                  defaultValue={ethers.utils.formatUnits(tRequest.maxPriorityFeePerGas, 'gwei')}
                 />
                 <span className="input-group-text">Gwei</span>
               </div>
@@ -249,11 +246,13 @@ function createSimulationElements(simulationChecks:Map<string, Boolean>) {
 const SimulationResults = function SimulationResults() {
   const navigate: NavigateFunction = useNavigate();
 
-  const [sendButtonEnabled, setSendButtonEnabled]:
-  [boolean, (state: boolean) => void] = React.useState<boolean>(true);
+  const [isSendingTx, setIsSendingTx]:
+  [boolean, (state: boolean) => void] = React.useState<boolean>(false);
+  const [isExternalSigner, setIsExternalSigner] = React.useState<boolean>(false);
+  const [signedTx, setSignedTx] = React.useState<Transaction | null>(null);
 
   const onSendTransaction = async (txReq: TransactionRequest) => {
-    setSendButtonEnabled(false);
+    setIsSendingTx(true);
     const pendingTxStore = await UserState.getPendingTxStore();
     try {
       const wallet = await UserState.getConnectedWallet();
@@ -268,7 +267,23 @@ const SimulationResults = function SimulationResults() {
         }, 3000);
       } else {
         try {
-          const tResp: TransactionResponse = await wallet.sendTransaction(txReq);
+          let tResp: TransactionResponse;
+          if (!isExternalSigner) {
+            tResp = await wallet.sendTransaction(txReq);
+          } else if (signedTx !== null && wallet.provider) {
+            if (signedTx.r === undefined || signedTx.s === undefined || signedTx.v === undefined) {
+              throw new Error('Signed transaction must have r, s, and v values');
+            }
+            tResp = await wallet.provider.sendTransaction(
+              ethers.utils.serializeTransaction(signedTx, {
+                r: signedTx.r,
+                s: signedTx.s,
+                v: signedTx.v,
+              }),
+            );
+          } else {
+            throw new Error('Could not find a signed transaction to send');
+          }
           await pendingTxStore.addPendingTransaction(tResp, true);
           navigate('/Home');
         } catch (err:any) {
@@ -292,6 +307,8 @@ const SimulationResults = function SimulationResults() {
           setTimeout(() => {
             toast!.className = 'toast hide';
           }, 3000);
+
+          setIsSendingTx(false);
         }
       }
     } catch (e:any) {
@@ -315,10 +332,12 @@ const SimulationResults = function SimulationResults() {
       setTimeout(() => {
         toast!.className = 'toast hide';
       }, 3000);
+
+      setIsSendingTx(false);
     }
 
     // Show button when an error occurs
-    setSendButtonEnabled(true);
+    setIsSendingTx(false);
   };
 
   const gasModalProps: IHelpModalProps = {
@@ -382,6 +401,30 @@ const SimulationResults = function SimulationResults() {
     simulationStatus = 'Simulation Failed!';
   }
 
+  useEffect(() => {
+    UserState.getWalletState().then((ws) => {
+      if (!isAccount(ws.currentWallet)) {
+        setIsExternalSigner(true);
+      }
+    });
+  }, []);
+
+  let externalSignerField = null;
+  let sendButtonEnabled = !isSendingTx;
+  if (isExternalSigner) {
+    externalSignerField = (
+      <ExternalSignerField
+        tx={data[0]}
+        callback={
+        (tx: Transaction) => {
+          setSignedTx(tx);
+        }
+      }
+      />
+    );
+    sendButtonEnabled &&= (signedTx !== null);
+  }
+
   const loadingSendButtonProps: ILoadingButtonProps = {
     buttonId: 'send-button',
     buttonClasses: areAllSimulationsPassed(simulationChecks)
@@ -390,6 +433,7 @@ const SimulationResults = function SimulationResults() {
     buttonText: 'Send',
     buttonOnClick: () => onSendTransaction(data[0]),
     buttonEnabled: sendButtonEnabled,
+    spin: isSendingTx,
   };
 
   return (
@@ -421,7 +465,7 @@ const SimulationResults = function SimulationResults() {
                     </h5>
                   </p>
                   <GasOptions
-                    t={txReq}
+                    tRequest={txReq}
                     modalToSimulationResults={modalToSimulationResults}
                   />
                 </div>
@@ -460,6 +504,7 @@ const SimulationResults = function SimulationResults() {
           </div>
         )))}
       </div>
+      {externalSignerField}
       <h6>{' '}</h6>
       <h6>{' '}</h6>
       <div id="bottom-buttons">

@@ -1,6 +1,6 @@
 import { Provider, TransactionRequest } from '@ethersproject/providers';
 import {
-  Contract, ethers, Transaction, Wallet,
+  Contract, ethers, Transaction, Signer,
 } from 'ethers';
 import { BigNumber } from '@ethersproject/bignumber';
 import SimulationSuite from './SimulationSuite';
@@ -151,7 +151,7 @@ class SimulationSendTransactions {
    * @param wallet the user's wallet
    * @returns the list of checks that the transaction passed in the simulation
    */
-  async simulateTransaction(txReq: TransactionRequest, wallet: Wallet) {
+  async simulateTransaction(txReq: TransactionRequest, wallet: Signer) {
     try {
       const t = await wallet.populateTransaction(txReq);
 
@@ -187,17 +187,6 @@ class SimulationSendTransactions {
     } catch (e) {
       throw new Error(e as string);
     }
-  }
-
-  /**
-   * Sends a transaction
-   * @param t Transaction to send
-   * @returns the transaction hash and the promise from sending t
-   */
-  async sendTransaction(t: Transaction) {
-    const tHash = String(t.hash);
-    const response = await this.provider.sendTransaction(tHash);
-    return { hash: tHash, response };
   }
 }
 export default SimulationSendTransactions;

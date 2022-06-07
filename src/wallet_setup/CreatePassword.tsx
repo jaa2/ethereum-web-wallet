@@ -16,7 +16,7 @@ async function PasswordCreated(password: string): Promise<void> {
   const backgroundWindow: BackgroundWindowInterface = await browser.runtime.getBackgroundPage();
   const { walletState } = backgroundWindow.stateObj;
   // Encrypt wallet
-  const result = walletState.saveEncryptedWallet(false, password);
+  const result = walletState.saveWallet(false, password);
   if (!result) {
     throw new Error('Could not save');
   }

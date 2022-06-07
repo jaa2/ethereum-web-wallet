@@ -1,10 +1,10 @@
 import React, { useEffect } from 'react';
 import { Link, NavigateFunction, useNavigate } from 'react-router-dom';
+import { Wallet } from 'ethers';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlus, faArrowCircleLeft } from '@fortawesome/free-solid-svg-icons';
 import browser from 'webextension-polyfill';
-import { Wallet } from 'ethers';
 
 import { BackgroundWindowInterface } from '../../background/background';
 import './CreateNewWallet.scss';
@@ -16,10 +16,10 @@ async function loadNewWallet(): Promise<string | null> {
   const walletCreated: boolean = await walletState.createWallet(false, null);
 
   // Show secret recovery phrase
-  const wallet: Wallet | null = !walletCreated ? null : await walletState.getWallet();
+  const wallet = !walletCreated ? null : await walletState.getWallet();
   if (walletCreated && wallet !== null) {
     await backgroundWindow.connectWallet();
-    return wallet.mnemonic.phrase;
+    return (wallet as Wallet).mnemonic.phrase;
   }
 
   // Wallet not created

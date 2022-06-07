@@ -4,17 +4,18 @@ export interface ILoadingButtonProps {
   buttonText: string;
   buttonOnClick: () => {};
   buttonEnabled: boolean;
+  spin: boolean;
 }
 
 const LoadingButton:
 React.FC<ILoadingButtonProps> = function LoadingButton(props: ILoadingButtonProps) {
   const {
-    buttonId, buttonClasses, buttonText, buttonOnClick, buttonEnabled,
+    buttonId, buttonClasses, buttonText, buttonOnClick, buttonEnabled, spin,
   } = props;
 
-  if (buttonEnabled) {
+  if (buttonEnabled || !spin) {
     return (
-      <button id={buttonId} className={buttonClasses.join(' ')} type="button" onClick={buttonOnClick}>{buttonText}</button>
+      <button id={buttonId} className={buttonClasses.join(' ')} type="button" onClick={buttonOnClick} disabled={!buttonEnabled}>{buttonText}</button>
     );
   }
 

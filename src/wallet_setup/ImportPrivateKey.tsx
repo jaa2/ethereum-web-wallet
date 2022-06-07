@@ -6,7 +6,7 @@ import browser from 'webextension-polyfill';
 
 import './ImportPrivateKey.scss';
 import React from 'react';
-import { ethers, Wallet } from 'ethers';
+import { ethers } from 'ethers';
 import { BackgroundWindowInterface } from '../../background/background';
 
 async function ValidPrivateKey(privateKey: string) {
@@ -16,7 +16,7 @@ async function ValidPrivateKey(privateKey: string) {
   const walletCreated: boolean = await walletState.createWallet(false, privateKey);
 
   // Show secret recovery phrase
-  const wallet: Wallet | null = !walletCreated ? null : await walletState.getWallet();
+  const wallet = !walletCreated ? null : await walletState.getWallet();
   return (walletCreated && wallet !== null);
 }
 
@@ -100,7 +100,7 @@ const ImportPrivateKey = function ImportPrivateKey() {
         <div className="form-group">
           <label htmlFor="private-key-input" className="form-label mt-4">Enter your private key below</label>
           <div className="input-group mb-3">
-            <input className="form-control" id="private-key-input" type="text" name="privateKey" onChange={handlePrivateKey} />
+            <input className="form-control" id="key-input" type="text" name="privateKey" onChange={handlePrivateKey} />
           </div>
           {privateKeyStatusElements}
         </div>
