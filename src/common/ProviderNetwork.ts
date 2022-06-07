@@ -45,7 +45,7 @@ export async function getProviderNetworks(): Promise<Array<ProviderNetwork>> {
       connectionType: ConnectionType.ETHERSCAN_API,
       internalName: 'goerli',
       networkID: 5,
-      explorerURL: 'https://rinkeby.etherscan.io',
+      explorerURL: 'https://goerli.etherscan.io',
     },
   ];
 
