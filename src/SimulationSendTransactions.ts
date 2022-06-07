@@ -75,13 +75,7 @@ class SimulationSendTransactions {
    */
   async getGasLimit(t: TransactionRequest) {
     try {
-      let estGas = await this.provider.estimateGas(t);
-      if (estGas.gte(BigNumber.from(21000))) {
-        // Padding of 1.2x the estimated gas limit is used
-        estGas = BigNumber.from(Math.floor(estGas.toNumber() * 1.2));
-      }
-
-      return estGas;
+      return await this.provider.estimateGas(t);
     } catch (e) {
       // TODO: Use some other metric for determining the gas limit
       return BigNumber.from(1000000);
