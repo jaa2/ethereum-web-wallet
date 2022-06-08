@@ -1,6 +1,6 @@
 import { Provider, TransactionRequest } from '@ethersproject/providers';
 import {
-  Contract, ethers, Transaction, Signer,
+  Contract, Transaction, Signer,
 } from 'ethers';
 import { BigNumber } from '@ethersproject/bignumber';
 import SimulationSuite from './SimulationSuite';
@@ -87,54 +87,20 @@ class SimulationSendTransactions {
    * @param t Transaction
    * @returns the total gas fee in ETH as a string
    */
-  static totalGasFeeInETH(t: TransactionRequest) {
-    const tGasLimit = BigNumber.from(t.gasLimit);
+  static totalGasFeeInETH(t: TransactionRequest): BigNumber {
     const { type } = t;
     if (type === null) {
-      return null;
+      return BigNumber.from(0);
     }
 
+    const tGasLimit = BigNumber.from(t.gasLimit);
     let tGasPrice = BigNumber.from(0);
     if (type === 2) {
-      const tMaxFeePerGas = BigNumber.from(t.maxFeePerGas);
-      const tMaxPriorityFeePerGas = BigNumber.from(t.maxPriorityFeePerGas);
-
-      tGasPrice = tMaxFeePerGas.add(tMaxPriorityFeePerGas);
+      tGasPrice = BigNumber.from(t.maxFeePerGas);
     } else {
       tGasPrice = BigNumber.from(t.gasPrice);
     }
-
-    let tTotalGasFees = ethers.utils.formatEther(tGasLimit.mul(tGasPrice));
-    tTotalGasFees = String(Math.round((+tTotalGasFees) * 10 ** 5) / 10 ** 5);
-    return tTotalGasFees;
-  }
-
-  /**
-   * Calculates the total transaction fee in ETH
-   * @param t Transaction
-   * @returns the total transaction fee in ETH as a string
-   */
-  static totalTransactionFeeInETH(t: TransactionRequest) {
-    const tGasLimit = BigNumber.from(t.gasLimit);
-    const { type } = t;
-    if (type === null) {
-      return null;
-    }
-
-    let tGasPrice = BigNumber.from(0);
-    if (type === 2) {
-      const tMaxFeePerGas = BigNumber.from(t.maxFeePerGas);
-      const tMaxPriorityFeePerGas = BigNumber.from(t.maxPriorityFeePerGas);
-
-      tGasPrice = tMaxFeePerGas.add(tMaxPriorityFeePerGas);
-    } else {
-      tGasPrice = BigNumber.from(t.gasPrice);
-    }
-
-    const tTotalGasFees = tGasLimit.mul(tGasPrice);
-    let tTotal = ethers.utils.formatEther(tTotalGasFees.add(BigNumber.from(t.value)));
-    tTotal = String(Math.round((+tTotal) * 10 ** 5) / 10 ** 5);
-    return tTotal;
+    return tGasLimit.mul(tGasPrice);
   }
 
   /**
