@@ -58,9 +58,9 @@ Promise<any> {
     case 'eth_sendTransaction':
     {
       console.log(`CreateTransaction runtime url: ${
-        browser.runtime.getURL('index.html/#/CreateTransaction')}`);
+        browser.runtime.getURL('index.html#/CreateTransaction')}`);
       const createTabProps: browser.Tabs.CreateCreatePropertiesType = {
-        url: browser.runtime.getURL('index.html/#/CreateTransaction'),
+        url: browser.runtime.getURL('index.html#/CreateTransaction'),
       };
       if (sender !== undefined) {
         createTabProps.openerTabId = sender.tab?.id;
