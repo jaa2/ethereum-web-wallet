@@ -320,13 +320,11 @@ const CreateTransaction = function CreateTransaction(props: TransactionAction) {
     browser.runtime.sendMessage(undefined, {
       type: 'populateCreateTransactionRequest',
     }).then((result) => {
-      console.log('Content script got message back:', result);
       if (result !== undefined && result.args !== undefined) {
         const txReq: TransactionRequest = result.args[0];
         setTo(txReq.to ? txReq.to : to);
         setAmount(txReq.value ? ethers.utils.formatEther(BigNumber.from(txReq.value))
           : amount);
-        console.log('Data: ', txReq.data);
         setData(txReq.data ? txReq.data.toString() : data);
         // TODO: Find different way of setting this value
         if (txReq.data !== undefined) {
@@ -341,13 +339,10 @@ const CreateTransaction = function CreateTransaction(props: TransactionAction) {
       }
     });
   }, []);
-  console.log('Should be listening for messages...');
 
   const locState = location.state as CreateTransactionLocationState | null;
   if (locState !== null) {
-    console.log('locState: ', locState);
     location.state = null;
-    console.log('locState afteR:', locState);
     if (locState.txReq) {
       setTo(locState.txReq.to ? locState.txReq.to : to);
       setAmount(ethers.utils.formatEther(BigNumber.from(locState.txReq.value).toString()));
@@ -360,7 +355,6 @@ const CreateTransaction = function CreateTransaction(props: TransactionAction) {
       action = 'Replace';
     }
     if (locState.data) {
-      console.log(`Setting data to ${locState.data}`);
       setData(locState.data);
       setDataField(locState.data);
     }
