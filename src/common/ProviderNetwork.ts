@@ -13,6 +13,13 @@ export async function addProviderNetwork(network: ProviderNetwork) {
   await browser.storage.local.set({ savedNetworks });
 }
 
+export async function removeProviderNetwork(name: string) {
+  let savedNetworks: ProviderNetwork[] = [];
+  savedNetworks = (await browser.storage.local.get({ savedNetworks: [] })).savedNetworks;
+  savedNetworks = savedNetworks.filter((network) => (network.displayName !== name));
+  await browser.storage.local.set({ savedNetworks });
+}
+
 /**
  * Finds a list of known provider networks
  * @returns an array of known provider networks
