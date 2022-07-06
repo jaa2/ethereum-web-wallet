@@ -12,6 +12,7 @@ import ImportSecretPhrase from './wallet_setup/ImportSecretPhrase';
 import CreateNonSigningWallet from './wallet_setup/CreateNonSigningWallet';
 import WalletSetup from './wallet_setup/WalletSetup';
 import AddProviderNetwork from './wallet_setup/AddProviderNetwork';
+import ProviderNetworkManager from './wallet_setup/ProviderNetworkManager';
 
 import Home from './Home';
 import ProfileSettings from './common/settings/ProfileSettings';
@@ -53,6 +54,7 @@ const App = function App() {
           <Route path="/CreateNonSigningWallet" element={<CreateNonSigningWallet />} />
           <Route path="/WalletSetup" element={<WalletSetup />} />
           <Route path="/AddProviderNetwork" element={<AddProviderNetwork />} />
+          <Route path="/ProviderNetworkManager" element={<ProviderNetworkManager />} />
 
           <Route path="/Home" element={<Home />} />
           <Route path="/ProfileSettings" element={<ProfileSettings />} />

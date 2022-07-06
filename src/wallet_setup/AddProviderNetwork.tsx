@@ -1,9 +1,8 @@
-import { faArrowCircleLeft } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { useNavigate } from 'react-router';
 import React from 'react';
 import './CommonScreen.scss';
+import { useNavigate } from 'react-router';
 import ProviderNetwork, { ConnectionType, addProviderNetwork } from '../common/ProviderNetwork';
+import BackButton from '../common/BackButton';
 
 async function addNetwork(name: string, networkID: number, rpcUrl: string, explorerURL?: string) {
   const pn: ProviderNetwork = {
@@ -17,17 +16,15 @@ async function addNetwork(name: string, networkID: number, rpcUrl: string, explo
 }
 
 export default function AddProviderNetwork() {
-  const navigate = useNavigate();
   const [name, setName]: [string, (name: string) => void] = React.useState<string>('');
   const [url, setURL]: [string, (url: string) => void] = React.useState<string>('');
   const [explorerURL, setExplorerURL]: [string, (url: string) => void] = React.useState<string>('');
   const [networkID, setNetworkID]:
   [number, (networkID: number) => void] = React.useState<number>(1);
+  const navigate = useNavigate();
   return (
     <div className="top-container container">
-      <button type="button" className="btn back-icon" onClick={() => navigate(-1)}>
-        <FontAwesomeIcon className="fa-icon" icon={faArrowCircleLeft} size="2x" />
-      </button>
+      <BackButton />
       <h1>Add Network</h1>
       <form
         className="container-md mt-2"
