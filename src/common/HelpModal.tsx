@@ -6,7 +6,7 @@ import { faQuestionCircle } from '@fortawesome/free-solid-svg-icons';
 
 export interface IHelpModalProps {
   title: string;
-  description: string;
+  description: string | JSX.Element;
 }
 
 const HelpModal: React.FC<IHelpModalProps> = function HelpModal(props: IHelpModalProps) {
@@ -22,6 +22,13 @@ const HelpModal: React.FC<IHelpModalProps> = function HelpModal(props: IHelpModa
     setIsOpen(false);
   };
 
+  let descriptionElement: JSX.Element;
+  if (typeof (description) === 'string') {
+    descriptionElement = <p>{description}</p>;
+  } else {
+    descriptionElement = description;
+  }
+
   return (
     <>
       <FontAwesomeIcon className="fa-icon" icon={faQuestionCircle} onClick={showModal} cursor="pointer" />
@@ -31,7 +38,7 @@ const HelpModal: React.FC<IHelpModalProps> = function HelpModal(props: IHelpModa
           <h5 className="modal-title" id="exampleModalLabel">{title}</h5>
         </Modal.Header>
         <Modal.Body>
-          <p>{description}</p>
+          {descriptionElement}
         </Modal.Body>
       </Modal>
     </>
