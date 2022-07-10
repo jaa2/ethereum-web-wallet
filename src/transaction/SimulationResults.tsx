@@ -343,7 +343,39 @@ const SimulationResults = function SimulationResults() {
 
   const gasModalProps: IHelpModalProps = {
     title: 'Gas Terms',
-    description: 'Gas price - maximum amount of Ether you are willing to pay for each unit of Gas. Gas limit - maximum amount of gas you are willing to spend to execute the transaction. Gwei - fractional unit of Ether used to specify gas price.',
+    description:
+  <div>
+    Each transaction must pay a fee to be included in the blockchain, weighted by the amount
+    of computation and storage the transaction requires, called &ldquo;gas&rdquo;.
+    In addition, each block in the blockchain has a &ldquo;basefee&rdquo;, which determines the
+    minimum fee per gas possible for all transactions in the block.
+    <ul>
+      <li>
+        <strong>Gas limit</strong>
+        : the maximum gas a transaction is allowed to consume.
+        Ensure this value is larger than the amount of gas actually used. Any unused gas is
+        refunded.
+      </li>
+      <li>
+        <strong>Gwei</strong>
+        : a unit of 1e-9 ether used to refer to gas price.
+      </li>
+      <li>
+        <strong>Max fee per gas</strong>
+        : the maximum fee per gas used. The transaction cannot be included in any block
+        whose basefee exceeds this value.
+      </li>
+      <li>
+        <strong>Max priority fee per gas</strong>
+        : the maximum priority fee paid to the
+        miner of the block that includes this transaction. In general, this value must be
+        at least 1 gwei for the transaction to be accepted by the network.
+      </li>
+    </ul>
+
+    If your transaction is not included quickly, you can choose to wait for
+    network usage to decrease or replace your transaction with one having a higher max fee per gas.
+  </div>,
   };
 
   const onEditTransaction = (txReq: TransactionRequest) => {
