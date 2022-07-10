@@ -344,7 +344,14 @@ const Home = function Home() {
   };
   const networkModalProps: IHelpModalProps = {
     title: 'Network',
-    description: 'Multiple networks that support the Ethereum protocol exist, meaning that they each independently maintain their own blockchain. In addition to the main Ethereum network, there are both test networks and private networks. Network switching is currently not supported.',
+    description:
+  <div>
+    Switch between EVM-compatible blockchains with this menu. You can add or remove visible networks
+    {' '}
+    <Link to="/ProfileSettings">
+      from the extension settings.
+    </Link>
+  </div>,
   };
 
   return (
