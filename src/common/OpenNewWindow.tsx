@@ -21,11 +21,23 @@ export const WindowTypeContext = React.createContext({
   setWindowType: (_: WindowType) => {}, /* eslint-disable-line */
 });
 
-const DelayedClose = () => {
+/**
+ * Delays closing the window for a period of time to allow a new window to be opened completely
+ */
+export const DelayedClose = () => {
   setTimeout(() => {
     window.close();
   }, 100);
 };
+
+/**
+ * Finds the WindowType of the current window using context
+ * @returns type of current window
+ */
+export function getWindowType(): WindowType {
+  const { windowType } = useContext(WindowTypeContext);
+  return windowType;
+}
 
 const OpenNewWindow = function OpenNewWindow() {
   // Get global WindowType state
