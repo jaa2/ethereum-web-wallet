@@ -1,10 +1,12 @@
 import React from 'react';
 import './CommonScreen.scss';
 import { useNavigate } from 'react-router';
-import ProviderNetwork, { ConnectionType, addProviderNetwork } from '../common/ProviderNetwork';
+import ProviderNetwork, { ConnectionType, addProviderNetworks, getProviderNetworks } from '../common/ProviderNetwork';
 import BackButton from '../common/BackButton';
+import UserState from '../common/UserState';
 
 async function addNetwork(name: string, networkID: number, rpcUrl: string, explorerURL?: string) {
+  const numPrevNetworks = (await getProviderNetworks()).length;
   const pn: ProviderNetwork = {
     displayName: name,
     connectionType: ConnectionType.JSON_RPC,
@@ -12,7 +14,12 @@ async function addNetwork(name: string, networkID: number, rpcUrl: string, explo
     address: rpcUrl,
     explorerURL,
   };
-  await addProviderNetwork(pn);
+  await addProviderNetworks([pn]);
+
+  if (numPrevNetworks === 0) {
+    const window = await UserState.getBackgroundWindow();
+    await window.getSavedNetwork();
+  }
 }
 
 export default function AddProviderNetwork() {

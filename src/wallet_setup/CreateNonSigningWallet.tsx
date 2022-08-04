@@ -34,7 +34,7 @@ const CreateNonSigningWallet = function CreateNonSigningWallet() {
     const resultSuccess: boolean = await validAddress(address);
     if (resultSuccess) {
       // Redirect
-      navigate('/Home');
+      navigate('/ProviderNetworkSetup');
     } else {
       throw new Error('Failed to create a non-signing wallet. Does a wallet already exist?');
     }

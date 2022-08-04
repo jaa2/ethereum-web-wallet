@@ -6,10 +6,10 @@ export enum ConnectionType {
   ETHERSCAN_API = 3,
 }
 
-export async function addProviderNetwork(network: ProviderNetwork) {
+export async function addProviderNetworks(networks: ProviderNetwork[]) {
   let savedNetworks: ProviderNetwork[] = [];
   savedNetworks = (await browser.storage.local.get({ savedNetworks: [] })).savedNetworks;
-  savedNetworks.push(network);
+  savedNetworks.push(...networks);
   await browser.storage.local.set({ savedNetworks });
 }
 
@@ -25,36 +25,7 @@ export async function removeProviderNetwork(name: string) {
  * @returns an array of known provider networks
  */
 export async function getProviderNetworks(): Promise<Array<ProviderNetwork>> {
-  const networks: Array<ProviderNetwork> = [
-    {
-      displayName: 'Ropsten Test Network',
-      connectionType: ConnectionType.ETHERSCAN_API,
-      internalName: 'ropsten',
-      networkID: 3,
-      explorerURL: 'https://ropsten.etherscan.io',
-    },
-    {
-      displayName: 'Kovan Test Network',
-      connectionType: ConnectionType.ETHERSCAN_API,
-      internalName: 'kovan',
-      networkID: 42,
-      explorerURL: 'https://kovan.etherscan.io',
-    },
-    {
-      displayName: 'Rinkeby Test Network',
-      connectionType: ConnectionType.ETHERSCAN_API,
-      internalName: 'rinkeby',
-      networkID: 4,
-      explorerURL: 'https://rinkeby.etherscan.io',
-    },
-    {
-      displayName: 'Goerli Test Network',
-      connectionType: ConnectionType.ETHERSCAN_API,
-      internalName: 'goerli',
-      networkID: 5,
-      explorerURL: 'https://goerli.etherscan.io',
-    },
-  ];
+  const networks: Array<ProviderNetwork> = [];
 
   // Load saved networks
   let savedNetworks: ProviderNetwork[] = [];

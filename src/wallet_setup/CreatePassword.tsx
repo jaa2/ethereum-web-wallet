@@ -57,7 +57,7 @@ const CreatePassword = function CreatePassword() {
     await PasswordCreated(password);
     // Redirect
     setIsEncrypting(false);
-    navigate('/Home');
+    navigate('/ProviderNetworkSetup');
   };
 
   function onSubmit(e: React.FormEvent<HTMLFormElement>) {

@@ -13,11 +13,12 @@ export interface BackgroundWindowInterface {
     walletState: WalletState,
     provider: Provider | null,
     pendingTransactionStore: PendingTransactionStore,
-    selectedNetwork?: ProviderNetwork
+    selectedNetwork?: ProviderNetwork,
   };
 
   connectWallet: () => Promise<void>;
   changeNetwork: (network: ProviderNetwork) => Promise<void>;
+  getSavedNetwork: () => Promise<void>;
 }
 
 declare global {
@@ -32,10 +33,16 @@ window.stateObj = {
   selectedNetwork: undefined,
 };
 
-async function changeNetwork(network: ProviderNetwork) {
+async function changeNetwork(network: ProviderNetwork | null) {
   if (window.stateObj.provider !== null) {
     window.stateObj.provider.removeAllListeners();
   }
+
+  if (network === null) {
+    window.stateObj.provider = null;
+    return;
+  }
+
   switch (network.connectionType) {
     case ConnectionType.JSON_RPC:
       if (network.address === undefined) {
@@ -77,10 +84,10 @@ window.connectWallet = async () => {
 async function getSavedNetwork(loadPendingTransactions: boolean = false) {
   const record = await browser.storage.local.get('currentNetworkName');
   let selectedNetworkIndex: number = 0;
+  const possibleNetworks = await getProviderNetworks();
   if ('currentNetworkName' in record) {
     // Find network by name
     const selectedNetworkName: string = record.currentNetworkName;
-    const possibleNetworks = await getProviderNetworks();
     for (let i = 0; i < possibleNetworks.length; i += 1) {
       if (possibleNetworks[i].displayName === selectedNetworkName) {
         selectedNetworkIndex = i;
@@ -89,11 +96,17 @@ async function getSavedNetwork(loadPendingTransactions: boolean = false) {
     }
   }
 
-  await changeNetwork((await getProviderNetworks())[selectedNetworkIndex]);
+  if (possibleNetworks.length > 0) {
+    await changeNetwork(possibleNetworks[selectedNetworkIndex]);
+  } else {
+    // No provider left
+    await changeNetwork(null);
+  }
 
-  if (loadPendingTransactions) {
+  if (loadPendingTransactions && window.stateObj.provider) {
     window.stateObj.pendingTransactionStore.load(window.stateObj.provider);
   }
 }
 
+window.getSavedNetwork = getSavedNetwork;
 getSavedNetwork();

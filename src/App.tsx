@@ -26,6 +26,7 @@ import { ThemeSetter } from './common/settings/Theme';
 import ExistingWallet from './ExistingWallet';
 
 import { WindowType, WindowTypeContext } from './common/OpenNewWindow';
+import ProviderNetworkSetup from './wallet_setup/ProviderNetworkSetup';
 
 // TODO: Gate off routes based on if the user has authenticated or not
 
@@ -53,6 +54,7 @@ const App = function App() {
           <Route path="/ImportSecretPhrase" element={<ImportSecretPhrase />} />
           <Route path="/CreateNonSigningWallet" element={<CreateNonSigningWallet />} />
           <Route path="/WalletSetup" element={<WalletSetup />} />
+          <Route path="/ProviderNetworkSetup" element={<ProviderNetworkSetup />} />
           <Route path="/AddProviderNetwork" element={<AddProviderNetwork />} />
           <Route path="/ProviderNetworkManager" element={<ProviderNetworkManager />} />
 
