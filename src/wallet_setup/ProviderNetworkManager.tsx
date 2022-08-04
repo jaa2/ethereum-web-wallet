@@ -5,6 +5,7 @@ import { faTrash } from '@fortawesome/free-solid-svg-icons';
 import { Link } from 'react-router-dom';
 import BackButton from '../common/BackButton';
 import ProviderNetwork, { ConnectionType, getProviderNetworks, removeProviderNetwork } from '../common/ProviderNetwork';
+import UserState from '../common/UserState';
 
 function ProviderNetworkEntry(
   network: ProviderNetwork,
@@ -37,7 +38,16 @@ export default function ProviderNetworkManager(): ReactElement {
   function deleteNetwork(name: string) {
     removeProviderNetwork(name)
       .then(() => getProviderNetworks())
-      .then((savedNetworks) => setNetworks(savedNetworks));
+      .then((savedNetworks) => setNetworks(savedNetworks))
+      .then(() => {
+        UserState.getBackgroundWindow().then(async (window) => {
+          const network = window.stateObj.selectedNetwork;
+          if (network && network.displayName === name) {
+            // We deleted the current provider, so find a new one to use
+            await window.getSavedNetwork();
+          }
+        });
+      });
   }
   return (
     <div className="top-container container">
