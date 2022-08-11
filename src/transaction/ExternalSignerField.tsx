@@ -62,7 +62,7 @@ export default function ExternalSignerField(props: IExternalSignerFieldProps) {
               const eventTx = ethers.utils.parseTransaction(event.target.value);
               isValidTx = true;
               isSameTx = [[eventTx.from === tx.from, 'Wrong sender address'],
-                [eventTx.to === tx.to, 'Wrong destination address'],
+                [eventTx.to === tx.to || (eventTx.to === null && tx.to === undefined), `Wrong destination address (got ${eventTx.to}, wanted ${tx.to})`],
                 [eventTx.chainId === tx.chainId, `Wrong chain ID (got ${eventTx.chainId}, wanted ${tx.chainId})`],
                 [eventTx.value.eq(tx.value ? tx.value : 0), `Wrong ETH value (got ${ethers.utils.formatEther(eventTx.value)} ETH)`],
                 [BigNumber.from(eventTx.nonce).eq(tx.nonce ? tx.nonce : 0), `Wrong nonce (got ${eventTx.nonce}, wanted ${tx.nonce})`],

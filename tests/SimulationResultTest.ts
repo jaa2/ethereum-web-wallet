@@ -167,13 +167,13 @@ describe('SimulationResults tests', () => {
     // Transaction costs more than what user has in wallet
     let t: Transaction = await provider.getTransaction('0x6a44268d33924f4f36223013d17da57ff98325bf246152214c044c055da4cbf5');
     let tReq = TransactionToRequest(t);
-    expect(await SimulationSuite.isTotalMoreThanWallet(tReq, balance)).to.be.true;
+    expect(await SimulationSuite.canAffordTx(tReq, balance)).to.be.false;
     await delay(1000);
 
     // Transaction amount is within the wallet's capacity
     balance = parseEther('0.05');
     t = await provider.getTransaction('0x6a44268d33924f4f36223013d17da57ff98325bf246152214c044c055da4cbf5');
     tReq = TransactionToRequest(t);
-    expect(await SimulationSuite.isTotalMoreThanWallet(tReq, balance)).to.be.false;
+    expect(await SimulationSuite.canAffordTx(tReq, balance)).to.be.true;
   });
 });

@@ -116,32 +116,31 @@ class SimulationSendTransactions {
       const t = await wallet.populateTransaction(txReq);
 
       // Our Simulation Checks
-      const code = await this.provider.getCode(String(t.to));
-      let isEOA = false;
-      if (code === '0x') {
-        isEOA = true;
-      }
-      let promises;
-      if (isEOA) {
-        promises = Promise.all([this.simulationSuite.isGasLimitEnough(t),
-          // SimulationSuite.isGasPriceReasonable(t, await this.provider.getFeeData()),
-          SimulationSuite.isTotalMoreThanWallet(t, await wallet.getBalance()),
-          this.simulationSuite.isDataSentToEOA(t)]);
-      } else {
-        promises = Promise.all([this.simulationSuite.isGasLimitEnough(t),
-          // SimulationSuite.isGasPriceReasonable(t, await this.provider.getFeeData()),
-          SimulationSuite.isTotalMoreThanWallet(t, await wallet.getBalance()),
-          this.simulationSuite.isTokenTransferToContract(t)]);
+      const promises = [
+        this.simulationSuite.isGasLimitEnough(t),
+        SimulationSuite.canAffordTx(t, await wallet.getBalance()),
+      ];
+      const checkTexts = ['Gas limit is reasonable', 'Total cost does not exceed balance'];
+
+      if (t.to !== undefined) {
+        const code = await this.provider.getCode(String(t.to));
+        let isEOA = false;
+        if (code === '0x') {
+          isEOA = true;
+        }
+
+        if (isEOA) {
+          promises.push(this.simulationSuite.isDataSentToEOA(t));
+          checkTexts.push('Data is not sent to non-contract address');
+        } else {
+          promises.push(this.simulationSuite.isTokenTransferToContract(t));
+          checkTexts.push('ERC-20 token is not sent to contract address');
+        }
       }
 
-      const simResults = await promises;
+      const simResults = await Promise.all(promises);
       // Simulation Check = Key; Boolean = Value
-      const simulationChecks = new Map([
-        [' Gas limit is reasonable', simResults[0]],
-        // ['Gas Price is Reasonable', simResults[1]],
-        [' Address is valid', true],
-        [' Total fee is not more than wallet', simResults[1] === false],
-        [' Data is sent correctly', simResults[2] === false]]);
+      const simulationChecks = new Map(checkTexts.map((text, i) => [` ${text}`, simResults[i]]));
 
       return { simulationChecks, t };
     } catch (e) {

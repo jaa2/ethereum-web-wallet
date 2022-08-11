@@ -229,22 +229,22 @@ class SimulationSuite {
      * @param t Transaction to test
      * @returns true if the transaction matches the function description
      */
-  static async isTotalMoreThanWallet(t: TransactionRequest
+  static async canAffordTx(t: TransactionRequest
   | null, balance: BigNumber): Promise<Boolean> {
     if (t === null) {
-      return true;
+      return false;
     }
 
     try {
       const tTotalGasFees = this.getTransactionMaxFee(t);
       const amount = BigNumber.from(t.value);
       if (amount.add(tTotalGasFees).gt(balance)) {
-        return true;
+        return false;
       }
 
-      return false;
-    } catch {
       return true;
+    } catch {
+      return false;
     }
   }
 

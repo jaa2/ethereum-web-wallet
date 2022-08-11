@@ -428,10 +428,13 @@ const SimulationResults = function SimulationResults() {
   let dest = String(data[0].to);
   dest = dest.substring(0, 7).concat('...'.concat(dest.substring(dest.length - 3, dest.length)));
 
-  const sourceToDest = source.concat(' to '.concat(dest));
+  let sourceToDest = source.concat(' to '.concat(dest));
   let transferLabel: string;
   if (contractOrEOA === '0x') {
     transferLabel = 'Basic Transfer';
+  } else if (data[0].to === undefined) {
+    transferLabel = 'Contract Creation';
+    sourceToDest = '';
   } else {
     transferLabel = 'Contract Interaction';
   }

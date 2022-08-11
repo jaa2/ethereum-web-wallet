@@ -53,13 +53,13 @@ async function getStateObj() {
  * @param amountInput The amount being sent
  */
 async function TestTransaction(
-  addressElem: HTMLInputElement,
+  addressElem: HTMLInputElement | null,
   amountElem: HTMLInputElement,
   location: Location,
   data: BytesLike | undefined,
 ) {
-  const addressInput = addressElem.value;
   const amountInput = amountElem.value;
+  const addressInput = addressElem ? addressElem.value : undefined;
 
   const txReq : TransactionRequest = {
     to: addressInput,
@@ -68,9 +68,10 @@ async function TestTransaction(
   try {
     // Preventing users from simulating transaction on invalid inputs
     let err = '';
-    if (addressElem.className === 'form-control is-invalid' && amountElem.className === 'form-control is-invalid') {
+    if ((addressElem !== null && addressElem.className === 'form-control is-invalid')
+      && amountElem.className === 'form-control is-invalid') {
       err = 'Address and amount inputs are invalid. Please fix them before testing the transaction.';
-    } else if (addressElem.className === 'form-control is-invalid') {
+    } else if (addressElem !== null && addressElem.className === 'form-control is-invalid') {
       err = 'Address input is invalid. Please fix it before testing the transaction.';
     } else if (amountElem.className === 'form-control is-invalid') {
       err = 'Amount input is invalid. Please fix it before testing the transaction';
@@ -105,7 +106,7 @@ async function TestTransaction(
         txReq,
         wallet.connect(provider),
       );
-      const contractOrEOA = await provider.getCode(addressInput);
+      const contractOrEOA = addressInput === undefined ? '0x00' : await provider.getCode(addressInput);
 
       return {
         simulationChecks: checksAndTx.simulationChecks,
@@ -125,6 +126,7 @@ async function TestTransaction(
 
     return null;
   } catch (e: any) {
+    throw new Error(e);
     let errMsg = e.message;
 
     const toastMsg = document.getElementById('toast-message');
@@ -169,7 +171,8 @@ const CreateTransaction = function CreateTransaction(props: TransactionAction) {
   [string, (matchState: string) => void] = React.useState<string>('');
   const [currentETHValue, setCurrentETHValue] = React.useState<number>(0);
 
-  const [to, setTo] = React.useState<string>('');
+  const [to, setTo] = React.useState<string | undefined>('');
+  const [isContractCreation, setIsContractCreation] = React.useState<boolean>(false);
   const [amount, setAmount] = React.useState<string>('0.00');
   const [data, setData] = React.useState<string>('0x');
   const [originRequest, setOriginRequest] = React.useState<string>('');
@@ -203,22 +206,8 @@ const CreateTransaction = function CreateTransaction(props: TransactionAction) {
 
   const onTestTransaction = async () => {
     setTestButtonEnabled(false);
-    const addressElem = (document.getElementById('toAddress') as HTMLInputElement);
+    const addressElem: HTMLInputElement | null = (document.getElementById('toAddress') as HTMLInputElement | null);
     const amountElem = (document.getElementById('amount') as HTMLInputElement);
-    if (addressElem.value === '') {
-      const feedbackElem = document.getElementById('to-feedback');
-      addressElem.className = 'form-control is-invalid';
-      feedbackElem!.textContent = 'Invalid address';
-      feedbackElem!.className = 'invalid-feedback';
-    }
-
-    if (amountElem.value === '') {
-      const feedbackElem = document.getElementById('amt-feedback');
-      amountElem.className = 'form-control is-invalid';
-      feedbackElem!.textContent = 'Invalid amount';
-      feedbackElem!.className = 'invalid-feedback';
-    }
-
     const dataFieldElem = document.getElementById('dataField');
     let currentData = data;
     if (dataFieldElem !== null && dataFieldElem instanceof HTMLTextAreaElement) {
@@ -252,6 +241,9 @@ const CreateTransaction = function CreateTransaction(props: TransactionAction) {
   };
 
   const onAddressInput = async () => {
+    if (document.getElementById('toAddress') === null) {
+      return;
+    }
     const addressElem = (document.getElementById('toAddress') as HTMLInputElement);
     const txReq : TransactionRequest = {
       to: addressElem.value,
@@ -301,6 +293,7 @@ const CreateTransaction = function CreateTransaction(props: TransactionAction) {
           feedbackElem!.textContent = errMsg;
           feedbackElem!.className = 'invalid-feedback';
         }
+        throw e;
       }
     } else {
       amountElem.className = 'form-control is-invalid';
@@ -322,7 +315,12 @@ const CreateTransaction = function CreateTransaction(props: TransactionAction) {
     }).then((result) => {
       if (result !== undefined && result.args !== undefined) {
         const txReq: TransactionRequest = result.args[0];
-        setTo(txReq.to ? txReq.to : to);
+        if (txReq.to === undefined) {
+          setIsContractCreation(true);
+          setTo(undefined);
+        } else {
+          setTo(txReq.to ? txReq.to : to);
+        }
         setAmount(txReq.value ? ethers.utils.formatEther(BigNumber.from(txReq.value))
           : amount);
         setData(txReq.data ? txReq.data.toString() : data);
@@ -344,7 +342,7 @@ const CreateTransaction = function CreateTransaction(props: TransactionAction) {
   if (locState !== null) {
     location.state = null;
     if (locState.txReq) {
-      setTo(locState.txReq.to ? locState.txReq.to : to);
+      setTo(locState.txReq.to);
       setAmount(ethers.utils.formatEther(BigNumber.from(locState.txReq.value).toString()));
       const dataStr = locState.txReq.data ? locState.txReq.data.toString() : data;
       setData(dataStr);
@@ -368,6 +366,18 @@ const CreateTransaction = function CreateTransaction(props: TransactionAction) {
     buttonEnabled: testButtonEnabled,
     spin: true,
   };
+
+  let toField = (
+    <div className="form-group">
+      <label className="col-form-label mt-4" htmlFor="toAddress">To</label>
+      <input type="text" className="form-control" defaultValue={to} id="toAddress" onChange={() => onAddressInput()} />
+      <div id="to-feedback" className="" />
+    </div>
+  );
+
+  if (isContractCreation) {
+    toField = <h4>Contract Creation</h4>;
+  }
 
   return (
     <div className="transaction-container">
@@ -394,11 +404,7 @@ const CreateTransaction = function CreateTransaction(props: TransactionAction) {
       </h1>
 
       <div className="field-entry">
-        <div className="form-group">
-          <label className="col-form-label mt-4" htmlFor="toAddress">To</label>
-          <input type="text" className="form-control" defaultValue={to} id="toAddress" onChange={() => onAddressInput()} />
-          <div id="to-feedback" className="" />
-        </div>
+        {toField}
         <div className="form-group">
           <label htmlFor="amount" className="form-label mt-4">Amount</label>
           <div className="form-group">
@@ -414,7 +420,7 @@ const CreateTransaction = function CreateTransaction(props: TransactionAction) {
             <h5 id="amount-in-usd">USD</h5>
           </div>
         </div>
-        <DataField initialData={data} />
+        <DataField initialData={data} defaultVisible={isContractCreation ? true : undefined} />
       </div>
       <div className="bottom-options">
         {action === 'Send' && (

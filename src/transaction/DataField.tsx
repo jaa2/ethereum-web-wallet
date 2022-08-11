@@ -2,10 +2,15 @@ import { ethers } from 'ethers';
 import React from 'react';
 import Config from '../common/settings/Config';
 
-const DataField = function DataField(props: { initialData: string }) {
-  const { initialData } = props;
+const DataField = function DataField(props: {
+  initialData: string,
+  defaultVisible: undefined | boolean
+}) {
+  const { initialData, defaultVisible } = props;
   const config: Config = new Config();
-  const [visible, setVisible] = React.useState<boolean>(config.getImmediate('showDataField', false));
+  const [visible, setVisible] = React.useState<boolean>(
+    defaultVisible !== undefined ? defaultVisible : config.getImmediate('showDataField', false),
+  );
 
   const [validData, setValidData] = React.useState<boolean>(true);
   let className = 'form-control';
@@ -16,13 +21,19 @@ const DataField = function DataField(props: { initialData: string }) {
   }
 
   React.useEffect(() => {
-    config.get('showDataField', false).then((val) => {
-      setVisible(val);
-    });
+    if (defaultVisible === undefined) {
+      config.get('showDataField', false).then((val) => {
+        setVisible(val);
+      });
+    }
   }, []);
 
   return (
-    <div className="form-group" hidden={!visible}>
+    <div
+      key={defaultVisible !== undefined ? defaultVisible.toString() : 'undefined'}
+      className="form-group"
+      hidden={!visible && !defaultVisible}
+    >
       <label className="col-form-label mt-4" htmlFor="dataField">Data</label>
       <textarea
         id="dataField"
