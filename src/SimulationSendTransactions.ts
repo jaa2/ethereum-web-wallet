@@ -130,10 +130,10 @@ class SimulationSendTransactions {
         }
 
         if (isEOA) {
-          promises.push(this.simulationSuite.isDataSentToEOA(t));
+          promises.push(this.simulationSuite.isDataSentToEOA(t).then((res) => !res));
           checkTexts.push('Data is not sent to non-contract address');
         } else {
-          promises.push(this.simulationSuite.isTokenTransferToContract(t));
+          promises.push(this.simulationSuite.isTokenTransferToContract(t).then((res) => !res));
           checkTexts.push('ERC-20 token is not sent to contract address');
         }
       }
