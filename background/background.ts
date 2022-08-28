@@ -1,5 +1,5 @@
 import {
-  JsonRpcProvider, WebSocketProvider, EtherscanProvider, Provider,
+  StaticJsonRpcProvider, WebSocketProvider, EtherscanProvider, Provider,
 } from '@ethersproject/providers';
 import { Wallet } from 'ethers';
 import browser from 'webextension-polyfill';
@@ -49,7 +49,7 @@ async function changeNetwork(network: ProviderNetwork | null) {
       if (network.address === undefined) {
         throw new Error('Undefined network address for a JSON-RPC connection type');
       }
-      window.stateObj.provider = new JsonRpcProvider(network.address);
+      window.stateObj.provider = new StaticJsonRpcProvider(network.address);
       break;
     case ConnectionType.WEBSOCKET:
       if (network.address === undefined) {
